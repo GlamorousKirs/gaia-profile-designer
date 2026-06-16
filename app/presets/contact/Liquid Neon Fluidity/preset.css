@@ -1,0 +1,255 @@
+:root {
+  /* Toggle Switch: 1 for ON, 0 for OFF */
+  --show-contact-label: 1;
+
+  /* Type exactly: left , right , or center */
+  --dock-position: center;
+
+  --contact-bg: #07070a; 
+  --contact-accent: #a14fff; /* Vibrant Electric Purple */
+  --btn-bg: #13111c; 
+  --btn-bg-hover: #1b172a; 
+  --text-color: #f1f0f5;
+}
+
+/* Fluid Animation Sequences */
+@keyframes ambientPulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(161, 79, 255, 0.2), inset 0 0 5px rgba(161, 79, 255, 0.1); }
+  50% { box-shadow: 0 0 30px rgba(161, 79, 255, 0.45), inset 0 0 12px rgba(161, 79, 255, 0.25); }
+}
+
+@keyframes liquidSweep {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+
+@keyframes scaleDot {
+  0%, 100% { transform: translateY(-50%) scale(1); opacity: 0.4; }
+  50% { transform: translateY(-50%) scale(1.6); opacity: 1; }
+}
+
+#id_contact {
+  position: fixed;
+  bottom: 20px;
+  width: 46px;
+  height: 46px;
+  background: var(--btn-bg);
+  border: 2px solid rgba(161, 79, 255, 0.3);
+  border-radius: 50px; /* Perfect Circle */
+  overflow: visible; 
+  z-index: 9999;
+  box-sizing: border-box;
+  animation: ambientPulse 3s infinite ease-in-out;
+  transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@container style(--dock-position: center) {
+  #id_contact {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+  #id_contact:hover {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@container style(--dock-position: right) {
+  #id_contact {
+    left: auto;
+    right: 20px;
+    transform: none;
+  }
+  #id_contact:hover {
+    transform: none;
+  }
+}
+
+@container style(--dock-position: left) {
+  #id_contact {
+    left: 20px;
+    right: auto;
+    transform: none;
+  }
+  #id_contact:hover {
+    transform: none;
+  }
+}
+
+#id_contact:hover {
+  width: 370px; 
+  height: 50px; 
+  border-radius: 25px; /* Smooth Fluid Pill Radius */
+  background: var(--contact-bg);
+  border-color: var(--contact-accent);
+  padding: 8px;
+}
+
+@media (max-width: 400px) {
+  #id_contact:hover {
+    width: calc(100vw - 40px);
+  }
+}
+
+/* Floating Orb Core */
+#id_contact:before {
+  content: "●"; 
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 42px;
+  height: 42px;
+  line-height: 42px;
+  font-size: 14px;
+  text-align: center;
+  color: var(--contact-accent);
+  text-shadow: 0 0 10px var(--contact-accent);
+  transition: all 0.5s ease;
+  z-index: 3;
+  pointer-events: none;
+}
+
+#id_contact:hover:before {
+  top: 13px; 
+  left: 18px;
+  width: auto;
+  height: auto;
+  line-height: 1;
+  transform: scale(0.8);
+}
+
+/* Top Label Header */
+#id_contact:after {
+  content: "FLUID_DOCK // SYSTEM";
+  position: absolute;
+  top: -16px; 
+  left: 14px;
+  font-family: sans-serif;
+  font-size: 9px; 
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--contact-accent);
+  opacity: 0;
+  transform: translateY(calc(3px * var(--show-contact-label)));
+  transition: all 0.4s ease;
+  pointer-events: none;
+}
+
+#id_contact:hover:after {
+  opacity: var(--show-contact-label);
+  transform: translateY(0);
+}
+
+#id_contact h2 {
+  display: none !important;
+}
+
+/* Navigation Row Map */
+#id_contact ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  gap: 8px;
+  height: 32px; 
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%) translateX(10px);
+  left: 42px; 
+  right: 12px;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+
+#id_contact:hover ul {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0); 
+}
+
+/* Dynamic List Indicator Nodes */
+#id_contact ul li {
+  flex: 1;
+  position: relative;
+  white-space: nowrap;
+  font-family: sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+#id_contact ul li::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  background: var(--contact-accent);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#id_contact ul li:hover::before {
+  opacity: 1;
+  animation: scaleDot 1s infinite;
+}
+
+/* Pill Link Buttons */
+#id_contact ul li a {
+  display: block;
+  padding: 8px 12px; 
+  color: var(--text-color);
+  text-decoration: none;
+  background: var(--btn-bg);
+  border-radius: 16px; /* High Radius Links */
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+/* Liquid Light Wave Sheen Overlays */
+#id_contact ul li a::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(161, 79, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+
+#id_contact ul li:has(a):hover a {
+  background: var(--btn-bg-hover);
+  color: #ffffff;
+  border-color: rgba(161, 79, 255, 0.4);
+}
+
+#id_contact ul li:has(a):hover a::after {
+  animation: liquidSweep 1.8s infinite linear;
+}
+
+/* Disabled Nodes */
+#id_contact ul li span {
+  display: block;
+  padding: 8px 12px; 
+  color: rgba(255, 255, 255, 0.2); 
+  background: rgba(0, 0, 0, 0.25); 
+  border-radius: 16px; /* Matched high corner radius */
+  cursor: not-allowed; 
+  user-select: none;
+  font-size: 0; 
+}
+
+#id_contact ul li span:after {
+  content: "READY";
+  font-size: 11px; 
+}

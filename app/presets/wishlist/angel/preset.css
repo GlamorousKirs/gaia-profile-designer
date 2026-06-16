@@ -1,0 +1,219 @@
+:root {
+    --show-halo: 1;
+    --show-spark: 1;
+    --show-shadow: 1;
+    --show-equipment-label: 1;
+    --show-wishlist-label: 1;
+    --show-locked-state: 1;
+
+    --item-size: 35px;
+    --item-gap: 15px;
+
+    --label-equipped: "Equipped";
+    --label-wanted: "Wanted";
+    --label-questing: "Questing";
+    --label-bought: "Bought";
+    --label-donated: "Donated";
+}
+
+html, body {
+    background: rgb(31, 36, 75);
+}
+
+#id_equipment,
+#id_wishlist {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--item-gap);
+    padding: 50px 40px;
+    background: transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+#id_wishlist, #id_equipment {
+    font-size: 0;
+
+    h2, .premium_sparkle, .glow, .private_checkmark {
+        display: none;
+    }
+}
+
+#id_wishlist > div[style*="margin:4px"] {
+    display: none;
+}
+
+#id_equipment .item,
+#id_wishlist .item {
+    width: var(--item-size);
+    height: var(--item-size);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s ease, border-color 0.4s ease, filter 0.4s ease, opacity 0.4s ease;
+    cursor: pointer;
+    z-index: 2;
+}
+
+#id_equipment .item:hover,
+#id_wishlist .item:hover {
+    transform: translateY(calc(-8px * var(--show-shadow))) scale(1.15);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #fff4bd;
+}
+
+#id_equipment .item::before,
+#id_wishlist .item::before {
+    content: '';
+    position: absolute;
+    top: calc(var(--item-size) * -0.2);
+    left: 50%;
+    width: calc(var(--item-size) * 0.65);
+    height: calc(var(--item-size) * 0.15);
+    border: 1.5px solid #fff4bd;
+    border-radius: 50%;
+    transform: translateX(-50%) rotateX(65deg) scale(0);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 12px #fff4bd, inset 0 0 4px #fff4bd;
+}
+
+#id_equipment .item:hover::before,
+#id_wishlist .item:hover::before {
+    opacity: var(--show-halo);
+    transform: translateX(-50%) rotateX(65deg) scale(var(--show-halo));
+    top: calc(var(--item-size) * -0.3);
+    animation: halo-float 2s ease-in-out infinite alternate;
+}
+
+#id_equipment .item::after,
+#id_wishlist .item::after {
+    content: '';
+    position: absolute;
+    bottom: calc(var(--item-size) * -0.1);
+    left: 50%;
+    width: calc(var(--item-size) * 0.45);
+    height: calc(var(--item-size) * 0.1);
+    background: #fff4bd;
+    border-radius: 50%;
+    transform: translateX(-50%) scale(0.5);
+    filter: blur(4px);
+    transition: all 0.6s ease;
+    z-index: -1;
+    opacity: 0;
+}
+
+#id_equipment .item:hover::after,
+#id_wishlist .item:hover::after {
+    opacity: calc(0.4 * var(--show-shadow));
+    transform: translateX(-50%) scale(calc(1.5 * var(--show-shadow)));
+    bottom: calc(var(--item-size) * -0.35);
+    box-shadow: 0 0 15px #fff4bd;
+}
+
+#id_wishlist .item:has(a[title*='(Bought)']),
+#id_wishlist .item:has(a[title*='(Donated)']) {
+    filter: grayscale(calc(1 * var(--show-locked-state))) opacity(calc(0.4 + (0.6 * (1 - var(--show-locked-state)))));
+    pointer-events: var(--show-locked-state, none);
+    border-color: rgba(255, 255, 255, calc(0.05 * var(--show-locked-state)));
+}
+
+#id_equipment .item_info,
+#id_wishlist .item_info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+#id_equipment .item_info::after,
+#id_wishlist .item_info::after {
+    content: '';
+    position: absolute;
+    top: 130%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-5px);
+    padding: 2px 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 244, 189, 0.3);
+    color: #fff4bd;
+    font-family: 'Georgia', serif;
+    font-size: 8px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    border-radius: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+    backdrop-filter: blur(2px);
+}
+
+#id_equipment .item:hover .item_info::after,
+#id_wishlist .item:hover .item_info::after {
+    opacity: var(--show-equipment-label);
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+#id_equipment .item_info::after { content: var(--label-equipped); }
+#id_wishlist .item:has(a[title*='(Wanted)']) .item_info::after { content: var(--label-wanted); }
+#id_wishlist .item:has(a[title*='(Questing)']) .item_info::after { content: var(--label-questing); }
+#id_wishlist .item:has(a[title*='(Bought)']) .item_info::after { content: var(--label-bought); }
+#id_wishlist .item:has(a[title*='(Donated)']) .item_info::after { content: var(--label-donated); }
+
+#id_equipment .item_info::before,
+#id_wishlist .item_info::before {
+    content: '';
+    position: absolute;
+    top: calc(var(--item-size) * -0.25);
+    left: 50%;
+    width: calc(var(--item-size) * 0.1);
+    height: calc(var(--item-size) * 0.1);
+    background: #ffffff;
+    border-radius: 50%;
+    filter: blur(1px);
+    box-shadow: 0 0 10px 2px #ffffff;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 3;
+}
+
+#id_equipment .item:hover .item_info::before,
+#id_wishlist .item:hover .item_info::before {
+    opacity: var(--show-spark);
+    animation: spark-orbit 4s linear infinite;
+}
+
+@keyframes halo-float {
+    0% { transform: translateX(-50%) rotateX(65deg) translateY(0); }
+    100% { transform: translateX(-50%) rotateX(65deg) translateY(-2px); }
+}
+
+@keyframes spark-orbit {
+    0% { transform: translateX(-50%) rotateX(65deg) rotateZ(0deg) translateY(calc(var(--item-size) * -0.35)); }
+    100% { transform: translateX(-50%) rotateX(65deg) rotateZ(360deg) translateY(calc(var(--item-size) * -0.35)); }
+}
+
+#id_equipment .item_info img,
+#id_wishlist .item_info img {
+    width: calc(var(--item-size) * 0.5);
+    height: calc(var(--item-size) * 0.5);
+    object-fit: contain;
+    filter: brightness(0) invert(1) opacity(0.7);
+    transition: filter 0.4s ease;
+}
+
+#id_equipment .item:hover .item_info img,
+#id_wishlist .item:hover .item_info img {
+    filter: brightness(0) invert(1) opacity(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+}

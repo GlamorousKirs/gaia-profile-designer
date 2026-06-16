@@ -1,0 +1,11 @@
+title = "Meow"
+
+[author]
+name = "Sunkirs"
+
+[panels]
+#   Add commas here 👇
+col1 = ["details", "aboutme", "wishlist"]
+col2 = []
+col3 = []
+header = true

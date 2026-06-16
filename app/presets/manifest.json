@@ -1,0 +1,123 @@
+[
+  {
+    "id": "bottom-wide",
+    "category": "columns",
+    "meta": {
+      "title": "Bottom Wide",
+      "author": {
+        "name": "Sunkirs",
+        "gaia_id": "46362126"
+      }
+    },
+    "cssPath": "/presets/columns/bottom-wide/preset.css"
+  },
+  {
+    "id": "Left Sidebar",
+    "category": "columns",
+    "meta": {
+      "title": "Left Sidebar",
+      "thumbnail": "https://rstr.in/1jo6mv5p8ea7ef/gaia/rvLQA5i7m3H",
+      "author": {
+        "name": "Sunkirs",
+        "gaia_id": "46362126"
+      }
+    },
+    "cssPath": "/presets/columns/Left Sidebar/preset.css"
+  },
+  {
+    "id": "Top Wide",
+    "category": "columns",
+    "meta": {
+      "title": "Top Wide",
+      "thumbnail": "https://rstr.in/1jo6mv5p8ea7ef/gaia/s2FecpyORzU",
+      "author": {
+        "name": "Sunkirs",
+        "gaia_id": "46362126"
+      }
+    },
+    "cssPath": "/presets/columns/Top Wide/preset.css"
+  },
+  {
+    "id": "Vertical Stack",
+    "category": "columns",
+    "meta": {
+      "title": "Vertical Stack",
+      "author": {
+        "name": "Sunkirs"
+      }
+    },
+    "cssPath": "/presets/columns/Vertical Stack/preset.css"
+  },
+  {
+    "id": "default",
+    "category": "header",
+    "meta": {
+      "title": "Original Header",
+      "author": {
+        "name": "Sunkirs"
+      }
+    },
+    "cssPath": "/presets/header/default/preset.css"
+  },
+  {
+    "id": "meow",
+    "category": "profile",
+    "meta": {
+      "title": "Meow",
+      "author": {
+        "name": "Sunkirs"
+      }
+    },
+    "cssPath": "/presets/profile/meow/preset.css"
+  },
+  {
+    "id": "test",
+    "category": "profile",
+    "meta": {
+      "title": "Test",
+      "author": {
+        "name": "Sunkirs"
+      }
+    },
+    "cssPath": "/presets/profile/test/preset.css"
+  },
+  {
+    "id": "angel",
+    "category": "wishlist",
+    "meta": {
+      "title": "Angel",
+      "thumbnail": "https://rstr.in/1jo6mv5p8ea7ef/gaia/x3LqucUQWJD",
+      "author": {
+        "name": "Sunkirs",
+        "gaia_id": "46362126"
+      }
+    },
+    "cssPath": "/presets/wishlist/angel/preset.css"
+  },
+  {
+    "id": "cloud",
+    "category": "wishlist",
+    "meta": {
+      "title": "Cloud",
+      "thumbnail": "https://rstr.in/1jo6mv5p8ea7ef/gaia/x3LqucUQWJD",
+      "author": {
+        "name": "Sunkirs",
+        "gaia_id": "46362126"
+      }
+    },
+    "cssPath": "/presets/wishlist/cloud/preset.css"
+  },
+  {
+    "id": "test-wishlist",
+    "category": "wishlist",
+    "meta": {
+      "title": "test wishlist",
+      "thumbnail": "https://rstr.in/1jo6mv5p8ea7ef/gaia/x3LqucUQWJD",
+      "author": {
+        "name": "Sunkirs",
+        "gaia_id": "46362126"
+      }
+    },
+    "cssPath": "/presets/wishlist/test-wishlist/preset.css"
+  }
+]

@@ -1,0 +1,47 @@
+[data-theme="neon-cyberpunk"] {
+  --background: oklch(12% 0.02 280);
+  --foreground: oklch(96% 0.01 280);
+
+  --card: oklch(16% 0.03 280);
+  --card-foreground: oklch(96% 0.01 280);
+
+  --popover: oklch(18% 0.03 280);
+  --popover-foreground: oklch(96% 0.01 280);
+
+  --primary: oklch(70% 0.25 300);
+  --primary-foreground: oklch(10% 0.01 300);
+
+  --secondary: oklch(55% 0.18 240);
+  --secondary-foreground: oklch(96% 0.01 280);
+
+  --accent: oklch(75% 0.22 160);
+  --accent-foreground: oklch(10% 0.01 160);
+
+  --muted: oklch(20% 0.02 280);
+  --muted-foreground: oklch(72% 0.01 280);
+
+  --destructive: oklch(60% 0.22 25);
+  --destructive-foreground: oklch(96% 0.01 280);
+
+  --border: oklch(100% 0 0 / 10%);
+  --input: oklch(100% 0 0 / 14%);
+  --ring: oklch(70% 0.25 300);
+
+  --chart-1: oklch(70% 0.25 300);
+  --chart-2: oklch(75% 0.22 160);
+  --chart-3: oklch(68% 0.20 240);
+  --chart-4: oklch(65% 0.18 200);
+  --chart-5: oklch(60% 0.16 320);
+
+  --sidebar: oklch(14% 0.02 280);
+  --sidebar-foreground: oklch(96% 0.01 280);
+
+  --sidebar-primary: oklch(70% 0.25 300);
+  --sidebar-primary-foreground: oklch(10% 0.01 300);
+
+  --sidebar-accent: oklch(18% 0.03 280);
+  --sidebar-accent-foreground: oklch(96% 0.01 280);
+
+  --sidebar-border: oklch(100% 0 0 / 10%);
+  --sidebar-ring: oklch(70% 0.25 300);
+}

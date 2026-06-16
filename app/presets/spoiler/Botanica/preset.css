@@ -1,0 +1,177 @@
+/* --- THE MAIN WRAPPER BLOCK & REVEALED STATE --- */
+.spoiler-wrapper,
+.spoiler-revealed {
+  max-width: 260px;
+  margin: 20px auto;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  /* FORCE KILL NATIVE GAIA DOTTED BORDERS & FOCUS OUTLINES */
+  border: none !important;
+  outline: none !important;
+  outline-width: 0 !important;
+  box-shadow: none !important; 
+}
+
+/* --- THE BUTTON HEADER CONTAINER --- */
+.spoiler-title {
+  display: block;
+  position: relative;
+  width: 100%;
+  background: #fdfbf7; /* Soft creamy ivory warm white */
+  border: 1px solid #e9e4db; /* Very light earthy boundary line */
+  border-radius: 6px;
+  padding: 1px;
+  overflow: hidden;
+  box-sizing: border-box;
+  outline: none !important;
+}
+
+/* --- THE TRIGGER BUTTONS --- */
+.spoiler-control {
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  box-sizing: border-box;
+  border: none !important;
+  background: transparent;
+  width: 100%;
+  padding: 9px 14px;
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Hide default span text completely */
+.spoiler-control span {
+  display: none !important;
+}
+
+/* --- THE HYBRID STATE ENGINE --- */
+
+/* Default / Initial state */
+.spoiler-control-show { display: block; }
+.spoiler-control-hide { display: none; }
+
+/* 1. If it has spoiler-revealed class but is UNHOVERED -> Keep it as "view links" */
+.spoiler-revealed:not(:hover) .spoiler-control-show { display: block !important; }
+.spoiler-revealed:not(:hover) .spoiler-control-hide { display: none; }
+
+/* 2. If it has spoiler-revealed class and IS HOVERED -> Show "close menu" */
+.spoiler-revealed:hover .spoiler-control-show { display: none; }
+.spoiler-revealed:hover .spoiler-control-hide { display: block; }
+
+/* 3. If it has spoiler-hidden class -> Force default state */
+.spoiler-hidden .spoiler-control-show { display: block !important; }
+.spoiler-hidden .spoiler-control-hide { display: none !important; }
+
+
+/* --- DECORATIVE TEXT & GRAPHICS (::BEFORE & ::AFTER) --- */
+
+/* Micro Typography Text Generators (::before) */
+.spoiler-control-show::before,
+.spoiler-control-hide::before {
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  font-weight: 500;
+}
+
+/* When closed or when an opened menu is unhovered/clicked closed */
+.spoiler-control-show::before { 
+  content: '✧ view directory'; 
+  color: #78716c; /* Soft stone gray */
+}
+
+/* When actively hovered open */
+.spoiler-control-hide::before { 
+  content: '✦ close directory'; 
+  color: #606c38; /* Deep botanical forest green */
+}
+
+/* Dynamic Interactive Side Indicators (::after) */
+.spoiler-control-show::after,
+.spoiler-control-hide::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transition: all 0.25s ease;
+}
+
+/* Closed / Unhovered soft earth tone dot */
+.spoiler-control-show::after {
+  background: #d6d3d1;
+}
+
+/* Open & Hovered active sage blossom dot */
+.spoiler-control-hide::after {
+  background: #a3b18a; /* Calm sage green accent */
+}
+
+
+/* --- THE REVEAL MECHANIC DRAWER --- */
+
+.spoiler-wrapper br {
+  display: none !important;
+}
+
+.spoiler {
+  display: block;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  box-sizing: border-box;
+  padding: 0 4px;
+  background: transparent;
+  outline: none !important;
+  border: none !important;
+  transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s linear;
+}
+
+/* Condition A: Expand container smoothly on hover if class exists */
+.spoiler-revealed:hover .spoiler {
+  max-height: 250px; 
+  opacity: 1;
+  padding: 4px;
+}
+
+/* Condition B: Ensure drawer collapses cleanly if parent drops to spoiler-hidden */
+.spoiler-hidden .spoiler {
+  max-height: 0 !important;
+  opacity: 0 !important;
+  padding: 0 4px !important;
+}
+
+
+/* --- BOTANICAL LINK LABELS --- */
+
+.spoiler a {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  font-size: 11px;
+  font-weight: 500;
+  color: #78716c;
+  background: #fcfbfa;
+  border: 1px solid #f2efea !important;
+  text-decoration: none;
+  padding: 8px 12px;
+  margin-top: 5px;
+  border-radius: 4px;
+  outline: none !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.spoiler a:hover {
+  background: #a3b18a; /* Sage fill focus */
+  color: #ffffff;
+  border-color: #a3b18a !important;
+  padding-left: 15px; /* Gentle drift layout response */
+}

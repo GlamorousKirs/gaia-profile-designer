@@ -1,0 +1,9 @@
+title = "Botanica"
+thumbnail = "Botanica.png"
+
+[author]
+name = "Sunkirs"
+gaia_id = "46362126"
+
+[panels]
+header = true

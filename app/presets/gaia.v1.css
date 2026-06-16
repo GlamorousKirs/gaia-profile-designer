@@ -1,0 +1,1697 @@
+/*! src/css/profiles/v1/header-min.css */
+#gaia_header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    color: #000;
+    margin-bottom: 0;
+    z-index: 99999;
+}
+
+#gaia_header #header_left {
+    background: #000;
+    color: #fff;
+    float: left;
+    width: 80%;
+    height: 24px;
+}
+
+#gaia_header #header_left img {
+    top: 0;
+    vertical-align: middle;
+}
+
+#gaia_header #header_right {
+    background: #000;
+    height: 24px;
+    color: #fff;
+    float: left;
+    width: 20%;
+    z-index: 9999;
+    text-align: right;
+    line-height: 23px;
+}
+
+#gaia_header #header_right img {
+    top: 0;
+    vertical-align: middle;
+}
+
+#header_right li img {
+    padding-right: 4px;
+}
+
+#gaia_header ul li {
+    display: inline;
+}
+
+#gaia_header a {
+    color: #ccc !important;
+}
+
+.spacer {
+    padding-left: 10px;
+}
+
+/*! src/css/profiles/v1/common-min.css */
+#header {
+    margin-top: 25px;
+    position: relative;
+    border-right: 1px solid #666;
+}
+
+#header h1 {
+    margin: 0;
+    padding: 0;
+    text-indent: -5000px;
+    height: 150px;
+}
+
+#header #avatar {
+    position: absolute;
+    width: 120px;
+    height: 25px;
+    z-index: 1;
+    left: 5px;
+    top: -5px;
+}
+
+#header #wordBubble {
+    position: absolute;
+    width: 120px;
+    height: 25px;
+    z-index: 2;
+    left: 130px;
+    top: 0;
+}
+
+#site {
+    width: 761px;
+    margin: 5px;
+}
+
+#content {
+    background: #FFF;
+    padding-bottom: 10px;
+    border-right: 1px solid #666;
+}
+
+#extendedProfileBody #header h1 {
+    background: url(https://graphics.gaiaonline.com/images/pageheader/profile_banner_image.jpg) top right no-repeat;
+}
+
+body {
+    background-color: #B6CAD5;
+    color: #000;
+    font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    scrollbar-face-color: #DEE3E7;
+    scrollbar-highlight-color: #FFF;
+    scrollbar-shadow-color: #DEE3E7;
+    scrollbar-3dlight-color: #D1D7DC;
+    scrollbar-arrow-color: #C8DFF9;
+    scrollbar-track-color: #EFEFEF;
+    scrollbar-darkshadow-color: #98AAB1;
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    border: 0;
+}
+
+a:link,
+a:active,
+a:visited {
+    color: #8997A1;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #DD6900;
+}
+
+* .yui-hidden {
+    display: none;
+}
+
+.journal-date {
+    font-size: x-small;
+}
+
+#allfriends #friendGroup li {
+    float: left;
+    width: 110px;
+    height: 130px;
+    text-align: center;
+}
+
+#allfriends #friendGroup li img {
+    width: 96px;
+    height: 96px;
+}
+
+#wishlist a {
+    text-decoration: none;
+}
+
+#friends .links #find_friends_banner {
+    background: url(https://graphics.gaiaonline.com/images/gaia_global/body/mygaia/ic_findfriendsm.gif) top left no-repeat;
+    padding: 5px 0 10px 30px;
+    margin-left: 10px;
+    float: right;
+    text-align: right;
+}
+
+#friends .links #find_friends_banner a {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#friends .links #find_friends_banner a:hover {
+    text-decoration: underline;
+}
+
+.forum_userstatus {
+    display: none;
+}
+
+#avatar_menu {
+    background: #FFF;
+    position: absolute;
+    z-index: 500;
+    display: none;
+    margin: 0;
+    list-style: none;
+    border: 1px solid #bbb;
+    border-right: 1px solid #777;
+    border-bottom: 1px solid #777;
+    width: 120px;
+    font-size: 13px;
+    font-family: Arial;
+}
+
+#avatar_menu li {
+    margin: 0;
+    list-style: none;
+}
+
+#avatar_menu a {
+    color: #3E53A2;
+    display: block;
+    font-size: 85%;
+    height: 1%;
+    padding: 2px;
+    margin: 1px;
+    text-decoration: none;
+    font-weight: normal;
+    text-align: left;
+}
+
+#avatar_menu a:hover {
+    background: #e7edf4;
+}
+
+#avatar_menu li.menu_seperator {
+    width: 100%;
+    height: 1px;
+    font-size: 0;
+    line-height: 0;
+    margin: 3px 0;
+    background: #bbb;
+}
+
+/*! src/layout/legacy/legacy-min.css */
+table,
+tr,
+td {
+    padding: 0;
+    margin: 0;
+}
+
+.forumgaia,
+.forumgaiab,
+.forumcom,
+.forumcomb,
+.forumgame,
+.forumgameb,
+.forument,
+.forumentb,
+.forumart,
+.forumartb,
+.forummisc,
+.forummiscb {
+    font-size: 10px;
+}
+
+.forumgaia2,
+.forumcom2,
+.forumgame2,
+.forument2,
+.forumart2,
+.forummisc2 {
+    font-size: 14px;
+}
+
+.forumgaiab,
+.forumgaia2,
+.forumcomb,
+.forumcom2,
+.forumgameb,
+.forumgame2,
+.forumentb,
+.forument2,
+.forumartb,
+.forumart2,
+.forummiscb,
+.forummisc2 {
+    font-weight: bold;
+}
+
+.forumgaia,
+.forumgaiab,
+.forumgaia2 {
+    color: #6d87dd;
+}
+
+.forumcom,
+.forumcomb,
+.forumcom2 {
+    color: #25b5ab;
+}
+
+.forumgame,
+.forumgameb,
+.forumgame2 {
+    color: #7071d2;
+}
+
+.forument,
+.forumentb,
+.forument2 {
+    color: #b37ad9;
+}
+
+.forumart,
+.forumartb,
+.forumart2 {
+    color: #d475a5;
+}
+
+.forummisc,
+.forummiscb,
+.forummisc2 {
+    color: #ffbe93;
+}
+
+.forumgaiabg {
+    background: url(https://graphics.gaiaonline.com/images/template/bg/forum_gaia3.gif);
+}
+
+.forumgaiabgtl {
+    background: url(https://graphics.gaiaonline.com/images/template/bg/forum_gaia_tl3.gif);
+}
+
+.forumcommuntiybg {
+    background: url(https://graphics.gaiaonline.com/images/template/bg/forum_gaia_community.gif);
+}
+
+.forumcombgtl {
+    background: url(https://graphics.gaiaonline.com/images/template/bg/forum_gaia_community_tl3.gif);
+}
+
+.forumgamebg {
+    background: url(https://graphics.gaiaonline.com/images/template/bg/forum_gaming3.gif);
+}
+
+.forumgamebgtl {
+    background: url(https://graphics.gaiaonline.com/images/template/bg/forum_gaming_tl3.gif);
+}
+
+.forumentbg {
+    background: url(https://graphics.gaiaonline.com/images/template/bg/forum_ent3.gif);
+}
+
+.forumentbgtl {
+    background: url(https://graphics.gaiaonline.com/images/template/bg/forum_ent_tl3.gif);
+}
+
+.forumartbg {
+    background: url(https://graphics.gaiaonline.com/images/template/bg/forum_art3.gif);
+}
+
+.forumartbgtl {
+    background: url(https://graphics.gaiaonline.com/images/template/bg/forum_art_tl3.gif);
+}
+
+.forummiscbg {
+    background: url(https://graphics.gaiaonline.com/images/template/bg/forum_misc3.gif);
+}
+
+.forummiscbgtl {
+    background: url(https://graphics.gaiaonline.com/images/template/bg/forum_misc_tl3.gif);
+}
+
+.forumtitle {
+    background: url(https://graphics.gaiaonline.com/images/template/bg/forum_gaia.gif) no-repeat;
+}
+
+#userTextAdsTopSpot {
+    background: url(https://graphics.gaiaonline.com/images/template/bg/ad_bg_1a_blue.gif) top left repeat;
+    font-size: 10px;
+    padding: 5px;
+}
+
+#userTextAdsTopSpot a {
+    text-decoration: none;
+    color: #000;
+}
+
+td.row1 {
+    background-color: #FFF;
+}
+
+td.row2 {
+    background-color: #FFF;
+}
+
+td.row3 {
+    background-color: #FFF;
+}
+
+td.row4 {
+    background-color: #FEDAFF;
+}
+
+td.row_event {
+    background-color: #F9C9E0;
+}
+
+td.rowpic {
+    background-image: url(https://graphics.gaiaonline.com/images/template/cellpic-r.gif);
+    background-repeat: repeat-y;
+}
+
+td.rowpic1 {
+    background-image: url(https://graphics.gaiaonline.com/images/template/cellpic-l.gif);
+    background-repeat: repeat-n;
+    height: 28px;
+}
+
+th {
+    color: #542F00;
+    font-size: 11px;
+    font-weight: bold;
+    background-color: #C8DFF9;
+    height: 25px;
+    background-image: url(https://graphics.gaiaonline.com/images/template/cellpic3.gif);
+}
+
+td.cat,
+td.catHead,
+td.catSides,
+td.catLeft,
+td.catRight,
+td.catBottom {
+    background: #D1D7DC url(https://graphics.gaiaonline.com/images/template/cellpic1.gif);
+    border: 1px solid #FFF;
+    height: 30px;
+}
+
+td.cat,
+td.catHead,
+td.catBottom {
+    height: 29px;
+    border: 0;
+}
+
+th.thHead,
+th.thSides,
+th.thTop,
+th.thLeft,
+th.thRight,
+th.thBottom,
+th.thCornerL,
+th.thCornerR {
+    font-weight: bold;
+    border: 1px solid #FFF;
+    height: 20px;
+}
+
+td.row3Right,
+td.spaceRow {
+    background: #D1D7DC;
+    border: 1px solid #FFF;
+}
+
+th.thHead,
+td.catHead {
+    font-size: 12px;
+    border: 0;
+}
+
+th.thSides,
+td.catSides,
+td.spaceRow,
+th.thRight,
+td.catRight,
+td.row3Right,
+th.thLeft,
+td.catLeft,
+th.thBottom,
+td.catBottom,
+th.thTop,
+th.thCornerL,
+th.thCornerR {
+    border: 0;
+}
+
+.code {
+    font-family: Courier, 'Courier New', sans-serif;
+    font-size: 11px;
+    color: #060;
+    background: #FAFAFA;
+    border: 1px solid #D1D7DC;
+}
+
+td .name {
+    font-size: 10px;
+}
+
+.postbody {
+    font-family: 'Lucida Grande', LucidaGrande, Lucida, Verdana, Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    color: #444;
+}
+
+.postcontent {
+    text-align: center;
+}
+
+.postcontent .genmed {
+    display: block;
+    padding-top: 5px;
+    color: #355080;
+}
+
+#content div.postcontent a:visited {
+    color: #777;
+}
+
+.postcontent table {
+    margin: 0 auto;
+    text-align: left;
+}
+
+.postcontent table td {
+    text-align: left;
+}
+
+.postcontent ul li,
+.postcontent ol li {
+    margin: 0 0 0 20px;
+    margin: 0 0 0 25px;
+}
+
+.postbody {
+    display: block;
+    text-align: left;
+}
+
+.gaiaSig {
+    text-align: center;
+}
+
+.gaiaSig span {
+    display: block;
+    width: 500px;
+    overflow: hidden;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.quote {
+    font-family: 'Lucida Grande', LucidaGrande, Lucida, Verdana, Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    color: #444;
+    line-height: 125%;
+    background: #FAFAFA;
+    border: 1px solid #D1D7DC;
+    padding: 5px;
+}
+
+.helpline {
+    background-color: #DEE3E7;
+    border-style: none;
+}
+
+.bodyline {
+    border: 0 #3982f7 solid;
+}
+
+td.smiley {
+    padding: 3px;
+}
+
+.maintitle,
+.glowTitle {
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: left;
+}
+
+.postdetails {
+    font-size: 10px;
+}
+
+.topictitle {
+    text-decoration: none;
+}
+
+.ie6-discontinued-wrapper {
+    padding: 10px 15px 0 15px;
+}
+
+input.guild_modify,
+textarea.guild_modify {
+    width: 34.25em;
+    border: 1px solid #a9a9a9;
+}
+
+textarea.guild_requestjoin {
+    width: 34.25em;
+    height: 200px;
+    border: 2px solid #a9a9a9;
+    margin-bottom: 5px;
+}
+
+input.tags {
+    width: 12.25em;
+    border: 1px solid #a9a9a9;
+    margin-bottom: 1px;
+}
+
+/*! src/css/profiles/v1/smilies-min.css */
+div.postcontent {
+    text-align: left;
+}
+
+div.postcontent .quote {
+    padding-left: 20px;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    clear: both;
+}
+
+div.postcontent .quote .cite {
+    font-weight: bold;
+    font-size: 80%;
+}
+
+div.postcontent .quote .quoted {
+    background: #efefef;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+div.postcontent .clear {
+    clear: both;
+}
+
+div.postcontent .code {
+    border: 1px solid #006;
+    background: #ccc;
+    font-family: Courier, "Courier New", monospace;
+}
+
+div.postcontent ul {
+    margin-left: 15px;
+}
+
+div.postcontent span.smilies {
+    padding-left: 2px;
+}
+
+div.postcontent span.smilies b {
+    visibility: hidden;
+    font-size: 1px;
+    padding-right: 12px;
+}
+
+div.postcontent span.smilies_biggrin {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_biggrin.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_biggrin {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_biggrin.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_biggrin {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_biggrin.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_smile {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_smile.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_smile {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_smile.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_smile {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_smile.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_redface {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_redface.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_crying {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_crying.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_stare {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_stare.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_xd {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_xd.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_3nodding {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_3nodding.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_blaugh {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_blaugh.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_gonk {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_gonk.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_scream {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_scream.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_stressed {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_stressed.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_sweatdrop {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_sweatdrop.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_heart {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_heart.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_domokun {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_domokun.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_xp {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_xp.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_whee {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_whee.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_wink {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_wink.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_wink {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_wink.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_wink {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_wink.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_sad {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_sad.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_sad {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_sad.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_sad {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_sad.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_surprised {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_surprised.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_surprised {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_surprised.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_surprised {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_surprised.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_eek {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_eek.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_confused {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_confused.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_confused {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_confused.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_confused {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_confused.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_cool {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_cool.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_cool {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_cool.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_cool {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_cool.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_lol {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_lol.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_mad {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_mad.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_mad {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_mad.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_mad {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_mad.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_razz {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_razz.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_razz {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_razz.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_razz {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_razz.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_cry {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_cry.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_evil {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_evil.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_twisted {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_twisted.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_rolleyes {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_rolleyes.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_exclaim {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_exclaim.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_question {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_question.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_idea {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_idea.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_arrow {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_arrow.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_neutral {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_neutral.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_neutral {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_neutral.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_neutral {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_neutral.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_mrgreen {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_mrgreen.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_ninja {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_ninja.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_4laugh {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_4laugh.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_rofl {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_rofl.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_pirate {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_pirate.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_talk2hand {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_talk2hand.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_burning_eyes {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_burning.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_cheese_whine {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_cheese.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_dramallama {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_dramallama.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_wahmbulance {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_wahmbulance.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_emo {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_emo.gif) left top no-repeat;
+}
+
+/*! src/css/profiles/v1/alert-min.css */
+#alerts_banner {
+    padding-left: 20px;
+    height: 30px;
+    margin-left: 10px;
+    float: right;
+    background: url(https://graphics.gaiaonline.com/images/gaia_global/body/mygaia/ic_alerts_17x22.gif) top left no-repeat;
+    text-align: right;
+}
+
+#alerts_banner a {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#alerts_banner a:hover {
+    text-decoration: underline;
+}
+
+.alert_container {
+    float: left;
+}
+
+/*! src/yui/container/assets/container-min.css */
+.yui-overlay,
+.yui-panel-container {
+    visibility: hidden;
+    position: absolute;
+    z-index: 2;
+}
+
+.yui-tt {
+    visibility: hidden;
+    position: absolute;
+    color: #333;
+    background-color: #FDFFB4;
+    font-family: arial, helvetica, verdana, sans-serif;
+    padding: 2px;
+    border: 1px solid #FCC90D;
+    font: 100% sans-serif;
+    width: auto;
+}
+
+.yui-tt-shadow {
+    display: none;
+}
+
+* html body.masked select {
+    visibility: hidden;
+}
+
+* html div.yui-panel-container select {
+    visibility: inherit;
+}
+
+* html div.drag select {
+    visibility: hidden;
+}
+
+* html div.hide-select select {
+    visibility: hidden;
+}
+
+.mask {
+    z-index: 1;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    -moz-opacity: .5;
+    opacity: .50;
+    filter: alpha(opacity=50);
+    background-color: #CCC;
+}
+
+.hide-scrollbars,
+.hide-scrollbars * {
+    overflow: hidden;
+}
+
+.hide-scrollbars select {
+    display: none;
+}
+
+.show-scrollbars {
+    overflow: auto;
+}
+
+.yui-panel-container.show-scrollbars {
+    overflow: visible;
+}
+
+.yui-panel-container.show-scrollbars .underlay {
+    overflow: auto;
+}
+
+.yui-panel-container .underlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.yui-panel-container.matte {
+    padding: 3px;
+    background-color: #fff;
+}
+
+.yui-panel-container.shadow .underlay {
+    top: 3px;
+    bottom: -3px;
+    right: -3px;
+    left: 3px;
+    background-color: #000;
+    opacity: .12;
+    filter: alpha(opacity=12);
+}
+
+.yui-panel-container.shadow .underlay.yui-force-redraw {
+    padding-bottom: 1px;
+}
+
+.yui-effect-fade .underlay {
+    display: none;
+}
+
+.yui-panel {
+    visibility: hidden;
+    border-collapse: separate;
+    position: relative;
+    left: 0;
+    top: 0;
+    font: 1em Arial;
+    background-color: #FFF;
+    border: 1px solid #000;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.yui-panel .hd {
+    background-color: #3d77cb;
+    color: #FFF;
+    font-size: 100%;
+    line-height: 100%;
+    border: 1px solid #FFF;
+    border-bottom: 1px solid #000;
+    font-weight: bold;
+    padding: 4px;
+    white-space: nowrap;
+}
+
+.yui-panel .bd {
+    overflow: hidden;
+    padding: 4px;
+}
+
+.yui-panel .bd p {
+    margin: 0 0 1em;
+}
+
+.yui-panel .container-close {
+    position: absolute;
+    top: 5px;
+    right: 4px;
+    z-index: 6;
+    height: 12px;
+    width: 12px;
+    margin: 0;
+    padding: 0;
+    background: url(https://graphics.gaiaonline.com/images/template/profile/profile_close_btn.gif) no-repeat;
+    cursor: pointer;
+    visibility: inherit;
+    text-indent: -10000em;
+    overflow: hidden;
+    text-decoration: none;
+}
+
+.yui-panel .ft {
+    padding: 4px;
+    overflow: hidden;
+}
+
+.yui-simple-dialog .bd .yui-icon {
+    background-repeat: no-repeat;
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+    float: left;
+}
+
+.yui-simple-dialog .bd span.blckicon {
+    background: url("blck16_1.gif") no-repeat;
+}
+
+.yui-simple-dialog .bd span.alrticon {
+    background: url("alrt16_1.gif") no-repeat;
+}
+
+.yui-simple-dialog .bd span.hlpicon {
+    background: url("hlp16_1.gif") no-repeat;
+}
+
+.yui-simple-dialog .bd span.infoicon {
+    background: url("info16_1.gif") no-repeat;
+}
+
+.yui-simple-dialog .bd span.warnicon {
+    background: url("warn16_1.gif") no-repeat;
+}
+
+.yui-simple-dialog .bd span.tipicon {
+    background: url("tip16_1.gif") no-repeat;
+}
+
+.yui-dialog .ft,
+.yui-simple-dialog .ft {
+    padding-bottom: 5px;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.yui-dialog form,
+.yui-simple-dialog form {
+    margin: 0;
+}
+
+.button-group button {
+    font: 100 76% verdana;
+    text-decoration: none;
+    background-color: #E4E4E4;
+    color: #333;
+    cursor: hand;
+    vertical-align: middle;
+    border: 2px solid #797979;
+    border-top-color: #FFF;
+    border-left-color: #FFF;
+    margin: 2px;
+    padding: 2px;
+}
+
+.button-group button.default {
+    font-weight: bold;
+}
+
+.button-group button:hover,
+.button-group button.hover {
+    border: 2px solid #90A029;
+    background-color: #EBF09E;
+    border-top-color: #FFF;
+    border-left-color: #FFF;
+}
+
+.button-group button:active {
+    border: 2px solid #E4E4E4;
+    background-color: #BBB;
+    border-top-color: #333;
+    border-left-color: #333;
+}
+
+.yui-override-padding {
+    padding: 0 !important;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+ul li {
+    list-style-type: none;
+}
+
+dl dt {
+    font-weight: bold;
+}
+
+#site {
+    width: 760px;
+    position: relative;
+}
+
+/* CONTENT */
+#content {
+    padding: 10px 0 10px 0;
+}
+
+#content #sidebar {
+    position: absolute;
+    width: 230px;
+    left: 10px;
+}
+
+#content #main {
+    margin-left: 230px;
+    min-height: 500px;
+    height: 500px;
+    border-left: 2px solid #D8E9F3;
+}
+
+#content>#main {
+    height: auto;
+}
+
+/* SECTION */
+.section {
+    padding: 0 10px 10px 10px;
+    font-size: 12px;
+}
+
+.section h2 {
+    font-size: 15px;
+    margin: 0 -10px 0 -10px;
+    height: 25px;
+    margin-bottom: 10px;
+    line-height: 25px;
+    text-indent: -5000px;
+    /* PHARK */
+}
+
+.section .clear {
+    clear: both;
+}
+
+.section .head {
+    width: 48px;
+    height: 48px;
+}
+
+.section .torso {
+    width: 96px;
+    height: 96px;
+}
+
+.section .body {
+    width: 120px;
+    height: 150px;
+}
+
+.section .items li {
+    display: inline;
+}
+
+.section .items li img {
+    width: 30px;
+    height: 30px;
+}
+
+.section .online {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/status_online.gif) top left no-repeat;
+}
+
+.section .offline {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/status_offline.gif) top left no-repeat;
+}
+
+.section .hidden {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/status_hidden.gif) top left no-repeat;
+}
+
+.section .links {
+    margin-bottom: 10px;
+}
+
+.section .links li {
+    display: inline;
+}
+
+.section .date {
+    text-align: right;
+    font-size: 10px;
+    font-weight: normal;
+    font-style: italic;
+    margin: 0 0 3px 3px;
+}
+
+/* CAPTION */
+.caption {
+    border: 2px solid #6F7074;
+    background: #FFF;
+}
+
+.caption2 {
+    border: 2px solid #6F7074;
+    background: #FFF;
+}
+
+.caption:before {
+    display: block;
+    margin: -2px -2px -2px -2px;
+    content: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/caption_tl.gif);
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/caption_tr.gif) top right no-repeat;
+    line-height: .1;
+}
+
+.caption:after {
+    display: block;
+    margin: -2px -2px -2px -2px;
+    content: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/caption_bl.gif);
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/caption_br.gif) bottom right no-repeat;
+    line-height: .1;
+}
+
+.caption2:before {
+    display: block;
+    margin: -2px -2px -2px -2px;
+    content: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/caption_tl.gif);
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/caption_tr.gif) top right no-repeat;
+    line-height: .1;
+}
+
+.caption2:after {
+    display: block;
+    margin: -2px -2px -2px -2px;
+    content: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/caption_bl.gif);
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/caption_br.gif) bottom right no-repeat;
+    line-height: .1;
+}
+
+.caption .message {
+    position: relative;
+    left: -22px;
+    padding: 0 0 0 32px;
+    min-height: 45px;
+    margin: 0 -12px 0 0;
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/caption_ml.gif) top left no-repeat;
+    font-size: 13px;
+    font-weight: normal;
+    height: 45px;
+}
+
+.caption2 .message {
+    position: relative;
+    right: -22px;
+    padding: 0 32px 0 0;
+    min-height: 45px;
+    margin: 0 0 0 -12px;
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/caption_mr.gif) top right no-repeat;
+    font-size: 13px;
+    font-weight: normal;
+    height: 45px;
+}
+
+.caption>.message {
+    height: auto;
+}
+
+.caption2>.message {
+    height: auto;
+}
+
+/* ACCOUNT */
+form {
+    margin: 0 150px;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+}
+
+.textfield {
+    width: 100%;
+}
+
+label {
+    font-weight: bold;
+}
+
+fieldset {
+    margin-bottom: 10px;
+}
+
+#account ul li {
+    display: inline;
+}
+
+/* Common Friends */
+#commonFriends p {
+    font-weight: bold;
+}
+
+#commonFriends ul {
+    font-size: 10px;
+    margin-bottom: 10px;
+}
+
+#commonFriends ul li {
+    display: inline;
+}
+
+/* PROFILE BAR */
+#bar {
+    display: block;
+    height: 22px;
+    margin-left: 12px;
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/action_bar_frontcap.gif) top left no-repeat
+}
+
+#bar li {
+    float: left;
+}
+
+#bar #onlineButton {
+    width: 60px;
+    background: transparent url(https://graphics.gaiaonline.com/images/profiles/v1/classic/bar_btn_online.gif);
+    text-indent: -5000px;
+    height: 22px;
+}
+
+#bar #offlineButton {
+    width: 60px;
+    background: transparent url(https://graphics.gaiaonline.com/images/profiles/v1/classic/bar_btn_offline.gif);
+    text-indent: -5000px;
+    height: 22px;
+}
+
+#bar #hiddenButton {
+    width: 60px;
+    background: transparent url(https://graphics.gaiaonline.com/images/profiles/v1/classic/bar_btn_hidden.gif);
+    text-indent: -5000px;
+    height: 22px;
+}
+
+#bar #addButton {
+    background: transparent url(https://graphics.gaiaonline.com/images/profiles/v1/classic/bar_btn_addfriend.gif);
+}
+
+#bar #msgButton {
+    background: transparent url(https://graphics.gaiaonline.com/images/profiles/v1/classic/bar_btn_pm.gif);
+}
+
+#bar #tradeButton {
+    background: transparent url(https://graphics.gaiaonline.com/images/profiles/v1/classic/bar_btn_trade.gif);
+}
+
+#bar #ignoreButton {
+    background: transparent url(https://graphics.gaiaonline.com/images/profiles/v1/classic/bar_btn_ignore.gif);
+}
+
+#bar a {
+    display: block;
+    height: 0;
+    padding-top: 22px;
+    color: #000;
+    overflow: hidden;
+}
+
+* html #bar a:link,
+* html #bar a:visited {
+    height: 22px;
+    he\ight: 0;
+}
+
+/* Add hover images here:-) */
+#bar #addButton a {
+    width: 33px;
+    background: transparent url(https://graphics.gaiaonline.com/images/profiles/v1/classic/bar_btn_addfriend.gif) -22px -90px no-repeat;
+}
+
+#bar #msgButton a {
+    width: 29px;
+    background: transparent url(https://graphics.gaiaonline.com/images/profiles/v1/classic/bar_btn_pm.gif) -22px -90px no-repeat;
+}
+
+#bar #tradeButton a {
+    width: 28px;
+    background: transparent url(https://graphics.gaiaonline.com/images/profiles/v1/classic/bar_btn_trade.gif) -22px -90px no-repeat;
+}
+
+#bar #ignoreButton a {
+    width: 34px;
+    background: transparent url(https://graphics.gaiaonline.com/images/profiles/v1/classic/bar_btn_ignore.gif) -22px -90px no-repeat;
+}
+
+#bar #addButton a:hover {
+    background-position: 0 0;
+    z-index: 50;
+}
+
+#bar #msgButton a:hover {
+    background-position: 0 0;
+    z-index: 50;
+}
+
+#bar #tradeButton a:hover {
+    background-position: 0 0;
+    z-index: 50;
+}
+
+#bar #ignoreButton a:hover {
+    background-position: 0 0;
+    z-index: 50;
+}
+
+* html #bar a:hover {
+    height: 22px;
+    height: 0;
+}
+
+/* PROFILE */
+#profile {
+    background: #FFF;
+    position: relative;
+}
+
+#profile h2 {
+    background: #185BC2;
+    color: #FFF;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    /* UN-PHARK */
+    text-indent: 0;
+}
+
+#profile .avatar {
+    position: relative;
+}
+
+#profile .caption {
+    position: absolute;
+    top: 70px;
+    left: 110px;
+    width: 105px;
+}
+
+#profile .status {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/action_bar_frontcap.gif) top left no-repeat;
+    margin-left: 10px;
+}
+
+/* DETAILS */
+#details {
+    background: #FFF url(https://graphics.gaiaonline.com/images/profiles/v1/classic/details_header_tile.gif) top left repeat-x;
+}
+
+#details h2 {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/details_header.gif) top left no-repeat;
+}
+
+#details #info {
+    width: 97px;
+}
+
+#details #stats {
+    float: right;
+    width: 100px;
+    margin: 0 0 10px 10px;
+}
+
+/* WISHLIST */
+#wishlist {
+    background: #FFF url(https://graphics.gaiaonline.com/images/profiles/v1/classic/wishlist_header_tile.gif) top left repeat-x;
+}
+
+#wishlist h2 {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/wishlist_header.gif) top left no-repeat;
+}
+
+#wishlist .questing {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/wishlist_questing.gif) top right no-repeat;
+}
+
+#wishlist .bought {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/wishlist_bought.gif) top right no-repeat;
+}
+
+#wishlist .donated {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/wishlist_donated.gif) top right no-repeat;
+}
+
+/* ABOUT */
+#about {
+    background: #FFF url(https://graphics.gaiaonline.com/images/profiles/v1/classic/about_header_tile.gif) top left repeat-x;
+}
+
+#about h2 {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/about_header.gif) top left no-repeat;
+}
+
+/* FRIENDS */
+#friends {
+    background: #FFF url(https://graphics.gaiaonline.com/images/profiles/v1/classic/friends_header_tile.gif) top left repeat-x;
+}
+
+#friends h2 {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/friends_header.gif) top left no-repeat;
+}
+
+#friends #friendGroup {
+    margin-top: 10px;
+}
+
+#friends #friendGroup li {
+    float: left;
+    width: 110px;
+    height: 130px;
+    text-align: center;
+    border-right: 2px solid #D8E9F3;
+}
+
+#friends #friendGroup li img {
+    width: 96px;
+    height: 96px;
+}
+
+/* JOURNAL */
+#journal {
+    background: #FFF url(https://graphics.gaiaonline.com/images/profiles/v1/classic/journal_header_tile.gif) top left repeat-x;
+}
+
+#journal h2 {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/journal_header.gif) top left no-repeat;
+}
+
+/* MULTIMEDIA */
+#multimedia {
+    background: #FFF url(https://graphics.gaiaonline.com/images/profiles/v1/classic/multimedia_header_tile.gif) top left repeat-x;
+}
+
+#multimedia h2 {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/multimedia_header.gif) top left no-repeat;
+}
+
+/* COMMENTS */
+#comments {
+    background: #FFF url(https://graphics.gaiaonline.com/images/profiles/v1/classic/comments_header_tile.gif) top left repeat-x;
+}
+
+#comments h2 {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/comments_header.gif) top left no-repeat;
+}
+
+#comments dl {
+    padding-bottom: 90px;
+}
+
+#comments dl dt {
+    position: relative;
+    padding-top: 10px;
+}
+
+#comments dl dt.avatar img {
+    position: absolute;
+    left: 0;
+}
+
+#comments dl dt.avatar2 div {
+    text-align: right;
+}
+
+#comments dl dt.avatar2 img {
+    position: absolute;
+    right: 0;
+    width: 120px;
+}
+
+#comments dl dd {
+    margin: 0 120px 0 100px;
+}
+
+#comments .delete {
+    margin-top: 10px;
+    text-align: right;
+}
+
+#comments #pagination li {
+    display: inline;
+}
+
+#comments .admin li {
+    text-align: right;
+}
+
+#comments form {
+    margin: 0px;
+}
+
+#comments fieldset {
+    padding: 10px;
+}
+
+/* SIGNATURE */
+#signature {
+    background: #FFF url(https://graphics.gaiaonline.com/images/profiles/v1/classic/signature_header_tile.gif) top left repeat-x;
+}
+
+#signature h2 {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v1/classic/signature_header.gif) top left no-repeat;
+}
+
+#signature p {
+    text-align: center;
+}

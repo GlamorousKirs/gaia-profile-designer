@@ -1,0 +1,92 @@
+/* --- REAL SMARTPHONE CHASSIS FRAME & VIEWPORT --- */
+#column_2 {
+  display: block;
+  width: 390px;                     /* True mobile aspect ratio width */
+  height: 750px;                    /* Realistic height scale */
+  background: #ffffff;              /* Internal screen canvas surface color */
+  border: 14px solid #b088a2;       /* Solid outer screen enclosure chassis edge */
+  border-radius: 70px;              /* Hardware structural rounded corner curve */
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5), 
+              inset 0 0 2px 1px rgba(255, 255, 255, 0.2); /* Glass reflection edge tint */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  padding: 55px 20px 30px 20px;     /* Balanced bottom spacing to mirror a real phone layout */
+  overflow-y: auto;                 /* Native screen touch scrolling behavior */
+  overflow-x: hidden;
+  
+  /* Modern standard scrollbar sizing property for Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+/* --- MINIMALIST MOBILE SCROLLBAR (WebKit Engines) --- */
+#column_2::-webkit-scrollbar {
+  width: 5px;                       /* Ultra-thin mobile track width */
+}
+
+#column_2::-webkit-scrollbar-track {
+  background: transparent;          /* Keeps background clean and seamless */
+}
+
+#column_2::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);  /* Subtle, low-profile overlay capsule pill */
+  border-radius: 10px;
+}
+
+#column_2::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);   /* Darkens slightly on focus interactions */
+}
+
+/* --- FIXED STICKY DYNAMIC ISLAND NOTCH --- */
+#column_2::before {
+  content: "";
+  position: sticky;                 /* Sticky tracks the scroll viewport bounding rect */
+  display: block;
+  top: -45px;                       /* Offsets the container's top padding so it stays flush at the top edge */
+  margin-top: -45px;                /* Pulls the layout element into true zero alignment */
+  margin-bottom: 21px;              /* Preserves the structural gap for the rest of the layout content */
+  left: 50%;
+  transform: translateX(calc(-50% + 10px)); /* Perfectly counters parent box padding balance shifts */
+  width: 95px;
+  height: 24px;
+  background: #000000;
+  border-radius: 20px;
+  z-index: 100;                     /* Ensures notch floats over content scrolling underneath */
+  pointer-events: none;
+}
+
+/* --- LIGHT AUTHENTIC IPHONE HOME INDICATOR LINE --- */
+#column_2::after {
+  content: "";
+  position: sticky;                 /* Pins it fixed inside the scrolling layout box */
+  display: block;
+  
+  /* Precision Hardware Alignment */
+  bottom: -22px;                    /* Lowers it closer to the bottom bezel, matching real hardware proportions */
+  margin-top: 615px;                /* Pushes the element cleanly to the footer of the screen canvas */
+  left: 50%;
+  transform: translateX(calc(-50% + 10px)); 
+  
+  /* Precise iPhone Home Line Aspect Ratio */
+  width: 134px;                     
+  height: 5px;                      
+  border-radius: 10px;              /* Perfectly rounded capsule caps */
+  
+  /* Premium Light Glass Overrides */
+  background: rgba(0, 0, 0, 0.22);  /* Lighter, native iOS shade for bright interfaces */
+  backdrop-filter: blur(4px);       /* Smooth micro-blur over elements rolling underneath */
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: inset 0 0.5px 1px rgba(255, 255, 255, 0.4); /* Crisp light reflection edge */
+  
+  /* Structural Controls */
+  z-index: 100;                     
+  pointer-events: none;             /* Zero click blocking over system forms */
+}
+
+/* --- STRUCTURAL CLEANUPS --- */
+.clear {
+  display: none;
+}

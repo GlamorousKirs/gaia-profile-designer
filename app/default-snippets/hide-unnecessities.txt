@@ -1,0 +1,3 @@
+.menu_seperator, .premium_sparkle, #id_comments #alerts_banner {
+    display: none;
+}

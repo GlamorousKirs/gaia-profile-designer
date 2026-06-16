@@ -1,0 +1,9 @@
+title = "Crimson"
+thumbnail = ""
+
+[author]
+name = "Sunkirs"
+gaia_id = "46362126"
+
+[panels]
+col1 = ["contact"]

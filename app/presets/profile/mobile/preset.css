@@ -1,0 +1,301 @@
+/* --- REAL SMARTPHONE CHASSIS FRAME --- */
+.panel.comments_panel#id_comments {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  max-width: 390px;               /* True mobile aspect ratio width */
+  height: 680px;                  /* Realistic height scale */
+  background: #000000;            /* Deep premium black bezel color */
+  border: 14px solid #000000;     /* Solid outer screen enclosure edge */
+  border-radius: 46px;            /* Hardware structural rounded corner curve */
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5), 
+              inset 0 0 2px 1px rgba(255, 255, 255, 0.2); /* Glass reflection edge tint */
+  margin: 30px auto;
+  box-sizing: border-box;
+  overflow: hidden;               /* Ensures zero screen bleed outside phone frame */
+}
+
+/* --- DYNAMIC ISL/CAMERA NOTCH --- */
+.panel.comments_panel#id_comments::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95px;
+  height: 24px;
+  background: #000000;
+  border-radius: 20px;
+  z-index: 100;                   /* Stays above all system elements */
+}
+
+/* --- FLOATING HOME INDICATOR BAR --- */
+.panel.comments_panel#id_comments::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* --- HIDE DEFAULT TITLE --- */
+.panel.comments_panel#id_comments h2#comments_title {
+  display: none !important;
+}
+
+/* --- FLOATING HEADER BUTTON BAR --- */
+#yui-gen11 {
+  position: absolute;
+  top: 40px;                      /* Safely clears dynamic island hardware space */
+  right: 16px;
+  margin: 0;
+  z-index: 90;
+}
+#yui-gen11 a {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 11px;
+  color: #0a84ff;                  /* True iOS Blue */
+  text-decoration: none;
+  font-weight: 600;
+  background: rgba(10, 132, 255, 0.12);
+  padding: 5px 12px;
+  border-radius: 14px;
+  transition: all 0.2s ease;
+}
+#yui-gen11 a:hover {
+  background: rgba(10, 132, 255, 0.22);
+}
+
+/* --- MOBILE LIQUID DISPLAY SCREEN --- */
+dl.style1 {
+  display: block;                
+  position: absolute;            
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 54px;                   /* Pulls baseline back to protect active input zone spacing */
+  background: #f2f2f7;           /* Light System grey interface background */
+  margin: 0;
+  padding: 85px 14px 16px 14px;   /* Top padding balances layout space for floating header buttons */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  box-sizing: border-box;
+  
+  /* System scrolling behavior */
+  overflow-y: auto;              
+  overflow-x: hidden;            
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hidden scrolling track matching standard app interfaces */
+dl.style1::-webkit-scrollbar {
+  width: 4px;
+}
+dl.style1::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+/* --- PERSISTENT FIXED BOTTOM MESSAGE BAR --- */
+#yui-gen10 {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(242, 242, 247, 0.94); /* Frosted blur overlay canvas layout */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 8px 14px 18px 14px;    /* Extra base padding protects floating home bar */
+  border-top: 1px solid #d1d1d6;
+  box-sizing: border-box;
+  z-index: 80;
+}
+
+#yui-gen10 #alert_container {
+  display: block;
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #c7c7cc;
+  border-radius: 20px;
+  padding: 6px 45px 6px 14px;     /* Correct safe boundary padding for the pill layout button */
+  box-sizing: border-box;
+  min-height: 34px;
+}
+
+/* Faux Placeholder text marker inside standard input field */
+#yui-gen10 #alert_container::before {
+  content: "iMessage";
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  color: #aeaeae;
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* Compact iOS Circular Submit Send Icon Pill */
+#yui-gen10 #alert_container a {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0px;                /* Strips raw text visibility safely */
+  width: 26px;
+  height: 26px;
+  background: #0a84ff;          
+  border-radius: 50%;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+/* Up-Arrow Icon Inside Send Pill Vector Graphics Shape Markup */
+#yui-gen10 #alert_container a::after {
+  content: "";
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  width: 6px;
+  height: 6px;
+  border-top: 2px solid #ffffff;
+  border-right: 2px solid #ffffff;
+}
+
+#yui-gen10 #alert_container a:hover {
+  transform: translateY(-50%) scale(1.05);
+  background: #0071e3;
+}
+
+/* --- LIVE CONVERSATION FEEDS --- */
+dl.style1 dt, 
+dl.style1 dd {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- USER DATA METADATA MARKERS (dt) --- */
+dl.style1 dt {
+  margin-top: 14px;
+  padding-left: 48px;            /* Aligns username text perfectly above message bubble edges */
+  margin-bottom: 2px;
+  border: none !important;
+}
+dl.style1 dt:first-of-type {
+  margin-top: 0px;
+}
+
+dl.style1 dt .username a {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8e8e93;                /* Grayed secondary app headers style */
+  text-decoration: none;
+}
+dl.style1 dt .date {
+  font-size: 9px;
+  color: #c7c7cc;
+  display: inline-block;         
+  margin-left: 4px;
+  vertical-align: baseline;
+}
+
+/* Report Trigger Utilities */
+dl.style1 dt .date a[href*="report.php"] {
+  display: inline-block;
+  font-size: 0px;                
+  opacity: 0;
+  color: #ff453a;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+dl.style1 dt .date:hover a[href*="report.php"] {
+  font-size: 9px;               
+  opacity: 1;
+  margin-left: 6px;             
+}
+
+/* --- CHAT BUBBLE CONTENT HOUSINGS (dd) --- */
+dl.style1 dd {
+  border-top: none !important;
+  display: block;
+  clear: both;
+  min-height: 36px;
+  margin-bottom: 8px;
+}
+
+/* Rounded Messenger Avatars */
+dl.style1 dd .dropBox {
+  float: left;                   
+  width: 34px !important;    
+  height: 34px !important;   
+  border-radius: 50%;        
+  overflow: hidden !important; 
+  background: #ffffff;
+  border: 1px solid #e5e5ea;
+  position: relative;
+}
+dl.style1 dd .avatarImage {
+  width: 90px !important;   
+  height: 120px !important;  
+  margin: -25px 0 0 -20px !important; 
+  display: block;
+  object-fit: fill;          
+  transform: scaleX(-1);     
+}
+
+/* --- PRODUCTION STABILIZED TEXT BUBBLE --- */
+dl.style1 dd .postcontent,
+dl.style1 dd:hover .postcontent,
+dl.style1 dd .postcontent:hover {
+  position: relative !important;            
+  display: block !important;
+  float: left !important;
+  width: fit-content !important;            
+  max-width: 250px !important;
+  height: auto !important;
+  min-height: 0px !important;
+  max-height: none !important;    /* Hard bricked to destroy dynamic max-height scripts */
+  margin: 0 0 0 8px !important;             
+  padding: 8px 14px !important;                 
+  box-sizing: border-box !important;        
+  font-size: 14px !important;               
+  line-height: 1.35 !important;
+  color: #000000 !important;
+  word-break: break-word !important;  
+  background: #ffffff !important;           
+  border-radius: 18px !important;           
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04) !important;
+  transition: none !important;    /* Prevents hover animation jumps */
+  transform: none !important;
+  overflow: visible !important;
+  opacity: 1 !important;
+}
+
+/* Embedded Media Assets */
+dl.style1 dd .postcontent img,
+dl.style1 dd:hover .postcontent img {
+  max-width: 100% !important;    
+  height: auto !important;       
+  max-height: none !important;
+  border-radius: 12px !important;            
+  display: block !important;
+  margin-top: 4px !important;               
+}
+
+/* --- ACTION OVERLAYS / STRUCTURAL CLEANUPS --- */
+dl.style1 dd .deletecomment,
+dl.style1 dd:hover .deletecomment {
+  display: none !important;      
+}
+.clear {
+  clear: both;
+}

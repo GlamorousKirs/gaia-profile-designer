@@ -1,0 +1,210 @@
+:root {
+  --show-contact-label: 1;
+  --dock-position: center;
+  --contact-bg: #0b0914; 
+  --contact-accent: #00ffff; 
+  --contact-sub-accent: #bd00ff; 
+  --btn-bg: #110e24; 
+  --btn-bg-hover: #191436; 
+  --text-color: #8c88a5;
+}
+@keyframes hyperGlow {
+  0%, 100% { 
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2), 0 0 30px rgba(189, 0, 255, 0.1), inset 0 0 15px rgba(0, 255, 255, 0.1);
+    border-color: rgba(0, 255, 255, 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.4), 0 0 50px rgba(189, 0, 255, 0.3), inset 0 0 25px rgba(189, 0, 255, 0.2);
+    border-color: rgba(189, 0, 255, 0.6);
+  }
+}
+@keyframes orbitRotate {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@keyframes pulseCore {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); text-shadow: 0 0 8px var(--contact-accent); }
+  50% { transform: translate(-50%, -50%) scale(1.15); text-shadow: 0 0 18px var(--contact-sub-accent); color: #ffffff; }
+}
+@keyframes quantumFlux {
+  0% { left: -100%; opacity: 0; }
+  50% { opacity: 0.4; }
+  100% { left: 100%; opacity: 0; }
+}
+#id_contact {
+  position: fixed;
+  bottom: 20px;
+  width: 46px;
+  height: 46px;
+  background: var(--btn-bg);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 50px; 
+  overflow: visible; 
+  z-index: 9999;
+  box-sizing: border-box;
+  animation: hyperGlow 4s infinite ease-in-out;
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@container style(--dock-position: center) {
+  #id_contact { left: 50%; right: auto; transform: translateX(-50%); }
+  #id_contact:hover { transform: translateX(-50%) translateY(-2px); }
+}
+@container style(--dock-position: right) {
+  #id_contact { left: auto; right: 20px; transform: none; }
+  #id_contact:hover { transform: translateY(-2px); }
+}
+@container style(--dock-position: left) {
+  #id_contact { left: 20px; right: auto; transform: none; }
+  #id_contact:hover { transform: translateY(-2px); }
+}
+#id_contact:hover {
+  width: 380px; 
+  height: 52px; 
+  border-radius: 14px; 
+  background: var(--contact-bg);
+  padding: 8px;
+}
+@media (max-width: 420px) {
+  #id_contact:hover { width: calc(100vw - 40px); }
+}
+#id_contact:before {
+  content: "A"; 
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Century Gothic', sans-serif;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--contact-accent);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 4;
+  pointer-events: none;
+}
+#id_contact:hover:before {
+  top: 50%; 
+  left: 26px;
+  animation: pulseCore 2.5s infinite ease-in-out;
+}
+#id_contact::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 58px;
+  height: 58px;
+  border: 1px dashed rgba(0, 255, 255, 0.2);
+  border-top-color: var(--contact-sub-accent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+  transition: all 0.4s ease;
+  animation: orbitRotate 6s infinite linear;
+}
+#id_contact:hover::after {
+  width: 32px;
+  height: 32px;
+  left: 26px;
+  border-style: solid;
+  border-color: rgba(189, 0, 255, 0.15);
+  border-right-color: var(--contact-accent);
+  animation-duration: 3s;
+}
+#id_contact h2 {
+  display: block !important;
+  margin: 0;
+  position: absolute;
+  bottom: -15px;
+  left: 10px;
+  font-family: monospace;
+  font-size: 7.5px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: var(--contact-sub-accent);
+  opacity: 0;
+  transition: opacity 0.4s ease 0.2s;
+}
+#id_contact:hover h2 {
+  opacity: var(--show-contact-label);
+}
+#id_contact ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  gap: 8px;
+  height: 34px; 
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%) translateX(15px);
+  left: 48px; 
+  right: 12px;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+  z-index: 3;
+}
+#id_contact:hover ul {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0); 
+}
+#id_contact ul li {
+  flex: 1;
+  position: relative;
+  white-space: nowrap;
+  font-family: sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+#id_contact ul li a {
+  display: block;
+  padding: 8px; 
+  color: var(--text-color);
+  text-decoration: none;
+  background: var(--btn-bg);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 18px; 
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+#id_contact ul li a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.15), transparent);
+  pointer-events: none;
+}
+#id_contact ul li:has(a):hover a {
+  background: var(--btn-bg-hover);
+  color: #ffffff;
+  border-color: var(--contact-accent);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+#id_contact ul li:has(a):hover a::before {
+  animation: quantumFlux 1.2s infinite linear;
+}
+#id_contact ul li span {
+  display: block;
+  padding: 8px; 
+  color: rgba(255, 255, 255, 0.1); 
+  background: rgba(0, 0, 0, 0.4); 
+  border-radius: 18px;
+  cursor: not-allowed; 
+  user-select: none;
+  font-size: 0; 
+}
+#id_contact ul li span:after {
+  content: "STASIS";
+  font-size: 10px; 
+  letter-spacing: 0.5px;
+}

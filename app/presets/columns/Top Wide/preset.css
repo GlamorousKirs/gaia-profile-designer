@@ -1,0 +1,30 @@
+#columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 500px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#column_1,
+#column_2,
+#column_3 {
+    overflow: auto;
+    border: 1px solid #64748b;
+    height: 200px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#column_1, #column_2 { margin-left: 0px; }
+
+#column_1 {
+    grid-column: span 2;
+}
+
+.clear {
+    display: none;
+}

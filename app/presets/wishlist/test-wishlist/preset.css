@@ -1,0 +1,135 @@
+#id_equipment {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 24px !important;
+  padding: 50px !important;
+  background: #040806 !important;
+  border-radius: 30px !important;
+  border: 1px solid #0f241a !important;
+  position: relative !important;
+  overflow: hidden !important;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(34, 197, 94, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(34, 197, 94, 0.05) 0%, transparent 50%) !important;
+}
+
+/* Firefly Effect */
+#id_equipment::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background-image: 
+    radial-gradient(2px 2px at 20% 30%, #4ade80, transparent),
+    radial-gradient(2px 2px at 50% 10%, #22c55e, transparent),
+    radial-gradient(1.5px 1.5px at 80% 40%, #4ade80, transparent),
+    radial-gradient(2px 2px at 10% 80%, #22c55e, transparent),
+    radial-gradient(1.5px 1.5px at 70% 90%, #4ade80, transparent) !important;
+  background-size: 200% 200% !important;
+  animation: firefly-drift 12s linear infinite, firefly-flicker 4s ease-in-out infinite alternate !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+#equipment_title {
+  display: none !important;
+}
+
+#id_equipment .item {
+  width: 48px !important;
+  height: 48px !important;
+  background: rgba(15, 36, 26, 0.6) !important;
+  border: 1px solid rgba(34, 197, 94, 0.2) !important;
+  border-radius: 12px 2px 12px 2px !important;
+  position: relative !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer !important;
+  z-index: 2 !important;
+}
+
+/* Bioluminescent Pulse on hover */
+#id_equipment .item::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: -4px !important;
+  border-radius: inherit !important;
+  background: #22c55e !important;
+  filter: blur(12px) !important;
+  opacity: 0 !important;
+  z-index: -1 !important;
+  transition: opacity 0.4s ease !important;
+}
+
+#id_equipment .item:hover {
+  background: rgba(34, 197, 94, 0.15) !important;
+  border-color: #22c55e !important;
+  transform: scale(1.1) rotate(5deg) !important;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3) !important;
+}
+
+#id_equipment .item:hover::before {
+  opacity: 0.5 !important;
+  animation: bio-pulse 2s ease-in-out infinite !important;
+}
+
+/* Growth Line Animation */
+#id_equipment .item::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 0 !important;
+  height: 2px !important;
+  background: #4ade80 !important;
+  box-shadow: 0 0 10px #4ade80 !important;
+  transition: width 0.4s ease !important;
+}
+
+#id_equipment .item:hover::after {
+  width: 100% !important;
+}
+
+#id_equipment .item_info {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+#id_equipment .item_info img {
+  width: 26px !important;
+  height: 26px !important;
+  object-fit: contain !important;
+  filter: sepia(1) saturate(2) hue-rotate(80deg) brightness(0.8) !important;
+  transition: all 0.4s ease !important;
+}
+
+#id_equipment .item:hover .item_info img {
+  filter: sepia(0) saturate(1.2) brightness(1.2) drop-shadow(0 0 5px rgba(34, 197, 94, 0.6)) !important;
+  transform: rotate(-5deg) !important;
+}
+
+@keyframes firefly-drift {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+@keyframes firefly-flicker {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes bio-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.2); opacity: 0.6; }
+}
+
+.premium_sparkle, 
+#id_equipment .clear, 
+#id_equipment span {
+  display: none !important;
+}

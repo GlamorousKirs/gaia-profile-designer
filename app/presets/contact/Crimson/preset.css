@@ -1,0 +1,260 @@
+:root {
+  /* Toggle Switch: 1 for ON, 0 for OFF */
+  --show-contact-label: 1;
+
+  /* Type exactly: left , right , or center */
+  --dock-position: center;
+
+  --contact-bg: #050103; /* Pure Abyssal Midnight Black */
+  --contact-accent: #990011; /* Deep Coagulated Crimson Blood Red */
+  --contact-sub-accent: #ff2233; /* High-Intensity Sanguine Scarlet */
+  --btn-bg: #120205; 
+  --btn-bg-hover: #26050b; 
+  --text-color: #d1b8bc; /* Ash-vampire muted silver text */
+}
+
+/* Sanguine Cardiac Rhythms & Kinetic Blade Keyframes */
+@keyframes vampireHeartbeat {
+  0%, 100% { 
+    border-color: var(--contact-accent);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.9), inset 0 0 10px rgba(153, 0, 17, 0.2);
+  }
+  30% { 
+    border-color: var(--contact-sub-accent);
+    box-shadow: 0 0 20px rgba(255, 34, 51, 0.35), inset 0 0 4px rgba(255, 34, 51, 0.2);
+  }
+  50% {
+    border-color: var(--contact-accent);
+    box-shadow: 0 0 12px rgba(153, 0, 17, 0.2), inset 0 0 8px rgba(153, 0, 17, 0.1);
+  }
+}
+
+@keyframes monogramTremor {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -48%) scale(1.05); text-shadow: 0 0 4px var(--contact-sub-accent); }
+}
+
+@keyframes bleedingEdge {
+  0% { left: -110%; }
+  100% { left: 110%; }
+}
+
+#id_contact {
+  position: fixed;
+  bottom: 20px;
+  width: 46px;
+  height: 46px;
+  background: var(--btn-bg);
+  border: 1.5px solid var(--contact-accent);
+  border-radius: 0px; /* Monolithic sharp geometric execution */
+  overflow: visible; 
+  z-index: 9999;
+  box-sizing: border-box;
+  animation: vampireHeartbeat 2.5s infinite cubic-bezier(0.215, 0.610, 0.355, 1);
+  transition: all 0.45s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@container style(--dock-position: center) {
+  #id_contact { left: 50%; right: auto; transform: translateX(-50%); }
+  #id_contact:hover { transform: translateX(-50%) translateY(0); }
+}
+@container style(--dock-position: right) {
+  #id_contact { left: auto; right: 20px; transform: none; }
+  #id_contact:hover { transform: none; }
+}
+@container style(--dock-position: left) {
+  #id_contact { left: 20px; right: auto; transform: none; }
+  #id_contact:hover { transform: none; }
+}
+
+#id_contact:hover {
+  width: 380px; 
+  height: 52px; 
+  background: var(--contact-bg);
+  border-color: var(--contact-sub-accent);
+  padding: 8px;
+}
+
+@media (max-width: 420px) {
+  #id_contact:hover { width: calc(100vw - 40px); }
+}
+
+/* Sharp Ritual Crest Monogram (No Emojis) */
+#id_contact:before {
+  content: "V"; 
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Cinzel', 'Didot', 'Garamond', serif;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: -1px;
+  color: #ffffff;
+  text-shadow: 0 0 5px var(--contact-accent);
+  z-index: 5;
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+#id_contact:hover:before {
+  top: 50%; 
+  left: 26px;
+  color: var(--contact-sub-accent);
+  animation: monogramTremor 1.5s infinite linear;
+}
+
+/* Obsidian Blood Moon Diagnostic Readout Ribbon Container */
+#id_contact h2 {
+  display: flex !important;
+  align-items: center;
+  margin: 0;
+  position: absolute;
+  top: -24px;
+  left: -1px;
+  width: auto;
+  white-space: nowrap;
+  height: 18px;
+  padding: 0 10px;
+  background: #0f0204;
+  border: 1px solid var(--contact-accent);
+  font-family: monospace;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  color: #ffffff;
+  opacity: 0;
+  visibility: hidden; 
+  font-size: 0; 
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  pointer-events: none;
+}
+
+#id_contact:hover h2 {
+  opacity: var(--show-contact-label);
+  visibility: visible; 
+}
+
+#id_contact:hover h2:after {
+  content: "BLOOD_MOON_PROTOCOL // ONLINE";
+  font-size: 8px;
+  text-shadow: 1px 1px #000;
+}
+
+/* Gothic Ribbon Layout Configuration Track Matrix */
+#id_contact ul {
+  padding: 0;
+  list-style: none;
+  display: flex;
+  gap: 6px;
+  height: 36px; 
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%) translateX(15px);
+  left: 48px; 
+  right: 12px;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  overflow: hidden;
+  z-index: 4;
+  
+}
+
+#id_contact:hover ul {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0); 
+}
+
+/* Individual Interface Nodes */
+#id_contact ul li {
+  flex: 1;
+  position: relative;
+  white-space: nowrap;
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+/* Brutalist Sharp Active Links */
+#id_contact ul li a {
+  display: block;
+  padding: 8px; 
+  color: var(--text-color); 
+  text-decoration: none;
+  background: var(--btn-bg);
+  border: 1px solid rgba(153, 0, 17, 0.3); 
+  border-radius: 0px; 
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+/* DECORATION: Liquid Sanguine Energy Surge bar inside active links */
+#id_contact ul li a::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -110%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 34, 51, 0.25), transparent);
+  pointer-events: none;
+}
+
+#id_contact ul li:has(a):hover a {
+  background: var(--btn-bg-hover);
+  color: #ffffff; 
+  border-color: var(--contact-sub-accent);
+  box-shadow: -3px 3px 0px var(--contact-accent);
+  transform: translateX(2px) translateY(-2px);
+}
+
+#id_contact ul li:has(a):hover a::after {
+  animation: bleedingEdge 1.4s infinite linear;
+}
+
+/* Distinctly Clear Desaturated Ash Inactive Fallback Units */
+#id_contact ul li span {
+  display: block;
+  padding: 8px; 
+  color: #4f393c; /* Highly readable dark ash slate crimson */
+  background: rgba(5, 1, 3, 0.9); 
+  border: 1px dashed rgba(153, 0, 17, 0.2); 
+  border-radius: 0px;
+  cursor: not-allowed; 
+  user-select: none;
+  font-size: 11px; 
+}
+
+#id_contact ul li span:after {
+  content: none;
+}
+
+/* ==========================================
+   TEXT REPLACEMENT ENGINE (MUTUALS OVERRIDE)
+   ========================================== */
+
+/* Target active link state for first item */
+#id_contact ul li:first-child a {
+  font-size: 0 !important;
+}
+#id_contact ul li:first-child a::before {
+  content: "MUTUALS";
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+/* Target disabled span state for first item */
+#id_contact ul li:first-child span {
+  font-size: 0 !important;
+}
+#id_contact ul li:first-child span::before {
+  content: "MUTUALS";
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
