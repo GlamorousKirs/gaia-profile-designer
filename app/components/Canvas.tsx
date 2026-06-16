@@ -45,12 +45,24 @@ export const Canvas = memo(function Canvas({
     if (!presetId || !category) return null
     const rawToml = presetTomlModules[`/app/presets/${category}/${presetId}/preset.toml`]
     if (!rawToml) return null
-    const layout = { col1: [] as string[], col2: [] as string[], col3: [] as string[], showHeader: category === "profile" }
-    const arrayRegex = /(col[1-3])\s*=\s*\[([\s\S]*?)\]/g
+
+    const layout = {
+      column1: [] as string[],
+      column2: [] as string[],
+      column3: [] as string[],
+      showHeader: category === "profile"
+    }
+
+    const arrayRegex = /(column[1-3])\s*=\s*\[([\s\S]*?)\]/g
     let match
     while ((match = arrayRegex.exec(rawToml)) !== null) {
-      layout[match[1] as "col1" | "col2" | "col3"] = match[2].replace(/["']/g, ' ').replace(/,/g, ' ').split(/\s+/).filter(name => name.trim().length > 0)
+      layout[match[1] as "column1" | "column2" | "column3"] = match[2]
+        .replace(/["']/g, ' ')
+        .replace(/,/g, ' ')
+        .split(/\s+/)
+        .filter(name => name.trim().length > 0)
     }
+
     if (/header\s*=\s*true/.test(rawToml)) layout.showHeader = true
     else if (/header\s*=\s*false/.test(rawToml)) layout.showHeader = false
     return layout
@@ -60,22 +72,34 @@ export const Canvas = memo(function Canvas({
 
   const integratedHtml = useMemo(() => {
     if (shouldCenterPanel) return category ? panelHtmlModules[`/app/presets/panels_html/${category}.html`] || "" : ""
+
     let currentHtml = gaiaHtml
     let globalHeaderHtml = ""
     const layoutToUse = columnLayout || parsedTomlLayout
-    if (layoutToUse && (layoutToUse.col1.length > 0 || layoutToUse.col2.length > 0 || layoutToUse.col3.length > 0)) {
-      if (layoutToUse.showHeader !== false) globalHeaderHtml = panelHtmlModules["/app/presets/panels_html/header.html"] || ""
-        ; (["col1", "col2", "col3"] as const).forEach((colKey, index) => {
-          const targetColumnString = `id="column_${index + 1}" class="column focus_column">`
-          const compiled = layoutToUse[colKey].filter(id => id !== "columns" && id !== "header").map(id => panelHtmlModules[`/app/presets/panels_html/${id}.html`] || "").join("\n")
-          currentHtml = currentHtml.replace(targetColumnString, `${targetColumnString}\n${compiled}`)
-        })
+
+    if (layoutToUse && ((layoutToUse.column1?.length ?? 0) > 0 || (layoutToUse.column2?.length ?? 0) > 0 || (layoutToUse.column3?.length ?? 0) > 0)) {
+      const showHeader = !("showHeader" in layoutToUse) || layoutToUse.showHeader !== false;
+
+      if (showHeader) {
+        globalHeaderHtml = panelHtmlModules["/app/presets/panels_html/header.html"] || ""
+      }
+      ; (["column1", "column2", "column3"] as const).forEach((colKey, index) => {
+        const targetColumnString = `id="column_${index + 1}" class="column focus_column">`
+        const compiled = (layoutToUse[colKey] || [])
+          .filter(id => id !== "columns" && id !== "header")
+          .map(id => panelHtmlModules[`/app/presets/panels_html/${id}.html`] || "")
+          .join("\n")
+
+        currentHtml = currentHtml.replace(targetColumnString, `${targetColumnString}\n${compiled}`)
+      })
     } else if (category === "profile") {
       globalHeaderHtml = panelHtmlModules["/app/presets/panels_html/header.html"] || ""
-      Object.entries(panelHtmlModules).filter(([k]) => !k.endsWith("avatar_menu.html") && !k.endsWith("header.html")).forEach(([_, html], i) => {
-        const target = `id="column_${(i % 3) + 1}" class="column focus_column">`
-        currentHtml = currentHtml.replace(target, `${target}\n${html}`)
-      })
+      Object.entries(panelHtmlModules)
+        .filter(([k]) => !k.endsWith("avatar_menu.html") && !k.endsWith("header.html"))
+        .forEach(([_, html], i) => {
+          const target = `id="column_${(i % 3) + 1}" class="column focus_column">`
+          currentHtml = currentHtml.replace(target, `${target}\n${html}`)
+        })
     } else if (activePanels.length > 0) {
       activePanels.forEach((id, i) => {
         const content = panelHtmlModules[`/app/presets/panels_html/${id}.html`] || ""
@@ -87,8 +111,11 @@ export const Canvas = memo(function Canvas({
       })
     } else if (category) {
       const content = panelHtmlModules[`/app/presets/panels_html/${category}.html`] || ""
-      if (category !== "header") currentHtml = gaiaHtml.replace(`id="column_2" class="column focus_column">`, `id="column_2" class="column focus_column">\n${content}`)
+      if (category !== "header") {
+        currentHtml = gaiaHtml.replace(`id="column_2" class="column focus_column">`, `id="column_2" class="column focus_column">\n${content}`)
+      }
     }
+
     return globalHeaderHtml ? currentHtml.replace('<div id="columns">', `${globalHeaderHtml}\n<div id="columns">`) : currentHtml
   }, [category, activePanels, shouldCenterPanel, parsedTomlLayout, columnLayout])
 

@@ -2,7 +2,11 @@ import { useState } from "react";
 import { extend } from "colord";
 import namesPlugin from "colord/plugins/names";
 import { HexAlphaColorPicker } from "react-colorful";
-import { Popover } from "@base-ui/react/popover";
+import { 
+  Popover, 
+  PopoverContent, 
+  PopoverTrigger 
+} from "@/components/ui/popover";
 
 extend([namesPlugin]);
 
@@ -17,7 +21,7 @@ export function EditorColorPicker({
   const [open, setOpen] = useState(false);
 
   return (
-    <Popover.Root
+    <Popover
       open={open}
       onOpenChange={(nextOpen) => {
         if (open && !nextOpen) {
@@ -26,33 +30,28 @@ export function EditorColorPicker({
         setOpen(nextOpen);
       }}
     >
-      <Popover.Trigger
+      <PopoverTrigger
         className="size-3 mr-1 rounded-full border border-border cursor-pointer transition-all hover:ring-2 hover:ring-primary/20 focus:outline-none focus:ring-2 focus:ring-primary"
         style={{ backgroundColor: color }}
         onClick={(e: React.MouseEvent) => e.stopPropagation()}
         aria-label="Pick a color"
       />
-      <Popover.Portal>
-        <Popover.Positioner className="z-9999" sideOffset={8}>
-          <Popover.Popup
-            className="custom-layout p-0 rounded-xl backdrop-blur-md bg-background border flex flex-col shadow-xl"
-            onClick={(e: React.MouseEvent) => e.stopPropagation()}
-          >
-
-            <HexAlphaColorPicker
-              color={color}
-              onChange={setColor}
-            />
-            <input
-              type="text"
-              className="w-full px-3 py-1.5 rounded bg-muted text-foreground text-xs font-mono focus:outline-none border-t border-border"
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
-              placeholder="hex"
-            />
-          </Popover.Popup>
-        </Popover.Positioner>
-      </Popover.Portal>
-    </Popover.Root>
+      <PopoverContent className="p-0 overflow-hidden w-auto bg-background" sideOffset={8}>
+        {/* The wrapper div that carries the custom-layout class */}
+        <div className="custom-layout p-2" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+          <HexAlphaColorPicker
+            color={color}
+            onChange={setColor}
+          />
+          <input
+            type="text"
+            className="w-full mt-2 px-3 py-1.5 rounded bg-muted text-foreground text-xs font-mono focus:outline-none border border-border"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            placeholder="hex"
+          />
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }

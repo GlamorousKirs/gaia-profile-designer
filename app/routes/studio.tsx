@@ -17,7 +17,7 @@ import {
   Layers,
   Settings,
   SlidersHorizontal,
-  CloudLightning,
+  Braces,
   Share2,
   MousePointer,
   Hand,
@@ -35,7 +35,7 @@ const InspectorPanel = lazy(() => import("@/components/InspectorPanel"))
 const panelFiles = import.meta.glob("/app/presets/panels_html/*.html");
 const EXCLUDED_PANELS = ["header", "columns"];
 
-const LIBRARY_PANELS = Object.keys(panelFiles)
+const INITIAL_PANELS = Object.keys(panelFiles)
   .map((path) => path.split("/").pop()?.replace(".html", ""))
   .filter((name): name is string => !!name && !EXCLUDED_PANELS.includes(name));
 
@@ -65,38 +65,40 @@ export default function Studio() {
   const category = searchParams.get("category")
 
   const [rootCss, setRootCss] = useState("")
-  const [cssCode, setCssCode] = useState("")
+  const [cssCode, setCssCode] = useState<string>(() => {
+    return localStorage.getItem("autosave_draft_code") || ""
+  })
   const [activePanels, setActivePanels] = useState<string[]>([])
 
   const [columns, setColumns] = useState<ColumnState>({
-    library: LIBRARY_PANELS,
-    col1: [],
-    col2: [],
-    col3: []
+    panels: INITIAL_PANELS,
+    column1: [],
+    column2: [],
+    column3: []
   })
 
   useEffect(() => {
-    const cleanLibrary = LIBRARY_PANELS.filter(p => !EXCLUDED_PANELS.includes(p));
+    const cleanPanels = INITIAL_PANELS.filter(p => !EXCLUDED_PANELS.includes(p));
 
     if (category === "profile") {
-      const newCols = { col1: [] as string[], col2: [] as string[], col3: [] as string[] };
-      cleanLibrary.forEach((panel, i) => {
+      const newCols = { column1: [] as string[], column2: [] as string[], column3: [] as string[] };
+      cleanPanels.forEach((panel, i) => {
         const col = (i % 3) + 1;
-        newCols[`col${col}` as keyof typeof newCols].push(panel);
+        newCols[`column${col}` as keyof typeof newCols].push(panel);
       });
-      setColumns({ library: [], ...newCols });
-      setActivePanels(cleanLibrary);
+      setColumns({ panels: [], ...newCols });
+      setActivePanels(cleanPanels);
     } else if (category && !EXCLUDED_PANELS.includes(category)) {
       setActivePanels([category]);
       setColumns({
-        library: cleanLibrary.filter(p => p !== category),
-        col1: [category],
-        col2: [],
-        col3: []
+        panels: cleanPanels.filter(p => p !== category),
+        column1: [category],
+        column2: [],
+        column3: []
       });
     } else {
       setActivePanels([]);
-      setColumns({ library: cleanLibrary, col1: [], col2: [], col3: [] });
+      setColumns({ panels: cleanPanels, column1: [], column2: [], column3: [] });
     }
   }, [category])
 
@@ -206,10 +208,10 @@ export default function Studio() {
                       className={`rounded-full size-9 shrink-0 ${isCodeOpen ? "text-primary border border-primary/20 bg-secondary" : ""}`}
                       onClick={() => setIsCodeOpen(prev => !prev)}
                     >
-                      <CloudLightning className="size-4" />
+                      <Braces className="size-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="text-xs">Toggle Code Panel (~)</TooltipContent>
+                  <TooltipContent side="top" className="text-xs">Code</TooltipContent>
                 </Tooltip>
                 <div className="w-px h-4 bg-border mx-1" aria-hidden="true" />
                 <Tooltip>

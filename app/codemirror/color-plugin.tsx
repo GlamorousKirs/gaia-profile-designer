@@ -1,30 +1,47 @@
 import { WidgetType, ViewPlugin, Decoration, EditorView, type DecorationSet } from "@codemirror/view";
 import { RangeSetBuilder } from "@codemirror/state";
+import { EditorColorPicker } from "@/components/EditorColorPicker";
+import { createRoot, type Root } from "react-dom/client";
+import { colord, extend } from "colord";
+import namesPlugin from "colord/plugins/names";
+
+extend([namesPlugin]);
 
 class ColorWidget extends WidgetType {
-  constructor(
-    readonly color: string,
-    readonly from: number,
-    readonly to: number
-  ) {
+  private root: Root | null = null;
+
+  constructor(readonly color: string, readonly from: number, readonly to: number) {
     super();
   }
 
-  toDOM() {
+  toDOM(view: EditorView) {
     const span = document.createElement("span");
-    span.className = "cm-custom-color-trigger size-3 mr-1 inline-block rounded-full border border-border cursor-pointer vertical-align-middle select-none transition-all hover:scale-110";
-    span.style.backgroundColor = this.color;
-
-    span.setAttribute("data-color", this.color);
-    span.setAttribute("data-from", this.from.toString());
-    span.setAttribute("data-to", this.to.toString());
-    span.setAttribute("contenteditable", "false");
+    span.className = "inline-flex items-center align-middle mx-1";
+    
+    this.root = createRoot(span);
+    this.root.render(
+      <EditorColorPicker
+        initialColor={this.color}
+        onCommit={(newColor) => {
+          view.dispatch({
+            changes: { from: this.from, to: this.to, insert: newColor }
+          });
+        }}
+      />
+    );
 
     return span;
   }
 
+  destroy() {
+    if (this.root) {
+      this.root.unmount();
+      this.root = null;
+    }
+  }
+
   eq(other: ColorWidget) {
-    return other.from === this.from && other.to === this.to && other.color === this.color;
+    return other.color === this.color && other.from === this.from;
   }
 }
 
@@ -43,19 +60,26 @@ export const ColorPlugin = ViewPlugin.fromClass(class {
 
   buildDeco(view: EditorView) {
     const builder = new RangeSetBuilder<Decoration>();
-    const hexRegex = /#([a-fA-F0-9]{8}|[a-fA-F0-9]{6}|[a-fA-F0-9]{4}|[a-fA-F0-9]{3})/g;
+    
+    // Pattern matches hex, rgb/a, hsl/a, and general words that could be color names
+    const colorRegex = /#([0-9a-fA-F]{3,8})|([a-zA-Z]+)|(rgba?|hsla?)\([^)]*\)/g;
 
     for (let { from, to } of view.visibleRanges) {
       const text = view.state.doc.sliceString(from, to);
       let match;
-      while ((match = hexRegex.exec(text)) !== null) {
-        const start = from + match.index;
-        const end = start + match[0].length;
-
-        builder.add(start, start, Decoration.widget({
-          widget: new ColorWidget(match[0], start, end),
-          side: -1
-        }));
+      while ((match = colorRegex.exec(text)) !== null) {
+        const colorValue = match[0];
+        
+        // Use colord to validate if the matched string is a valid CSS color
+        if (colord(colorValue).isValid()) {
+          const start = from + match.index;
+          const end = start + colorValue.length;
+          
+          builder.add(end, end, Decoration.widget({
+            widget: new ColorWidget(colorValue, start, end),
+            side: 1
+          }));
+        }
       }
     }
     return builder.finish();

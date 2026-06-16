@@ -131,8 +131,7 @@
   }
 
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
   }
 
   ::-webkit-scrollbar-track {
@@ -140,15 +139,10 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--muted-foreground);
+    background: var(--border);
     opacity: 0.3;
     border-radius: var(--radius);
     border: 2px solid transparent; 
-    background-clip: padding-box;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--border);
     background-clip: padding-box;
   }
 }
@@ -159,36 +153,38 @@
   mix-blend-mode: normal;
 }
 
+/* Ensure specificity by anchoring to your wrapper */
 .custom-layout .react-colorful {
-  padding: 0px 0px;
-  padding-top: 0px;
-  border-radius: var(--radius);
-  background: var(--background);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-    height: 10rem;
+  width: 200px;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: transparent;
 }
 
 .custom-layout .react-colorful__saturation {
-  margin: 0px 0;
+  flex-grow: 1;
   border-radius: 8px;
-  border-bottom: none;
-
+  margin-bottom: 5px;
 }
 
 .custom-layout .react-colorful__hue,
 .custom-layout .react-colorful__alpha {
-  order: 1;
-  height: 5px;
-  border-radius: var(--radius);
-  margin-bottom: 10px;
+  height: 10px;
+  border-radius: 9999px;
+}
+
+.custom-layout .react-colorful__saturation-pointer {
+  width: 12px;
+  height: 12px;
 }
 
 .custom-layout .react-colorful__hue-pointer,
-.custom-layout .react-colorful__alpha-pointer,
- .custom-layout .react-colorful__saturation-pointer{
-  width: 10px;
-  height: 10px;
+.custom-layout .react-colorful__alpha-pointer {
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  border: 1px solid white;
+  background: white;
+  border: 2px solid var(--border);
 }

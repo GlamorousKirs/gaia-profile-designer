@@ -22,10 +22,10 @@ import { CSS } from "@dnd-kit/utilities"
 import { GripVertical } from "lucide-react"
 
 export interface ColumnState {
-  library: string[]
-  col1: string[]
-  col2: string[]
-  col3: string[]
+  panels: string[]
+  column1: string[]
+  column2: string[]
+  column3: string[]
 }
 
 interface ColumnManagerProps {
@@ -37,9 +37,19 @@ interface ColumnManagerProps {
 const DroppableColumn = memo(function DroppableColumn({ id, items }: { id: keyof ColumnState, items: string[] }) {
   const { setNodeRef } = useDroppable({ id })
   
+  // Custom display mapping to rename labels only in the UI sidebar
+  const columnLabels: Record<keyof ColumnState, string> = {
+    panels: "Panels",
+    column1: "Column 1",
+    column2: "Column 2",
+    column3: "Column 3"
+  }
+
   return (
     <div className="flex flex-col">
-      <h3 className="text-[9px] font-bold uppercase text-muted-foreground mb-2 px-1 tracking-wider">{id}</h3>
+      <h3 className="text-[9px] font-bold uppercase text-muted-foreground mb-2 px-1 tracking-wider">
+        {columnLabels[id]}
+      </h3>
       <div
         ref={setNodeRef}
         className="border border-border/50 rounded-md p-2 bg-muted/10 min-h-15 transition-colors hover:bg-muted/20"
@@ -58,7 +68,6 @@ const DroppableColumn = memo(function DroppableColumn({ id, items }: { id: keyof
 const SortableItem = memo(function SortableItem({ id }: { id: string }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
   
-  // Using transform instead of translate speeds up painting via GPU acceleration
   const style = { 
     transform: CSS.Transform.toString(transform), 
     transition 
@@ -83,7 +92,6 @@ const SortableItem = memo(function SortableItem({ id }: { id: string }) {
 export default function ColumnManager({ columns, setColumns }: ColumnManagerProps) {
   const [activeId, setActiveId] = useState<string | null>(null)
 
-  // Keep sensors stable
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor)
@@ -97,8 +105,6 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
     setActiveId(event.active.id as string)
   }
 
-  // OPTIMIZATION: Debounce or safeguard your Over state. Only change state if 
-  // container boundaries are actually crossed to minimize layout thrashing.
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event
     if (!over) return
@@ -161,7 +167,6 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
     setActiveId(null)
   }
 
-  // Prevent parent map from parsing keys on every single mini-interaction
   const columnEntries = useMemo(() => Object.entries(columns) as [keyof ColumnState, string[]][], [columns])
 
   return (
