@@ -2,10 +2,10 @@ import { useState } from "react";
 import { extend } from "colord";
 import namesPlugin from "colord/plugins/names";
 import { HexAlphaColorPicker } from "react-colorful";
-import { 
-  Popover, 
-  PopoverContent, 
-  PopoverTrigger 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
 } from "@/components/ui/popover";
 
 extend([namesPlugin]);
@@ -37,7 +37,7 @@ export function EditorColorPicker({
         aria-label="Pick a color"
       />
       <PopoverContent className="p-0 overflow-hidden w-auto bg-background" sideOffset={8}>
-        {/* The wrapper div that carries the custom-layout class */}
+        { }
         <div className="custom-layout p-2" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
           <HexAlphaColorPicker
             color={color}

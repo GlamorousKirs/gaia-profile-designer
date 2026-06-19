@@ -1,4 +1,4 @@
-import { useState, useTransition, lazy, Suspense, useEffect, useCallback, useRef } from "react"
+import { useState, useTransition, lazy, Suspense, useEffect, useCallback, useRef, useMemo } from "react"
 import { useSearchParams } from "react-router"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
@@ -24,7 +24,8 @@ import {
   Maximize2,
   Minimize2,
   Hash,
-  Component
+  Component,
+  Image
 } from "lucide-react"
 import { ThemePicker } from "~/components/ThemePicker"
 
@@ -32,6 +33,7 @@ const Canvas = lazy(() => import("~/components/Canvas").then(m => ({ default: m.
 const LayerManager = lazy(() => import("@/components/LayerManager"))
 const SettingsPanel = lazy(() => import("@/components/SettingsPanel"))
 const InspectorPanel = lazy(() => import("@/components/InspectorPanel"))
+const GaiaLogoPanel = lazy(() => import("@/components/GaiaLogoPanel").then(m => ({ default: m.GaiaLogoPanel })))
 
 const panelFiles = import.meta.glob("/app/presets/panels_html/*.html");
 const EXCLUDED_PANELS = ["header", "columns"];
@@ -46,17 +48,11 @@ const leftTabs: SidebarTab<"selectors" | "layers" | "columns">[] = [
   { id: "layers", icon: Layers, label: "Toggle Layer Panel" },
 ]
 
-const rightTabs: SidebarTab<"settings" | "inspector" | "elements">[] = [
-  { id: "elements", icon: Component, label: "Toggle Elements Menu" },
-  { id: "settings", icon: Settings, label: "Toggle Engine Settings Panel" },
-  { id: "inspector", icon: Move, label: "Toggle Properties Inspector Panel" },
-]
-
 export default function Studio() {
   const [leftOpen, setLeftOpen] = useState(true)
   const [rightOpen, setRightOpen] = useState(true)
   const [activeLeftTab, setActiveLeftTab] = useState<"selectors" | "layers" | "columns">("columns")
-  const [activeRightTab, setActiveRightTab] = useState<"settings" | "inspector" | "elements">("elements")
+  const [activeRightTab, setActiveRightTab] = useState<"settings" | "inspector" | "elements" | "logos">("elements")
   const [activeTool, setActiveTool] = useState<"select" | "hand">("select")
   const [isCodeOpen, setIsCodeOpen] = useState(false)
   const [isMaximized, setIsMaximized] = useState(false)
@@ -105,6 +101,31 @@ export default function Studio() {
     column2: [],
     column3: []
   })
+
+  const isLogoSelected = useMemo(() => {
+    if (!selectedSelector) return false
+    return /gaia-logo/i.test(selectedSelector) || (/#header_left.*img/i.test(selectedSelector))
+  }, [selectedSelector])
+
+  const dynamicRightTabs = useMemo<SidebarTab<"settings" | "inspector" | "elements" | "logos">[]>(() => {
+    const baseTabs: SidebarTab<"settings" | "inspector" | "elements" | "logos">[] = [
+      { id: "elements", icon: Component, label: "Toggle Elements Menu" },
+      { id: "settings", icon: Settings, label: "Toggle Engine Settings Panel" },
+      { id: "inspector", icon: Move, label: "Toggle Properties Inspector Panel" },
+    ]
+
+    if (isLogoSelected) {
+      baseTabs.splice(1, 0, { id: "logos", icon: Image, label: "Toggle Gaia Logo Assets" })
+    }
+
+    return baseTabs
+  }, [isLogoSelected])
+
+  useEffect(() => {
+    if (!isLogoSelected && activeRightTab === "logos") {
+      setActiveRightTab("elements")
+    }
+  }, [isLogoSelected, activeRightTab])
 
   const updateCssProperty = useCallback((property: string, value: string | number, suffix = "") => {
     if (!selectedSelector) return
@@ -180,7 +201,11 @@ export default function Studio() {
   const handleCanvasElementSelected = useCallback((selector: string) => {
     setSelectedSelector(selector)
     startTransition(() => {
-      setActiveRightTab("elements")
+      if (/gaia-logo/i.test(selector) || /#header_left.*img/i.test(selector)) {
+        setActiveRightTab("logos")
+      } else {
+        setActiveRightTab("elements")
+      }
       setRightOpen(true)
     })
   }, [])
@@ -257,7 +282,6 @@ export default function Studio() {
               </Suspense>
             </div>
 
-            { }
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
               <div className="flex items-center gap-1.5 p-1.5 bg-card/90 backdrop-blur-md border border-border rounded-full shadow-lg pointer-events-auto">
                 <Tooltip>
@@ -321,13 +345,13 @@ export default function Studio() {
           </div>
 
           {!isMaximized && (
-            <SidebarPanel
+            <SidebarPanel<"settings" | "inspector" | "elements" | "logos">
               side="right"
               isOpen={rightOpen}
               onToggleOpen={(val) => startTransition(() => setRightOpen(val))}
               activeTab={activeRightTab}
               onTabChange={(tab) => startTransition(() => setActiveRightTab(tab))}
-              tabs={rightTabs}
+              tabs={dynamicRightTabs}
             >
               <Suspense fallback={<div className="p-4 text-xs text-muted-foreground animate-pulse">Loading right workspace...</div>}>
                 {activeRightTab === "elements" ? (
@@ -372,6 +396,26 @@ export default function Studio() {
                     borderColor={borderColor}
                     setBorderColor={setBorderColor}
                     updateCssProperty={updateCssProperty}
+                  />
+                ) : activeRightTab === "logos" && isLogoSelected ? (
+                  <GaiaLogoPanel
+                    tagName="gaia-logo"
+                    onSelectLogo={(cssUrl) => {
+                      if (!selectedSelector) return;
+
+                      setCssCode((prevCode) => {
+                        const escapedSelector = selectedSelector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                        const blockRegex = new RegExp(`(${escapedSelector}\\s*{)([^}]*)(})`, "i");
+
+                        const exactInnerBlock = `\n  padding: 0 47px 0 0;\n  height: 16px;\n  width: 0;\n  background: ${cssUrl} no-repeat center / contain;\n`;
+
+                        if (blockRegex.test(prevCode)) {
+                          return prevCode.replace(blockRegex, `$1${exactInnerBlock}$3`);
+                        } else {
+                          return `${prevCode}\n${selectedSelector} {${exactInnerBlock}}\n`;
+                        }
+                      });
+                    }}
                   />
                 ) : activeRightTab === "settings" ? (
                   <SettingsPanel />

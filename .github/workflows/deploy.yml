@@ -40,7 +40,8 @@ jobs:
 
       - name: 🏗️ Build Application
         run: npm run build
-        # This will automatically trigger 'prebuild' (generate-themeswatches) first!
+        env:
+          VITE_CLOUDINARY_CLOUD_NAME: ${{ secrets.VITE_CLOUDINARY_CLOUD_NAME }}
 
       - name: 🛠️ Create 404 fallback for React Router client routes
         run: cp build/client/index.html build/client/404.html
@@ -53,6 +54,6 @@ jobs:
         with:
           path: './build/client'
 
-      - name: 🚀 Deploy to GitHub Pages
+      - name: 💕 Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

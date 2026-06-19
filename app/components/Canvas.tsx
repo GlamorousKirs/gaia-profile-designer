@@ -33,7 +33,7 @@ export const Canvas = memo(function Canvas({
   category = null,
   activePanels = [],
   columnLayout = null,
-  selectedSelector = "body",
+  selectedSelector = "html, body",
   onElementSelected
 }: CanvasProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -142,6 +142,10 @@ export const Canvas = memo(function Canvas({
             outline-offset: -2px;
           }
           body { box-sizing: border-box; }
+          html.highlight-selected body {
+            outline: 2px solid #2563eb !important;
+            outline-offset: -2px;
+          }
           * {
             user-select: none !important;
           }
@@ -153,10 +157,10 @@ export const Canvas = memo(function Canvas({
           ${rawGaiaScript}
           const userStyleTag = document.getElementById('user-overrides');
           let currentHovered = null;
-          let activeSelectorString = "body";
+          let activeSelectorString = "html, body";
 
           function getSelector(el) {
-            if (!el || el === document.body || el === document.documentElement) return 'body';
+            if (!el || el === document.body || el === document.documentElement) return 'html, body';
 
             const segments = [];
             let current = el;
@@ -187,25 +191,30 @@ export const Canvas = memo(function Canvas({
               }
             }
             if (e.data.type === 'sync-selected-element') {
-              activeSelectorString = e.data.selector || "body";
+              activeSelectorString = e.data.selector || "html, body";
               
+              document.documentElement.classList.remove('highlight-selected');
               document.querySelectorAll('.highlight-selected').forEach(el => {
                 el.classList.remove('highlight-selected');
               });
 
               if (e.data.selector) {
                 try {
-                  const elements = document.querySelectorAll(e.data.selector);
-                  elements.forEach(el => {
-                    el.classList.add('highlight-selected');
-                  });
+                  if (e.data.selector === "html, body") {
+                    document.documentElement.classList.add('highlight-selected');
+                  } else {
+                    const elements = document.querySelectorAll(e.data.selector);
+                    elements.forEach(el => {
+                      el.classList.add('highlight-selected');
+                    });
+                  }
                 } catch(err){}
               }
             }
           });
 
           document.addEventListener('mouseover', (e) => {
-            if (!window.isSelectionActive || e.target === document.body || e.target === document.documentElement) return;
+            if (!window.isSelectionActive) return;
             if (currentHovered && currentHovered !== e.target) {
               currentHovered.classList.remove('highlight-hover');
             }
@@ -227,34 +236,32 @@ export const Canvas = memo(function Canvas({
             e.preventDefault();
             e.stopPropagation();
             
-            if (e.target === document.body || e.target === document.documentElement) return;
+            let finalSelector = "html, body";
 
-            const baseSelector = getSelector(e.target);
-            const hasShift = e.shiftKey;
-            const hasCtrl = e.ctrlKey || e.metaKey;
+            if (e.target !== document.body && e.target !== document.documentElement) {
+              const baseSelector = getSelector(e.target);
+              const hasShift = e.shiftKey;
+              const hasCtrl = e.ctrlKey || e.metaKey;
 
-            // Generate what this click targeting phrase means by itself
-            let segmentToAppend = baseSelector;
-            if (hasShift) {
-              segmentToAppend = baseSelector + ", " + baseSelector + " *";
-              window.getSelection()?.removeAllRanges();
-            }
+              let segmentToAppend = baseSelector;
+              if (hasShift) {
+                segmentToAppend = baseSelector + ", " + baseSelector + " *";
+                window.getSelection()?.removeAllRanges();
+              }
 
-            let finalSelector = segmentToAppend;
+              finalSelector = segmentToAppend;
 
-            // If Ctrl is held, join this chunk onto whatever groups are already active
-            if (hasCtrl) {
-              if (activeSelectorString && activeSelectorString !== "body") {
-                const parts = activeSelectorString.split(',').map(p => p.trim());
-                
-                // Add new pieces only if they aren't already part of the selector group string
-                const incomingParts = segmentToAppend.split(',').map(p => p.trim());
-                const filteredIncoming = incomingParts.filter(p => !parts.includes(p));
+              if (hasCtrl) {
+                if (activeSelectorString && activeSelectorString !== "html, body") {
+                  const parts = activeSelectorString.split(',').map(p => p.trim());
+                  const incomingParts = segmentToAppend.split(',').map(p => p.trim());
+                  const filteredIncoming = incomingParts.filter(p => !parts.includes(p));
 
-                if (filteredIncoming.length > 0) {
-                  finalSelector = activeSelectorString + ", " + filteredIncoming.join(", ");
-                } else {
-                  finalSelector = activeSelectorString;
+                  if (filteredIncoming.length > 0) {
+                    finalSelector = activeSelectorString + ", " + filteredIncoming.join(", ");
+                  } else {
+                    finalSelector = activeSelectorString;
+                  }
                 }
               }
             }

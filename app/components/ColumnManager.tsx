@@ -107,18 +107,21 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
 
     const overId = over.id as string
     const activeContainer = findContainer(active.id as string, columns)
-    const overContainer = findContainer(overId, columns) || (overId as keyof ColumnState)
+
+    // Check if the over target is an explicitly registered DroppableContainer object rather than an item string string matches
+    const isContainer = over.data.current?.type === "container" || (overId in columns && !findContainer(overId, columns))
+    const overContainer = isContainer ? (overId as keyof ColumnState) : findContainer(overId, columns)
 
     if (!activeContainer || !overContainer || activeContainer === overContainer) return
 
     setColumns((prev) => {
       const activeItems = prev[activeContainer]
-      const overItems = prev[overContainer as keyof ColumnState]
+      const overItems = prev[overContainer]
       const activeIndex = activeItems.indexOf(active.id as string)
       const overIndex = overItems.indexOf(overId)
 
       let newIndex
-      if (overId in prev) {
+      if (isContainer) {
         newIndex = overItems.length
       } else {
         newIndex = overIndex >= 0 ? overIndex : overItems.length
@@ -148,13 +151,14 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
     const overId = over.id as string
 
     const activeContainer = findContainer(activeId, columns)
-    const overContainer = findContainer(overId, columns) || (overId as keyof ColumnState)
+    const isContainer = over.data.current?.type === "container" || (overId in columns && !findContainer(overId, columns))
+    const overContainer = isContainer ? (overId as keyof ColumnState) : findContainer(overId, columns)
 
     if (activeContainer && overContainer && activeContainer === overContainer) {
       const oldIndex = columns[activeContainer].indexOf(activeId)
       const newIndex = columns[overContainer].indexOf(overId)
 
-      if (oldIndex !== newIndex) {
+      if (oldIndex !== newIndex && !isContainer) {
         setColumns((prev) => ({
           ...prev,
           [overContainer]: arrayMove(prev[overContainer], oldIndex, newIndex)

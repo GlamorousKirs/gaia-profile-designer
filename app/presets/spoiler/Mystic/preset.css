@@ -1,27 +1,24 @@
-/* --- THE MAIN WRAPPER BLOCK & REVEALED STATE --- */
 .spoiler-wrapper,
 .spoiler-revealed {
-  max-width: 210px; /* Small, focused footprint */
+  max-width: 210px;                               
   margin: 25px auto;
   box-sizing: border-box;
-  font-family: 'Georgia', serif; /* Elegant, literary serif typography */
+  font-family: 'Georgia', serif;                                         
   position: relative;
   
-  /* FORCE KILL NATIVE GAIA DOTTED BORDERS & FOCUS OUTLINES */
   border: none !important;
   outline: none !important;
   outline-width: 0 !important;
   box-shadow: none !important; 
 }
 
-/* Wrapper Pseudos: Intricate corner cosmic accents */
 .spoiler-wrapper::before {
   content: '☾';
   position: absolute;
   top: -14px;
   left: 4px;
   font-size: 11px;
-  color: #c084fc; /* Shimmering lavender moon */
+  color: #c084fc;                               
   text-shadow: 0 0 8px rgba(192, 132, 252, 0.4);
 }
 .spoiler-wrapper::after {
@@ -36,13 +33,11 @@
   letter-spacing: 1px;
 }
 
-/* --- THE BUTTON HEADER CONTAINER --- */
 .spoiler-title {
   display: block;
   position: relative;
   width: 100%;
-  background: #1e1b4b; /* Deep twilight midnight blue */
-  /* Fluid, asymmetrical enchanted book cuts */
+  background: #1e1b4b;                                  
   border-radius: 12px 30px 14px 40px; 
   padding: 3px;
   overflow: hidden;
@@ -50,7 +45,6 @@
   outline: none !important;
 }
 
-/* Title Pseudos: Ethereal atmospheric glow paths */
 .spoiler-title::before {
   content: '';
   position: absolute;
@@ -58,7 +52,7 @@
   left: 0;
   width: 100%;
   height: 1px;
-  background: linear-gradient(to right, #e879f9, transparent); /* Magenta trace line */
+  background: linear-gradient(to right, #e879f9, transparent);                         
 }
 .spoiler-title::after {
   content: '';
@@ -71,7 +65,6 @@
   border-radius: 50%;
 }
 
-/* --- THE TRIGGER BUTTONS --- */
 .spoiler-control {
   appearance: none;
   -webkit-appearance: none;
@@ -88,33 +81,25 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Hide default span text completely */
 .spoiler-control span {
   display: none !important;
 }
 
-/* --- THE HYBRID STATE ENGINE --- */
 
-/* Default / Initial state */
 .spoiler-control-show { display: block; }
 .spoiler-control-hide { display: none; }
 
-/* 1. If it has spoiler-revealed class but is UNHOVERED -> Keep it as "view links" */
 .spoiler-revealed:not(:hover) .spoiler-control-show { display: block !important; }
 .spoiler-revealed:not(:hover) .spoiler-control-hide { display: none; }
 
-/* 2. If it has spoiler-revealed class and IS HOVERED -> Show "close menu" */
 .spoiler-revealed:hover .spoiler-control-show { display: none; }
 .spoiler-revealed:hover .spoiler-control-hide { display: block; }
 
-/* 3. If it has spoiler-hidden class -> Force default state */
 .spoiler-hidden .spoiler-control-show { display: block !important; }
 .spoiler-hidden .spoiler-control-hide { display: none !important; }
 
 
-/* --- DECORATIVE TEXT & GRAPHICS (::BEFORE & ::AFTER) --- */
 
-/* Control Button Typography Text Generators (::before) */
 .spoiler-control-show::before,
 .spoiler-control-hide::before {
   font-size: 11px;
@@ -122,19 +107,16 @@
   font-style: italic;
 }
 
-/* Closed state string with personality */
 .spoiler-control-show::before { 
   content: '✧ break seal'; 
   color: #faf5ff;
 }
 
-/* Open state string with personality */
 .spoiler-control-hide::before { 
   content: '✦ cast ward'; 
-  color: #f472b6; /* Luminous pink seal warning */
+  color: #f472b6;                                 
 }
 
-/* Dynamic Interactive Glyphs (::after) */
 .spoiler-control-show::after,
 .spoiler-control-hide::after {
   position: absolute;
@@ -145,13 +127,11 @@
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Closed symbol */
 .spoiler-control-show::after {
   content: '⊹';
   color: #c084fc;
 }
 
-/* Open symbol */
 .spoiler-control-hide::after {
   content: '✶';
   color: #f472b6;
@@ -159,7 +139,6 @@
 }
 
 
-/* --- THE REVEAL MECHANIC DRAWER --- */
 
 .spoiler-wrapper br {
   display: none !important;
@@ -179,7 +158,6 @@
   transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s linear;
 }
 
-/* Drawer Pseudos: Ethereal layout hanging spine line */
 .spoiler::before {
   content: '';
   position: absolute;
@@ -190,21 +168,18 @@
   background: linear-gradient(to bottom, rgba(192, 132, 252, 0.25), transparent);
 }
 
-/* Condition A: Expand container smoothly on hover if class exists */
 .spoiler-revealed:hover .spoiler {
   max-height: 250px; 
   opacity: 1;
   padding: 8px 0;
 }
 
-/* Condition B: Ensure drawer collapses cleanly if parent drops to spoiler-hidden */
 .spoiler-hidden .spoiler {
   max-height: 0 !important;
   opacity: 0 !important;
 }
 
 
-/* --- TEXT-STREAM GRIMOIRE ENTRY LINKS --- */
 
 .spoiler a {
   display: flex;
@@ -213,26 +188,23 @@
   width: 100%;
   font-size: 11px;
   font-weight: 400;
-  color: #71717a; /* Ink parchment grey text */
-  background: transparent; /* No block shape containers */
+  color: #71717a;                              
+  background: transparent;                                
   text-decoration: none;
-  padding: 7px 0 7px 22px; /* Shifts cleanly past the alignment spine */
+  padding: 7px 0 7px 22px;                                              
   margin: 0;
   outline: none !important;
   border: none !important;
   position: relative;
-  /* Gentle curved shape paths mapped right over the text link trails */
   border-radius: 12px 4px 12px 4px;
   transition: color 0.2s ease, padding-left 0.2s ease, background 0.2s ease;
 }
 
-/* Personalized Text Labels mapped sequentially onto your links */
 .spoiler a:nth-child(1)::before { content: 'i . the chronicler'; }
 .spoiler a:nth-child(2)::before { content: 'ii . astral link'; }
 .spoiler a:nth-child(3)::before { content: 'iii . tithe / art'; }
 .spoiler a:nth-child(4)::before { content: 'iv . creations'; }
 
-/* Base properties for the story text labels */
 .spoiler a::before {
   position: relative;
   font-style: italic;
@@ -241,7 +213,6 @@
   transition: color 0.2s ease;
 }
 
-/* Link ::after: Fine magical trace alignment glow line */
 .spoiler a::after {
   content: '';
   position: absolute;
@@ -255,14 +226,14 @@
 }
 
 .spoiler a:hover {
-  background: rgba(250, 245, 255, 0.6); /* Soft ethereal fog background highlight */
-  padding-left: 28px; /* Kinetic drift alignment feedback */
+  background: rgba(250, 245, 255, 0.6);                                             
+  padding-left: 28px;                                       
 }
 
 .spoiler a:hover::before {
-  color: #1e1b4b; /* Text transforms into deep midnight purple contrast */
+  color: #1e1b4b;                                                         
 }
 
 .spoiler a:hover::after {
-  width: calc(100% - 36px); /* Sweeps glowing line underneath text item */
+  width: calc(100% - 36px);                                               
 }

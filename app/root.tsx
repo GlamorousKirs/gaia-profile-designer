@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from "react"
+import { Suspense } from "react"
 import {
   Links,
   Meta,
@@ -10,13 +10,11 @@ import {
 
 import type { Route } from "./+types/root"
 import { ThemeProvider } from "next-themes"
+import Navbar from "@/components/Navbar"
+import { TooltipProvider } from "@/components/ui/tooltip"
+
 import "./app.css"
 import "@/themes/import-themes"
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { AnimatePresence } from "motion/react"
-
-const Navbar = lazy(() => import("@/components/Navbar"))
-const Preloader = lazy(() => import("@/components/Preloader"))
 
 export function meta() {
   return [
@@ -26,30 +24,6 @@ export function meta() {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const MINIMUM_DELAY = 2000
-
-    const startTime = Date.now()
-
-    const deactivatePreloader = () => {
-      const elapsedTime = Date.now() - startTime
-      const remainingTime = Math.max(0, MINIMUM_DELAY - elapsedTime)
-
-      setTimeout(() => {
-        setLoading(false)
-      }, remainingTime)
-    }
-
-    if (document.readyState === "complete") {
-      deactivatePreloader()
-    } else {
-      window.addEventListener("load", deactivatePreloader)
-      return () => window.removeEventListener("load", deactivatePreloader)
-    }
-  }, [])
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -61,18 +35,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider attribute="data-theme" storageKey="theme" defaultTheme="system" enableSystem>
-          <Suspense fallback={null}>
-            <AnimatePresence>
-              {loading && <Preloader loading={loading} onLoadingComplete={() => console.log("Done!")} />}
-            </AnimatePresence>
-
-            <main className={`w-full transition-opacity duration-700 ${!loading ? "opacity-100" : "opacity-0"}`}>
-              <TooltipProvider>
-                <Navbar />
+          <TooltipProvider>
+            <main className="w-full">
+              <Navbar />
+              <Suspense fallback={null}>
                 {children}
-              </TooltipProvider>
+              </Suspense>
             </main>
-          </Suspense>
+          </TooltipProvider>
         </ThemeProvider>
         <ScrollRestoration />
         <Scripts />
@@ -80,6 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     </html>
   )
 }
+
 export default function App() {
   return <Outlet />
 }

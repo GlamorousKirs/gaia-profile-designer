@@ -26,7 +26,6 @@ const rawDefaultFiles = import.meta.glob('/app/default-snippets/*.txt', {
   query: '?raw',
 })
 
-// Build defaults only once outside runtime evaluations
 const DYNAMIC_SYSTEM_DEFAULTS: Snippet[] = Object.entries(rawDefaultFiles).map(
   ([filePath, module]) => {
     const fileNameWithExtension = filePath.split('/').pop() || ''
@@ -80,7 +79,6 @@ export const useSnippetStore = create<SnippetStore>()(
   )
 )
 
-// Optimized: This will now properly read atomic slices avoiding trash reference rendering
 export const useFilteredSnippets = () => {
   const snippets = useSnippetStore((state) => state.snippets)
   const showDefaults = useSnippetStore((state) => state.showDefaults)

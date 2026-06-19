@@ -106,12 +106,15 @@
 }
 
 @keyframes leaf-rotate-fill {
-  0%, 100% { 
-    transform: rotate(var(--avatar-menu-initialDeg)); 
+
+  0%,
+  100% {
+    transform: rotate(var(--avatar-menu-initialDeg));
     background: transparent;
   }
-  50% { 
-    transform: rotate(225deg); 
+
+  50% {
+    transform: rotate(225deg);
     background: var(--menu-color-accent);
   }
 }
@@ -196,19 +199,19 @@
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Base alternating degrees */
 #avatar_menu li:nth-child(even) a::after {
   transform: translateY(-50%) rotate(5deg);
 }
+
 #avatar_menu li:nth-child(odd) a::after {
   transform: translateY(-50%) rotate(90deg);
 }
 
-/* Hover alternating degrees (swapped) */
 #avatar_menu li:nth-child(even) a:hover::after {
   background: var(--menu-color-accent);
   transform: translateY(-50%) rotate(90deg) scale(1.3);
 }
+
 #avatar_menu li:nth-child(odd) a:hover::after {
   background: var(--menu-color-accent);
   transform: translateY(-50%) rotate(5deg) scale(1.3);

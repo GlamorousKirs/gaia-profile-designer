@@ -148,149 +148,157 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
     }
   }, [setCode])
 
-  if (!isOpen) return null
-
   return (
-    <>
-      {isDragging && <div className="fixed inset-0 z-40 cursor-grabbing pointer-events-auto" />}
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {isDragging && <div className="fixed inset-0 z-40 cursor-grabbing pointer-events-auto" />}
 
-      <div className="fixed bottom-24 left-0 right-0 flex justify-center pointer-events-none z-50">
-        <motion.div
-          ref={panelRef}
-          drag
-          dragListener={false}
-          dragControls={dragControls}
-          dragMomentum={false}
-          onDragStart={() => setIsDragging(true)}
-          onDragEnd={() => setIsDragging(false)}
-          animate={{
-            width: currentEditorWidth + (snippetsOpen ? currentSnippetsWidth : 0),
-            height: currentHeight
-          }}
-          transition={structuralSpring}
-          className="flex overflow-hidden p-0 pointer-events-auto will-change-[width,height,transform] bg-background border border-border rounded-xl contain-layouts text-card-foreground"
-        >
-          <div className="absolute inset-0 backdrop-blur-md bg-background/95 -z-10 pointer-events-none rounded-xl" />
-
-          { }
-          <div style={{ width: currentEditorWidth }} className="grid grid-rows-[auto_1fr_auto] h-full shrink-0 z-10 bg-transparent">
-
-            { }
-            <div
-              className="h-9 border-b border-border flex items-center justify-between px-3 bg-muted/40 cursor-grab active:cursor-grabbing select-none"
-              onPointerDown={(e) => dragControls.start(e)}
+          <div className="fixed bottom-24 left-0 right-0 flex justify-center pointer-events-none z-50">
+            <motion.div
+              ref={panelRef}
+              drag
+              dragListener={false}
+              dragControls={dragControls}
+              dragMomentum={false}
+              onDragStart={() => setIsDragging(true)}
+              onDragEnd={() => setIsDragging(false)}
+              initial={{
+                opacity: 0,
+                y: 20,
+                width: currentEditorWidth + (snippetsOpen ? currentSnippetsWidth : 0),
+                height: currentHeight
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                width: currentEditorWidth + (snippetsOpen ? currentSnippetsWidth : 0),
+                height: currentHeight
+              }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={structuralSpring}
+              style={{
+                width: currentEditorWidth + (snippetsOpen ? currentSnippetsWidth : 0),
+                height: currentHeight
+              }}
+              className="flex overflow-hidden p-0 pointer-events-auto will-change-[width,height,transform] bg-background border border-border rounded-xl contain-layouts text-card-foreground shadow-xl"
             >
-              <div className="flex items-center gap-1.5 text-foreground/40">
-                <GripVertical className="size-4 shrink-0" />
-                <span className="text-[11px] font-semibold tracking-wider uppercase text-muted-foreground">Editor</span>
-              </div>
-              <div className="flex items-center gap-1.5" onPointerDown={(e) => e.stopPropagation()}>
-                { }
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={cycleScale}
-                  className="gap-1 h-6 text-[11px] px-2 font-medium transition-colors"
-                  aria-label={`Change layout scale. Current scale: ${scaleMultiplier}x`}
-                >
-                  <Maximize2 className="size-3" />
-                  <span>{SCALE_OPTIONS.find(opt => opt.value === scaleMultiplier)?.label}</span>
-                </Button>
+              <div className="absolute inset-0 backdrop-blur-md bg-background/95 -z-10 pointer-events-none rounded-xl" />
 
-                <Button
-                  variant={snippetsOpen ? "secondary" : "ghost"}
-                  size="sm"
-                  onClick={() => startTransition(() => setSnippetsOpen(!snippetsOpen))}
-                  className="gap-1 h-6 text-[11px] px-2 font-medium transition-colors"
-                  aria-label={snippetsOpen ? "Close snippets panel" : "Open snippets panel"}
+              <div style={{ width: currentEditorWidth }} className="grid grid-rows-[auto_1fr_auto] h-full shrink-0 z-10 bg-transparent">
+                <div
+                  className="h-9 border-b border-border flex items-center justify-between px-3 bg-muted/40 cursor-grab active:cursor-grabbing select-none"
+                  onPointerDown={(e) => dragControls.start(e)}
                 >
-                  <Library className="size-3" /> Snippets
-                </Button>
-              </div>
-            </div>
+                  <div className="flex items-center gap-1.5 text-foreground/40">
+                    <GripVertical className="size-4 shrink-0" />
+                    <span className="text-[11px] font-semibold tracking-wider uppercase text-muted-foreground">Editor</span>
+                  </div>
+                  <div className="flex items-center gap-1.5" onPointerDown={(e) => e.stopPropagation()}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={cycleScale}
+                      className="gap-1 h-6 text-[11px] px-2 font-medium transition-colors"
+                      aria-label={`Change layout scale. Current scale: ${scaleMultiplier}x`}
+                    >
+                      <Maximize2 className="size-3" />
+                      <span>{SCALE_OPTIONS.find(opt => opt.value === scaleMultiplier)?.label}</span>
+                    </Button>
 
-            { }
-            <ScrollArea className="w-full bg-muted/20 overflow-hidden">
-              <div className="h-full w-full">
-                <Suspense fallback={<div className="p-4 text-xs font-mono text-muted-foreground">Loading editor...</div>}>
-                  <CodeMirror
-                    value={code}
-                    extensions={editorExtensions}
-                    onChange={setCode}
-                    onCreateEditor={(view) => {
-                      editorViewRef.current = view
-                    }}
-                    className="text-xs font-mono h-full"
-                    basicSetup={{
-                      lineNumbers: true,
-                      foldGutter: true,
-                      dropCursor: true,
-                      allowMultipleSelections: false,
-                      indentOnInput: true
-                    }}
+                    <Button
+                      variant={snippetsOpen ? "secondary" : "ghost"}
+                      size="sm"
+                      onClick={() => startTransition(() => setSnippetsOpen(!snippetsOpen))}
+                      className="gap-1 h-6 text-[11px] px-2 font-medium transition-colors"
+                      aria-label={snippetsOpen ? "Close snippets panel" : "Open snippets panel"}
+                    >
+                      <Library className="size-3" /> Snippets
+                    </Button>
+                  </div>
+                </div>
+
+                <ScrollArea className="w-full bg-muted/20 overflow-hidden">
+                  <div className="h-full w-full">
+                    <Suspense fallback={<div className="p-4 text-xs font-mono text-muted-foreground">Loading editor...</div>}>
+                      <CodeMirror
+                        value={code}
+                        extensions={editorExtensions}
+                        onChange={setCode}
+                        onCreateEditor={(view) => {
+                          editorViewRef.current = view
+                        }}
+                        className="text-xs font-mono h-full"
+                        basicSetup={{
+                          lineNumbers: true,
+                          foldGutter: true,
+                          dropCursor: true,
+                          allowMultipleSelections: false,
+                          indentOnInput: true
+                        }}
+                      />
+                    </Suspense>
+                  </div>
+                </ScrollArea>
+
+                <div className="h-7 border-t border-border flex items-center justify-between px-2 bg-muted/30 select-none">
+                  <div onPointerDown={(e) => e.stopPropagation()}>
+                    <Button
+                      onClick={handleCopy}
+                      variant="ghost"
+                      size="sm"
+                      className="gap-1 h-5 w-auto px-2 font-medium"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="size-3 text-green-500" /> <span className="text-[10px]">Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="size-3" /> <span className="text-[10px]">Copy Code</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center gap-1" onPointerDown={(e) => e.stopPropagation()}>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="size-5 rounded-full"
+                      onClick={scrollToTop}
+                      aria-label="Scroll to top of code"
+                    >
+                      <ChevronRight className="size-3 -rotate-90 text-foreground" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="size-5 rounded-full"
+                      onClick={scrollToBottom}
+                      aria-label="Scroll to bottom of code"
+                    >
+                      <ChevronRight className="size-3 rotate-90 text-foreground" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <AnimatePresence initial={false}>
+                {snippetsOpen && (
+                  <SnippetPanel
+                    dragControls={dragControls}
+                    currentCode={code}
+                    onSelectSnippet={handleSelectSnippet}
+                    width={currentSnippetsWidth}
+                    scaleMultiplier={scaleMultiplier}
                   />
-                </Suspense>
-              </div>
-            </ScrollArea>
-
-            { }
-            <div className="h-7 border-t border-border flex items-center justify-between px-2 bg-muted/30 select-none">
-              <div onPointerDown={(e) => e.stopPropagation()}>
-                <Button
-                  onClick={handleCopy}
-                  variant="ghost"
-                  size="sm"
-                  className="gap-1 h-5 w-auto px-2 font-medium"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="size-3 text-green-500" /> <span className="text-[10px]">Copied</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="size-3" /> <span className="text-[10px]">Copy Code</span>
-                    </>
-                  )}
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-1" onPointerDown={(e) => e.stopPropagation()}>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="size-5 rounded-full"
-                  onClick={scrollToTop}
-                  aria-label="Scroll to top of code"
-                >
-                  <ChevronRight className="size-3 -rotate-90 text-foreground" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="size-5 rounded-full"
-                  onClick={scrollToBottom}
-                  aria-label="Scroll to bottom of code"
-                >
-                  <ChevronRight className="size-3 rotate-90 text-foreground" />
-                </Button>
-              </div>
-            </div>
+                )}
+              </AnimatePresence>
+            </motion.div>
           </div>
-
-          { }
-          <AnimatePresence initial={false}>
-            {snippetsOpen && (
-              <SnippetPanel
-                dragControls={dragControls}
-                currentCode={code}
-                onSelectSnippet={handleSelectSnippet}
-                width={currentSnippetsWidth}
-                scaleMultiplier={scaleMultiplier}
-              />
-            )}
-          </AnimatePresence>
-        </motion.div>
-      </div>
-    </>
+        </>
+      )}
+    </AnimatePresence>
   )
 }

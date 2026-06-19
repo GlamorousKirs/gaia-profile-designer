@@ -2,9 +2,6 @@ import React, { useState, useEffect, useRef } from "react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { HexAlphaColorPicker } from "react-colorful"
 
-// ==========================================
-// 1. FIGMA-STYLE SLIDER INPUT (DRAG LABEL)
-// ==========================================
 interface SliderInputProps extends Omit<React.ComponentProps<"input">, "onChange"> {
   label: string
   value: number
@@ -40,7 +37,6 @@ export const SliderProperty = ({
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDragging) return
     const deltaX = e.clientX - startX.current
-    // Smooth 0.5x scaling multiplier for granular pixel precision dragging
     const newValue = Math.min(max, Math.max(min, startValue.current + Math.round(deltaX * step * 0.5)))
     onChange(newValue)
   }
@@ -52,7 +48,7 @@ export const SliderProperty = ({
 
   return (
     <div className="flex items-center h-7 border border-border rounded bg-background hover:border-muted-foreground/20 focus-within:border-primary group transition-colors">
-      {/* Figma-like slider label: Drag sideways to alter numeric value */}
+      {                                                                   }
       <span
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -79,9 +75,6 @@ export const SliderProperty = ({
 }
 
 
-// ==========================================
-// 2. FIGMA-STYLE INLINE COLOR DECLARATION
-// ==========================================
 interface ColorInputProps {
   color: string
   onChange: (color: string) => void

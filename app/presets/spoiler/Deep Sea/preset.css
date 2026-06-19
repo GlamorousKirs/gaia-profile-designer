@@ -1,4 +1,3 @@
-/* --- KEYFRAMES: SONAR SWEEP & RADIAL JITTER MECHANICS --- */
 @keyframes sonarEcho {
   0% { opacity: 0.3; transform: scale(0.9); }
   50% { opacity: 1; color: #f97316; text-shadow: 0 0 4px #f97316; transform: scale(1.05); }
@@ -11,31 +10,27 @@
   66% { transform: translateY(1.5px); }
 }
 
-/* --- THE MAIN WRAPPER BLOCK & REVEALED STATE --- */
 .spoiler-wrapper,
 .spoiler-revealed {
-  max-width: 240px; /* Marginally widened to perfectly house the dual-column grid array */
+  max-width: 240px;                                                                       
   margin: 30px auto;
   box-sizing: border-box;
   font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
   position: relative;
   
-  /* FORCE KILL NATIVE GAIA DOTTED BORDERS & FOCUS OUTLINES */
   border: none !important;
   outline: none !important;
   box-shadow: none !important; 
 }
 
-/* --- THE RAZOR-THIN NAVIGATIONAL STRIP --- */
 .spoiler-title {
   display: block;
   position: relative;
   width: 100%;
-  background: #0b1329; /* Pressure-hull deep marine void */
-  border: 1px solid #1c2541; /* Heavy iron bulkhead frame */
+  background: #0b1329;                                     
+  border: 1px solid #1c2541;                                
   border-radius: 3px 3px 0 0;
   
-  /* Ultra-thin architectural compression layer */
   padding: 0; 
   overflow: hidden;
   box-sizing: border-box;
@@ -43,12 +38,10 @@
   transition: border-radius 0.2s ease, border-color 0.2s ease;
 }
 
-/* Seals the console unit into a singular sleek instrument block when hidden */
 .spoiler-hidden .spoiler-title {
   border-radius: 3px;
 }
 
-/* --- THE TRIGGER BUTTONS --- */
 .spoiler-control {
   appearance: none;
   -webkit-appearance: none;
@@ -58,7 +51,6 @@
   background: transparent;
   width: 100%;
   
-  /* Compressed padding for a minimal vertical footprint */
   padding: 3px 12px; 
   cursor: pointer;
   text-align: left;
@@ -66,12 +58,10 @@
   outline: none !important;
 }
 
-/* Hide default span text completely */
 .spoiler-control span {
   display: none !important;
 }
 
-/* --- THE HYBRID STATE ENGINE --- */
 .spoiler-control-show { display: block; }
 .spoiler-control-hide { display: none; }
 
@@ -82,7 +72,6 @@
 .spoiler-hidden .spoiler-control-show { display: block !important; }
 .spoiler-hidden .spoiler-control-hide { display: none !important; }
 
-/* --- SONAR PROTOCOL DATA LABELS --- */
 .spoiler-control-show::before,
 .spoiler-control-hide::before {
   font-size: 8.5px;
@@ -90,9 +79,8 @@
   letter-spacing: 0.8px;
 }
 .spoiler-control-show::before { content: '⚓ NAV_SCAN // RUN'; color: #48cae4; }
-.spoiler-control-hide::before { content: '⚓ NAV_SCAN // MUTE'; color: #f97316; /* Coral alert */ }
+.spoiler-control-hide::before { content: '⚓ NAV_SCAN // MUTE'; color: #f97316;                   }
 
-/* Micro-Decoration 1: Active Sonar Ping Sweep module */
 .spoiler-control-show::after {
   content: '(•)';
   font-size: 9px;
@@ -112,7 +100,6 @@
 }
 
 
-/* --- THE REVEAL MECHANIC DRAWER & DUAL GRID SYSTEM --- */
 .spoiler-wrapper br {
   display: none !important;
 }
@@ -125,7 +112,7 @@
   box-sizing: border-box;
   padding: 0;
   
-  background: #010610; /* Abyssal zone black floor */
+  background: #010610;                               
   
   border-left: 1px solid #1c2541;
   border-right: 1px solid #1c2541;
@@ -136,16 +123,14 @@
   transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, border-color 0.2s ease;
 }
 
-/* CONSOLE HOVER ENGAGEMENT STATE */
 .spoiler-revealed:hover .spoiler {
   max-height: 300px; 
   opacity: 1;
   padding: 4px; 
   
-  /* OVERHAUL: Converts the standard vertical layout block into a crisp 50/50 Grid matrix */
   display: grid !important;
-  grid-template-columns: 1fr 1fr; /* Splices user links perfectly side-by-side */
-  gap: 4px; /* Clean tracking gutter separating the left and right link columns */
+  grid-template-columns: 1fr 1fr;                                                
+  gap: 4px;                                                                       
   
   border-color: #3a506b;
 }
@@ -157,13 +142,11 @@
 .spoiler-hidden .spoiler {
   max-height: 0 !important;
   opacity: 0 !important;
-  display: block !important; /* Resets structural flow when hidden */
+  display: block !important;                                         
 }
 
 
-/* --- IMMUNE MATRIX-GRID SYMMETRIC LINKS --- */
 .spoiler a {
-  /* Using localized internal flex rows inside the grid slots to isolate data layers completely */
   display: flex;
   align-items: center;
   box-sizing: border-box;
@@ -171,7 +154,7 @@
   
   font-size: 8.5px;
   font-weight: 700;
-  color: #8d99ae; /* Directly formats your raw BBCode profile links like digital ocean charts */
+  color: #8d99ae;                                                                               
   text-decoration: none;
   letter-spacing: 0.3px;
   text-transform: uppercase;
@@ -182,50 +165,45 @@
   outline: none !important;
   border: none !important;
   position: relative;
-  background: #0b1329; /* Individual grid keys are set as isolated instrument buttons */
+  background: #0b1329;                                                                  
   border-radius: 2px;
   transition: color 0.15s ease, background 0.15s ease, padding-left 0.15s ease;
 }
 
-/* Micro-Decoration 2: Vector Coordinate Reticle point asset */
 .spoiler a::before {
   content: '∟';
   font-size: 10px;
   font-weight: 300;
   color: #3a506b;
-  margin-right: 6px; /* Secure left barrier wall safely shields your text values */
+  margin-right: 6px;                                                               
   flex-shrink: 0;
   transition: color 0.15s ease, transform 0.2s ease;
 }
 
-/* Micro-Decoration 3: Right-aligned Depth Gauge Multiplier pushed securely by auto flex rules */
 .spoiler a::after {
   content: '_01';
-  margin-left: auto; /* Force-pushes telemetry label to the absolute edge to block all collision errors */
+  margin-left: auto;                                                                                      
   padding-left: 6px;
   font-size: 7.5px;
   color: #3a506b;
   flex-shrink: 0;
 }
 
-/* --- LINK HOVER INTERACTION STYLES --- */
 .spoiler a:hover {
-  background: #1c2541; /* Individual grid block illuminates into active submarine bay blue */
-  color: #ffffff; /* Raw user text flashes to maximum high-visibility white */
+  background: #1c2541;                                                                       
+  color: #ffffff;                                                             
   padding-left: 11px;
 }
 
-/* Reticle corner shifts forward and morphs into a centered navigation crosshair */
 .spoiler a:hover::before {
   content: '+';
-  color: #48cae4; /* Electric deep ocean cyan track glow */
+  color: #48cae4;                                          
   transform: scale(1.2);
 }
 
-/* Depth multiplier transitions parameter states and engages a vertical mechanical flutter */
 .spoiler a:hover::after {
   content: '_OK';
-  color: #f97316; /* Flashes coral alert on target selection lock */
+  color: #f97316;                                                   
   font-weight: 900;
   animation: gaugeJitter 0.5s infinite linear;
 }

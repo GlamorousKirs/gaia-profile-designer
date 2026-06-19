@@ -85,7 +85,7 @@ try {
     bg: vars['--background'] || ''
   }));
 
-  const contentOutput = `/** AUTO-GENERATED VIA GENERATE-THEMESWATCHES.TS - DO NOT EDIT MANUALLY **/
+  const contentOutput = `                                                                           
 
 export const THEMES = ${JSON.stringify(themeArrayEntries, null, 2)} as const;
 
@@ -99,7 +99,7 @@ export type ThemeId = typeof THEMES[number]['id'];
   fs.writeFileSync(componentOutput, contentOutput, 'utf-8');
 
   const sortedCssFiles = [...files].sort((a, b) => a.localeCompare(b));
-  const cssImportsContent = `/** AUTO-GENERATED VIA GENERATE-THEMESWATCHES.TS - DO NOT EDIT MANUALLY **/
+  const cssImportsContent = `                                                                           
 
 ${sortedCssFiles.map((file) => `import "./${file}";`).join('\n')}
 `;
