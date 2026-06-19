@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { create } from 'zustand'
-import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware'
+import { persist } from 'zustand/middleware'
 
 export interface Snippet {
   id: string
@@ -13,13 +13,7 @@ export type SnippetActionType = 'append-cursor' | 'prepend' | 'append' | 'replac
 
 interface SnippetStore {
   snippets: Snippet[]
-  filteredSnippets: Snippet[]
-  searchQuery: string
   showDefaults: boolean
-  isProcessingSearch: boolean
-  worker: Worker | null
-  initializeWorker: () => void
-  setSearchQuery: (query: string) => void
   setShowDefaults: (show: boolean) => void
   addSnippet: (title: string, code: string) => void
   updateSnippet: (id: string, code: string) => void
@@ -27,53 +21,12 @@ interface SnippetStore {
   deleteSnippet: (id: string) => void
 }
 
-// Native Asynchronous IndexedDB Layer Wrapper
-const idbStorage: StateStorage = {
-  getItem: async (name: string): Promise<string | null> => {
-    return new Promise((resolve) => {
-      const request = indexedDB.open("gaia-snippets-db", 1)
-      request.onupgradeneeded = () => request.result.createObjectStore("store")
-      request.onsuccess = () => {
-        const db = request.result
-        const tx = db.transaction("store", "readonly")
-        const req = tx.objectStore("store").get(name)
-        req.onsuccess = () => resolve(req.result ? JSON.stringify(req.result) : null)
-        req.onerror = () => resolve(null)
-      }
-      request.onerror = () => resolve(null)
-    })
-  },
-  setItem: async (name: string, value: string): Promise<void> => {
-    return new Promise((resolve) => {
-      const request = indexedDB.open("gaia-snippets-db", 1)
-      request.onupgradeneeded = () => request.result.createObjectStore("store")
-      request.onsuccess = () => {
-        const db = request.result
-        const tx = db.transaction("store", "readwrite")
-        tx.objectStore("store").put(JSON.parse(value), name)
-        tx.oncomplete = () => resolve()
-      }
-    })
-  },
-  removeItem: async (name: string): Promise<void> => {
-    return new Promise((resolve) => {
-      const request = indexedDB.open("gaia-snippets-db", 1)
-      request.onsuccess = () => {
-        const db = request.result
-        const tx = db.transaction("store", "readwrite")
-        tx.objectStore("store").delete(name)
-        tx.oncomplete = () => resolve()
-      }
-    })
-  },
-}
-
 const rawDefaultFiles = import.meta.glob('/app/default-snippets/*.txt', {
   eager: true,
   query: '?raw',
 })
 
-// Build system defaults once outside of core operational component scopes
+// Build defaults only once outside runtime evaluations
 const DYNAMIC_SYSTEM_DEFAULTS: Snippet[] = Object.entries(rawDefaultFiles).map(
   ([filePath, module]) => {
     const fileNameWithExtension = filePath.split('/').pop() || ''
@@ -94,103 +47,32 @@ const DYNAMIC_SYSTEM_DEFAULTS: Snippet[] = Object.entries(rawDefaultFiles).map(
 
 export const useSnippetStore = create<SnippetStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       snippets: [],
-      filteredSnippets: [],
-      searchQuery: "",
       showDefaults: true,
-      isProcessingSearch: false,
-      worker: null,
-
-      initializeWorker: () => {
-        if (typeof window === "undefined" || get().worker) return
-
-        // Note: Explicit path setup optimized to run within your repo namespace structure on GitHub Pages
-        const worker = new Worker("/gaia-profile-designer/search-worker.js")
-
-        worker.onmessage = (e: MessageEvent<Snippet[]>) => {
-          set({ filteredSnippets: e.data, isProcessingSearch: false })
-        }
-
-        set({ worker })
-
-        // Initial paint populate run
-        worker.postMessage({
-          snippets: get().snippets,
-          systemDefaults: DYNAMIC_SYSTEM_DEFAULTS,
-          query: get().searchQuery,
-          showDefaults: get().showDefaults,
-        })
-      },
-
-      setSearchQuery: (query) => {
-        set({ searchQuery: query, isProcessingSearch: true })
-        get().worker?.postMessage({
-          snippets: get().snippets,
-          systemDefaults: DYNAMIC_SYSTEM_DEFAULTS,
-          query,
-          showDefaults: get().showDefaults,
-        })
-      },
-
-      setShowDefaults: (show) => {
-        set({ showDefaults: show, isProcessingSearch: true })
-        get().worker?.postMessage({
-          snippets: get().snippets,
-          systemDefaults: DYNAMIC_SYSTEM_DEFAULTS,
-          query: get().searchQuery,
-          showDefaults: show,
-        })
-      },
-
-      addSnippet: (title, code) => {
-        const newSnippet: Snippet = { id: crypto.randomUUID(), title, code, isDefault: false }
-        const updated = [...get().snippets, newSnippet]
-        set({ snippets: updated })
-        get().worker?.postMessage({
-          snippets: updated,
-          systemDefaults: DYNAMIC_SYSTEM_DEFAULTS,
-          query: get().searchQuery,
-          showDefaults: get().showDefaults,
-        })
-      },
-
-      updateSnippet: (id, code) => {
-        const updated = get().snippets.map((s) => (s.id === id ? { ...s, code } : s))
-        set({ snippets: updated })
-        get().worker?.postMessage({
-          snippets: updated,
-          systemDefaults: DYNAMIC_SYSTEM_DEFAULTS,
-          query: get().searchQuery,
-          showDefaults: get().showDefaults,
-        })
-      },
-
-      renameSnippet: (id, title) => {
-        const updated = get().snippets.map((s) => (s.id === id ? { ...s, title } : s))
-        set({ snippets: updated })
-        get().worker?.postMessage({
-          snippets: updated,
-          systemDefaults: DYNAMIC_SYSTEM_DEFAULTS,
-          query: get().searchQuery,
-          showDefaults: get().showDefaults,
-        })
-      },
-
-      deleteSnippet: (id) => {
-        const updated = get().snippets.filter((s) => s.id !== id)
-        set({ snippets: updated })
-        get().worker?.postMessage({
-          snippets: updated,
-          systemDefaults: DYNAMIC_SYSTEM_DEFAULTS,
-          query: get().searchQuery,
-          showDefaults: get().showDefaults,
-        })
-      },
+      setShowDefaults: (show) => set({ showDefaults: show }),
+      addSnippet: (title, code) =>
+        set((state) => ({
+          snippets: [
+            ...state.snippets,
+            { id: crypto.randomUUID(), title, code, isDefault: false },
+          ],
+        })),
+      updateSnippet: (id, code) =>
+        set((state) => ({
+          snippets: state.snippets.map((s) => (s.id === id ? { ...s, code } : s)),
+        })),
+      renameSnippet: (id, title) =>
+        set((state) => ({
+          snippets: state.snippets.map((s) => (s.id === id ? { ...s, title } : s)),
+        })),
+      deleteSnippet: (id) =>
+        set((state) => ({
+          snippets: state.snippets.filter((s) => s.id !== id),
+        })),
     }),
     {
       name: 'gaia-snippets-storage',
-      storage: createJSONStorage(() => idbStorage),
       partialize: (state) => ({
         snippets: state.snippets.filter((s) => !s.isDefault),
       }),
@@ -198,5 +80,12 @@ export const useSnippetStore = create<SnippetStore>()(
   )
 )
 
-// Optimized atomic selector reference
-export const useFilteredSnippets = () => useSnippetStore((state) => state.filteredSnippets)
+// Optimized: This will now properly read atomic slices avoiding trash reference rendering
+export const useFilteredSnippets = () => {
+  const snippets = useSnippetStore((state) => state.snippets)
+  const showDefaults = useSnippetStore((state) => state.showDefaults)
+
+  return useMemo(() => {
+    return showDefaults ? [...DYNAMIC_SYSTEM_DEFAULTS, ...snippets] : snippets
+  }, [showDefaults, snippets])
+}

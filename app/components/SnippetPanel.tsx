@@ -1,5 +1,6 @@
-import { useState, memo, useMemo, useRef, useEffect } from "react"
+import { useState, memo, useMemo, useRef } from "react"
 import { motion, AnimatePresence } from "motion/react"
+import { useVirtualizer } from "@tanstack/react-virtual"
 import { useSnippetStore, useFilteredSnippets } from "@/store/useSnippetStore"
 import type { Snippet, SnippetActionType } from "@/store/useSnippetStore"
 import {
@@ -15,8 +16,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-const structuralSpring = { type: "spring", stiffness: 550, damping: 55 } as const
-const ITEM_HEIGHT = 54 // Exact height of a single snippet row container in px
+const structuralSpring = { type: "spring", stiffness: 450, damping: 45 } as const
 
 const SnippetRow = memo(({
     snippet,
@@ -27,9 +27,7 @@ const SnippetRow = memo(({
     startRename,
     openEditorModal,
     deleteSnippet,
-    onSelectSnippet,
-    maxChars,
-    style
+    onSelectSnippet
 }: {
     snippet: Snippet
     editingId: string | null
@@ -40,14 +38,10 @@ const SnippetRow = memo(({
     openEditorModal: (snippet: Snippet, e: React.MouseEvent) => void
     deleteSnippet: (id: string) => void
     onSelectSnippet: (code: string, action: SnippetActionType) => void
-    maxChars: number
-    style?: React.CSSProperties
 }) => {
     const codePreview = useMemo(() => {
-        const cleanStr = snippet.code.replace(/\s+/g, ' ');
-        if (cleanStr.length <= maxChars) return cleanStr;
-        return cleanStr.substring(0, maxChars) + '...';
-    }, [snippet.code, maxChars]);
+        return snippet.code.replace(/\s+/g, ' ').substring(0, 35) + '...';
+    }, [snippet.code]);
 
     const isEditing = editingId === snippet.id;
 
@@ -64,20 +58,17 @@ const SnippetRow = memo(({
     return (
         <div
             onClick={handleRowClick}
-            style={style}
-            className={`absolute left-0 right-0 flex flex-col justify-between items-stretch rounded-md border p-2 text-xs font-mono cursor-pointer transition-colors contain-layout contain-paint ${
-                snippet.isDefault
+            className={`group relative flex flex-col justify-center items-stretch rounded-md border p-2 text-xs font-mono cursor-pointer transition-all w-full h-full ${snippet.isDefault
                     ? 'bg-muted/30 border-dashed border-border/40 hover:bg-muted/50 hover:border-sky-500/30'
                     : 'border-transparent hover:border-border/60 hover:bg-background/60'
-            }`}
+                }`}
         >
             <div className="flex items-center justify-between gap-2 w-full">
-                <div className="flex items-center gap-2 overflow-hidden flex-1">
+                <div className="flex items-center gap-2 overflow-hidden flex-1 min-w-0">
                     <FileCode className={`size-3.5 shrink-0 ${snippet.isDefault ? 'text-sky-400/80' : 'text-muted-foreground'}`} />
                     {isEditing ? (
                         <input
                             type="text"
-                            aria-label="Rename title"
                             value={editTitle}
                             onChange={(e) => setEditTitle(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && saveRename(snippet.id)}
@@ -99,12 +90,11 @@ const SnippetRow = memo(({
                     onClick={(e) => e.stopPropagation()}
                 >
                     <DropdownMenu modal={false}>
-                        <DropdownMenuTrigger asChild>
+                        <DropdownMenuTrigger>
                             <Button
                                 variant="ghost"
                                 size="icon"
                                 className="size-5 h-5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
-                                aria-label="Snippet actions menu"
                             >
                                 <MoreHorizontal className="size-3.5" />
                             </Button>
@@ -145,7 +135,7 @@ const SnippetRow = memo(({
                 </div>
             </div>
 
-            <div className="text-[10px] text-muted-foreground/60 truncate mt-0.5 pointer-events-none pl-5">
+            <div className="text-[10px] text-muted-foreground/60 truncate mt-1 pointer-events-none pl-5">
                 {codePreview}
             </div>
         </div>
@@ -170,6 +160,8 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
     const renameSnippet = useSnippetStore((state) => state.renameSnippet)
 
     const visibleSnippets = useFilteredSnippets()
+    
+    const scrollContainerRef = useRef<HTMLDivElement>(null)
 
     const [editingId, setEditingId] = useState<string | null>(null)
     const [editTitle, setEditTitle] = useState("")
@@ -179,66 +171,12 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
     const [modalTitle, setModalTitle] = useState("")
     const [modalCode, setModalCode] = useState("")
 
-    // List Virtualization Local Window State
-    const scrollContainerRef = useRef<HTMLDivElement>(null)
-    const [scrollTop, setScrollTop] = useState(0)
-    const [containerHeight, setContainerHeight] = useState(300)
-
-    useEffect(() => {
-        const container = scrollContainerRef.current
-        if (!container) return
-
-        const handleScroll = () => {
-            setScrollTop(container.scrollTop)
-        }
-
-        // Measure panel viewport context accurately
-        setContainerHeight(container.clientHeight || 300)
-        container.addEventListener("scroll", handleScroll, { passive: true })
-        
-        const resizeObserver = new ResizeObserver((entries) => {
-            for (let entry of entries) {
-                setContainerHeight(entry.contentRect.height)
-            }
-        })
-        resizeObserver.observe(container)
-
-        return () => {
-            container.removeEventListener("scroll", handleScroll)
-            resizeObserver.disconnect()
-        }
-    }, [])
-
-    // Virtualization Index Computations
-    const { startIndex, endIndex } = useMemo(() => {
-        const start = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - 2)
-        const end = Math.min(visibleSnippets.length, Math.ceil((scrollTop + containerHeight) / ITEM_HEIGHT) + 2)
-        return { startIndex: start, endIndex: end }
-    }, [scrollTop, containerHeight, visibleSnippets.length])
-
-    const totalListHeight = visibleSnippets.length * ITEM_HEIGHT
-
-    const virtualItems = useMemo(() => {
-        const items = []
-        for (let i = startIndex; i < endIndex; i++) {
-            const snippet = visibleSnippets[i]
-            if (snippet) {
-                items.push({
-                    index: i,
-                    snippet,
-                    style: {
-                        top: `${i * ITEM_HEIGHT}px`,
-                        height: `${ITEM_HEIGHT - 4}px`, // subtle spacing gap offset
-                    }
-                })
-            }
-        }
-        return items
-    }, [startIndex, endIndex, visibleSnippets])
-
-    const dynamicMaxChars = useMemo(() => {
-        return Math.floor(45 * scaleMultiplier);
-    }, [scaleMultiplier]);
+    const rowVirtualizer = useVirtualizer({
+        count: visibleSnippets.length,
+        getScrollElement: () => scrollContainerRef.current,
+        estimateSize: () => 58, 
+        overscan: 10,
+    })
 
     const openEditorModal = (snippet?: Snippet, e?: React.MouseEvent) => {
         if (e) e.stopPropagation()
@@ -276,22 +214,22 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
     }
 
     return (
-        <div className="flex shrink-0 h-full relative transform-gpu">
+        <div className="flex shrink-0 h-full relative">
             <div className="w-px h-full bg-border shrink-0 z-20" />
             <motion.div
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: width }}
-                exit={{ opacity: 0, width: 0 }}
+                initial={{ opacity: 0, scaleX: 0.95 }}
+                animate={{ opacity: 1, scaleX: 1 }}
+                exit={{ opacity: 0, scaleX: 0.95 }}
                 transition={structuralSpring}
-                style={{ transformOrigin: "left center" }}
-                className="h-full overflow-hidden flex flex-col bg-background will-change-[width,opacity]"
+                style={{ width: width, transformOrigin: "left center" }}
+                className="h-full overflow-hidden flex flex-col bg-background will-change-transform contain-strict"
             >
-                <div className="h-full flex flex-col select-text overflow-hidden w-full">
+                <div className="h-full flex flex-col select-text overflow-hidden">
                     <div
                         className="h-9 shrink-0 border-b border-border flex items-center justify-between px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted/40 cursor-grab active:cursor-grabbing select-none"
                         onPointerDown={(e) => dragControls.start(e)}
                     >
-                        <span className="truncate">Snippets Library</span>
+                        <span>Snippets Library</span>
                         <div className="flex items-center gap-1" onPointerDown={(e) => e.stopPropagation()}>
                             <Button
                                 variant="ghost"
@@ -317,37 +255,55 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
                         </div>
                     </div>
 
-                    {/* Virtualized List View Container */}
                     <div 
                         ref={scrollContainerRef}
-                        className="flex-1 bg-muted/20 overflow-y-auto relative contain-strict"
-                        style={{ WebkitOverflowScrolling: 'touch' }}
+                        className="flex-1 bg-muted/20 overflow-y-auto min-h-0 relative"
                     >
                         {visibleSnippets.length === 0 ? (
                             <div className="text-[11px] font-mono p-4 text-muted-foreground italic text-center">
                                 No templates found here.
                             </div>
                         ) : (
-                            <div 
-                                style={{ height: `${totalListHeight}px`, width: '100%' }} 
-                                className="relative p-2"
+                            <div
+                                style={{
+                                    height: `${rowVirtualizer.getTotalSize()}px`,
+                                    width: '100%',
+                                    position: 'relative',
+                                }}
                             >
-                                {virtualItems.map((item) => (
-                                    <SnippetRow
-                                        key={item.snippet.id}
-                                        snippet={item.snippet}
-                                        editingId={editingId}
-                                        editTitle={editTitle}
-                                        setEditTitle={setEditTitle}
-                                        saveRename={saveRename}
-                                        startRename={startRename}
-                                        openEditorModal={openEditorModal}
-                                        deleteSnippet={deleteSnippet}
-                                        onSelectSnippet={onSelectSnippet}
-                                        maxChars={dynamicMaxChars}
-                                        style={item.style}
-                                    />
-                                ))}
+                                {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+                                    const snippet = visibleSnippets[virtualItem.index];
+                                    if (!snippet) return null;
+
+                                    return (
+                                        <div
+                                            key={virtualItem.key}
+                                            style={{
+                                                position: 'absolute',
+                                                top: 0,
+                                                left: 0,
+                                                width: '100%',
+                                                height: `${virtualItem.size}px`, 
+                                                transform: `translateY(${virtualItem.start}px)`,
+                                                paddingLeft: '8px',
+                                                paddingRight: '8px',
+                                                paddingBottom: '4px'
+                                            }}
+                                        >
+                                            <SnippetRow
+                                                snippet={snippet}
+                                                editingId={editingId}
+                                                editTitle={editTitle}
+                                                setEditTitle={setEditTitle}
+                                                saveRename={saveRename}
+                                                startRename={startRename}
+                                                openEditorModal={openEditorModal}
+                                                deleteSnippet={deleteSnippet}
+                                                onSelectSnippet={onSelectSnippet}
+                                            />
+                                        </div>
+                                    )
+                                })}
                             </div>
                         )}
                     </div>
@@ -360,7 +316,6 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.1 }}
                         className="absolute inset-0 bg-background/95 backdrop-blur-sm z-50 p-3 flex flex-col justify-between border-l border-border"
                     >
                         <div className="flex flex-col gap-2 flex-1 overflow-hidden">
@@ -372,7 +327,6 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
                                     onChange={(e) => setModalTitle(e.target.value)}
                                     className="bg-transparent border-b border-border text-xs font-semibold text-foreground focus:outline-none focus:border-primary py-0.5 px-1 flex-1 mr-2 disabled:border-transparent disabled:opacity-80"
                                     placeholder="Snippet Name"
-                                    aria-label="Snippet template title"
                                 />
                                 <Button
                                     variant="ghost"
@@ -392,7 +346,6 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
                                 className="w-full flex-1 bg-muted/30 border border-border rounded-md p-2 font-mono text-[11px] text-foreground resize-none focus:outline-none focus:ring-1 focus:ring-primary overflow-y-auto read-only:opacity-70"
                                 placeholder="Type/paste a line of CSS code here."
                                 spellCheck={false}
-                                aria-label="Snippet text editor content"
                             />
                         </div>
 
