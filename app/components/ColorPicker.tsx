@@ -5,12 +5,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 extend([namesPlugin])
 
-interface PopoverPickerProps {
+interface ColorPickerProps {
   color: string
   onChange: (color: string) => void
 }
 
-export const PopoverPicker = ({ color, onChange }: PopoverPickerProps) => {
+export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
   const validColor = color || "#000000";
 
   return (

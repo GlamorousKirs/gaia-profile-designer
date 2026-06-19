@@ -59,8 +59,8 @@ const SnippetRow = memo(({
         <div
             onClick={handleRowClick}
             className={`group relative flex flex-col justify-center items-stretch rounded-md border p-2 text-xs font-mono cursor-pointer transition-all w-full h-full ${snippet.isDefault
-                    ? 'bg-muted/30 border-dashed border-border/40 hover:bg-muted/50 hover:border-sky-500/30'
-                    : 'border-transparent hover:border-border/60 hover:bg-background/60'
+                ? 'bg-muted/30 border-dashed border-border/40 hover:bg-muted/50 hover:border-sky-500/30'
+                : 'border-transparent hover:border-border/60 hover:bg-background/60'
                 }`}
         >
             <div className="flex items-center justify-between gap-2 w-full">
@@ -160,7 +160,7 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
     const renameSnippet = useSnippetStore((state) => state.renameSnippet)
 
     const visibleSnippets = useFilteredSnippets()
-    
+
     const scrollContainerRef = useRef<HTMLDivElement>(null)
 
     const [editingId, setEditingId] = useState<string | null>(null)
@@ -174,7 +174,7 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
     const rowVirtualizer = useVirtualizer({
         count: visibleSnippets.length,
         getScrollElement: () => scrollContainerRef.current,
-        estimateSize: () => 58, 
+        estimateSize: () => 58,
         overscan: 10,
     })
 
@@ -255,7 +255,7 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
                         </div>
                     </div>
 
-                    <div 
+                    <div
                         ref={scrollContainerRef}
                         className="flex-1 bg-muted/20 overflow-y-auto min-h-0 relative"
                     >
@@ -283,7 +283,7 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
                                                 top: 0,
                                                 left: 0,
                                                 width: '100%',
-                                                height: `${virtualItem.size}px`, 
+                                                height: `${virtualItem.size}px`,
                                                 transform: `translateY(${virtualItem.start}px)`,
                                                 paddingLeft: '8px',
                                                 paddingRight: '8px',

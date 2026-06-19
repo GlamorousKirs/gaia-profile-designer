@@ -1,4 +1,4 @@
-import { useState, useTransition, lazy, Suspense, useEffect } from "react"
+import { useState, useTransition, lazy, Suspense, useEffect, useCallback, useRef } from "react"
 import { useSearchParams } from "react-router"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
@@ -8,6 +8,7 @@ import { useIsMobile } from "@/hooks/use-is-mobile"
 import type { SidebarTab } from "@/components/sidebar-panel"
 import ColumnManager, { type ColumnState } from "@/components/ColumnManager"
 import CodePanel from "@/components/CodePanel"
+import { ElementPropertiesPanel } from "@/components/ElementPropertiesPanel"
 
 const SelectorPanel = lazy(() => import("@/components/SelectorPanel"))
 
@@ -22,7 +23,8 @@ import {
   Hand,
   Maximize2,
   Minimize2,
-  Hash
+  Hash,
+  Component
 } from "lucide-react"
 import { ThemePicker } from "~/components/ThemePicker"
 
@@ -44,7 +46,8 @@ const leftTabs: SidebarTab<"selectors" | "layers" | "columns">[] = [
   { id: "layers", icon: Layers, label: "Toggle Layer Panel" },
 ]
 
-const rightTabs: SidebarTab<"settings" | "inspector">[] = [
+const rightTabs: SidebarTab<"settings" | "inspector" | "elements">[] = [
+  { id: "elements", icon: Component, label: "Toggle Elements Menu" },
   { id: "settings", icon: Settings, label: "Toggle Engine Settings Panel" },
   { id: "inspector", icon: Move, label: "Toggle Properties Inspector Panel" },
 ]
@@ -53,7 +56,7 @@ export default function Studio() {
   const [leftOpen, setLeftOpen] = useState(true)
   const [rightOpen, setRightOpen] = useState(true)
   const [activeLeftTab, setActiveLeftTab] = useState<"selectors" | "layers" | "columns">("columns")
-  const [activeRightTab, setActiveRightTab] = useState<"settings" | "inspector">("settings")
+  const [activeRightTab, setActiveRightTab] = useState<"settings" | "inspector" | "elements">("elements")
   const [activeTool, setActiveTool] = useState<"select" | "hand">("select")
   const [isCodeOpen, setIsCodeOpen] = useState(false)
   const [isMaximized, setIsMaximized] = useState(false)
@@ -63,11 +66,38 @@ export default function Studio() {
   const presetId = searchParams.get("id")
   const category = searchParams.get("category")
 
-  const [rootCss, setRootCss] = useState("")
+  const [rootCss] = useState("")
   const [cssCode, setCssCode] = useState<string>(() => {
     return localStorage.getItem("autosave_draft_code") || ""
   })
   const [activePanels, setActivePanels] = useState<string[]>([])
+  const [selectedSelector, setSelectedSelector] = useState<string>("body")
+
+  const [borderRadius, setBorderRadius] = useState<number>(0)
+  const [bgColor, setBgColor] = useState<string>("#ffffff")
+  const [textColor, setTextColor] = useState<string>("#ffffff")
+
+  const [widthVal, setWidthVal] = useState<number>(0)
+  const [heightVal, setHeightVal] = useState<number>(0)
+
+  const [paddingTop, setPaddingTop] = useState<number>(0)
+  const [paddingBottom, setPaddingBottom] = useState<number>(0)
+  const [paddingLeft, setPaddingLeft] = useState<number>(0)
+  const [paddingRight, setPaddingRight] = useState<number>(0)
+
+  const [marginTop, setMarginTop] = useState<number>(0)
+  const [marginBottom, setMarginBottom] = useState<number>(0)
+  const [marginLeft, setMarginLeft] = useState<number>(0)
+  const [marginRight, setMarginRight] = useState<number>(0)
+
+  const [fontSize, setFontSize] = useState<number>(14)
+  const [letterSpacing, setLetterSpacing] = useState<number>(0)
+  const [opacityVal, setOpacityVal] = useState<number>(100)
+
+  const [borderWidth, setBorderWidth] = useState<number>(0)
+  const [borderColor, setBorderColor] = useState<string>("#ffffff")
+
+  const isUpdatingRef = useRef(false)
 
   const [columns, setColumns] = useState<ColumnState>({
     panels: INITIAL_PANELS,
@@ -75,6 +105,34 @@ export default function Studio() {
     column2: [],
     column3: []
   })
+
+  const updateCssProperty = useCallback((property: string, value: string | number, suffix = "") => {
+    if (!selectedSelector) return
+
+    isUpdatingRef.current = true
+    setCssCode((prevCode) => {
+      const escapedSelector = selectedSelector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+      const blockRegex = new RegExp(`(${escapedSelector}\\s*{)([^}]*)(})`, "i")
+      const propRegex = new RegExp(`(?<!-)(${property}\\s*:\\s*)[^;}\\s]+`, "i")
+      const fullValue = `${value}${suffix}`
+
+      if (blockRegex.test(prevCode)) {
+        return prevCode.replace(blockRegex, (_, openTag, body, closeTag) => {
+          if (propRegex.test(body)) {
+            return `${openTag}${body.replace(propRegex, `$1${fullValue}`)}${closeTag}`
+          } else {
+            return `${openTag}\n  ${property}: ${fullValue};${body}${closeTag}`
+          }
+        })
+      } else {
+        return `${prevCode}\n${selectedSelector} {\n  ${property}: ${fullValue};\n}\n`
+      }
+    })
+
+    setTimeout(() => {
+      isUpdatingRef.current = false
+    }, 0)
+  }, [selectedSelector])
 
   useEffect(() => {
     const cleanPanels = INITIAL_PANELS.filter(p => !EXCLUDED_PANELS.includes(p));
@@ -104,6 +162,29 @@ export default function Studio() {
   const { isMobile } = useIsMobile()
   const { isTablet } = useIsTablet()
 
+  useEffect(() => {
+    localStorage.setItem("autosave_draft_code", cssCode)
+  }, [cssCode])
+
+  const handleLeftSelectorAppend = (selector: string) => {
+    const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    const blockRegex = new RegExp(`(?:^|\\s)${escapedSelector}\\s*{`, "i")
+
+    if (!blockRegex.test(cssCode)) {
+      const codeSnippet = `\n${selector} {\n  \n}\n`
+      setCssCode((prev) => prev + codeSnippet)
+    }
+    setIsCodeOpen(true)
+  }
+
+  const handleCanvasElementSelected = useCallback((selector: string) => {
+    setSelectedSelector(selector)
+    startTransition(() => {
+      setActiveRightTab("elements")
+      setRightOpen(true)
+    })
+  }, [])
+
   if (isMobile || isTablet) {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center p-4 text-center bg-background">
@@ -111,12 +192,6 @@ export default function Studio() {
         <p className="text-muted-foreground text-sm max-w-xs">The Studio is optimized for desktop only.</p>
       </div>
     )
-  }
-
-  const handleSelectorSelect = (selector: string) => {
-    const codeSnippet = `\n${selector} {}\n`
-    setCssCode((prev) => prev + codeSnippet)
-    setIsCodeOpen(true)
   }
 
   return (
@@ -154,7 +229,7 @@ export default function Studio() {
             >
               <Suspense fallback={<div className="p-4 text-xs text-muted-foreground animate-pulse">Loading panel...</div>}>
                 {activeLeftTab === "selectors" ? (
-                  <SelectorPanel onSelectSelector={handleSelectorSelect} />
+                  <SelectorPanel onSelectSelector={handleLeftSelectorAppend} />
                 ) : activeLeftTab === "layers" ? (
                   <LayerManager />
                 ) : (
@@ -176,10 +251,13 @@ export default function Studio() {
                   rootCss={rootCss}
                   cssCode={cssCode}
                   columnLayout={columns}
+                  selectedSelector={selectedSelector}
+                  onElementSelected={handleCanvasElementSelected}
                 />
               </Suspense>
             </div>
 
+            { }
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
               <div className="flex items-center gap-1.5 p-1.5 bg-card/90 backdrop-blur-md border border-border rounded-full shadow-lg pointer-events-auto">
                 <Tooltip>
@@ -251,8 +329,55 @@ export default function Studio() {
               onTabChange={(tab) => startTransition(() => setActiveRightTab(tab))}
               tabs={rightTabs}
             >
-              <Suspense fallback={<div className="p-4 text-xs text-muted-foreground animate-pulse">Loading settings...</div>}>
-                {activeRightTab === "settings" ? <SettingsPanel /> : <InspectorPanel />}
+              <Suspense fallback={<div className="p-4 text-xs text-muted-foreground animate-pulse">Loading right workspace...</div>}>
+                {activeRightTab === "elements" ? (
+                  <ElementPropertiesPanel
+                    selectedSelector={selectedSelector}
+                    cssCode={cssCode}
+                    setCssCode={setCssCode}
+                    borderRadius={borderRadius}
+                    setBorderRadius={setBorderRadius}
+                    bgColor={bgColor}
+                    setBgColor={setBgColor}
+                    textColor={textColor}
+                    setTextColor={setTextColor}
+                    widthVal={widthVal}
+                    setWidthVal={setWidthVal}
+                    heightVal={heightVal}
+                    setHeightVal={setHeightVal}
+                    paddingTop={paddingTop}
+                    setPaddingTop={setPaddingTop}
+                    paddingBottom={paddingBottom}
+                    setPaddingBottom={setPaddingBottom}
+                    paddingLeft={paddingLeft}
+                    setPaddingLeft={setPaddingLeft}
+                    paddingRight={paddingRight}
+                    setPaddingRight={setPaddingRight}
+                    marginTop={marginTop}
+                    setMarginTop={setMarginTop}
+                    marginBottom={marginBottom}
+                    setMarginBottom={setMarginBottom}
+                    marginLeft={marginLeft}
+                    setMarginLeft={setMarginLeft}
+                    marginRight={marginRight}
+                    setMarginRight={setMarginRight}
+                    fontSize={fontSize}
+                    setFontSize={setFontSize}
+                    letterSpacing={letterSpacing}
+                    setLetterSpacing={setLetterSpacing}
+                    opacityVal={opacityVal}
+                    setOpacityVal={setOpacityVal}
+                    borderWidth={borderWidth}
+                    setBorderWidth={setBorderWidth}
+                    borderColor={borderColor}
+                    setBorderColor={setBorderColor}
+                    updateCssProperty={updateCssProperty}
+                  />
+                ) : activeRightTab === "settings" ? (
+                  <SettingsPanel />
+                ) : (
+                  <InspectorPanel />
+                )}
               </Suspense>
             </SidebarPanel>
           )}

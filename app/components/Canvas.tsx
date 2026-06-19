@@ -20,6 +20,8 @@ interface CanvasProps {
   category?: string | null
   activePanels?: string[]
   columnLayout?: ColumnState | null
+  selectedSelector?: string
+  onElementSelected?: (selector: string) => void
 }
 
 export const Canvas = memo(function Canvas({
@@ -30,7 +32,9 @@ export const Canvas = memo(function Canvas({
   presetId = null,
   category = null,
   activePanels = [],
-  columnLayout = null
+  columnLayout = null,
+  selectedSelector = "body",
+  onElementSelected
 }: CanvasProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
@@ -128,29 +132,135 @@ export const Canvas = memo(function Canvas({
         <style id="active-preset-styles">${loadedPresetCss}</style>
         <style id="user-overrides"></style>
         <style>
-        .highlight-hover{outline:2px solid #94a3b8;cursor:crosshair}
-        .highlight-selected{outline:2px solid #3b82f6}
-        
-        body { box-sizing: border-box; }
-
-        ${shouldCenterPanel ? "html,body{overflow:hidden}body > *{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);margin:0;}" : ""}
+          .highlight-hover {
+            outline: 2px dashed #6366f1 !important;
+            outline-offset: -2px;
+            cursor: crosshair !important;
+          }
+          .highlight-selected {
+            outline: 2px solid #2563eb !important;
+            outline-offset: -2px;
+          }
+          body { box-sizing: border-box; }
+          * {
+            user-select: none !important;
+          }
+          ${shouldCenterPanel ? "html,body{overflow:hidden}body > *{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);margin:0;}" : ""}
         </style>
       </head>
       <body id="viewer">
         <script>
           ${rawGaiaScript}
           const userStyleTag = document.getElementById('user-overrides');
+          let currentHovered = null;
+          let activeSelectorString = "body";
+
+          function getSelector(el) {
+            if (!el || el === document.body || el === document.documentElement) return 'body';
+
+            const segments = [];
+            let current = el;
+
+            while (current && current !== document.body && current !== document.documentElement) {
+              let segment = current.id ? ('#' + current.id) : current.tagName.toLowerCase();
+              segments.unshift(segment);
+              current = current.parentNode;
+            }
+
+            return segments.join(' ');
+          }
+
           window.addEventListener('message', (e) => {
             if (e.data.type === 'init-html' || e.data.type === 'update-html') {
-              // Target the body directly but preserve the script tag so it doesn't self-destruct
               const scriptTag = document.querySelector('script');
               document.body.innerHTML = e.data.html;
               document.body.appendChild(scriptTag);
             }
-            if (e.data.type === 'update-css') userStyleTag.textContent = e.data.css;
-            if (e.data.type === 'toggle-selection-mode') window.isSelectionActive = e.data.active;
+            if (e.data.type === 'update-css') {
+              userStyleTag.textContent = e.data.css;
+            }
+            if (e.data.type === 'toggle-selection-mode') {
+              window.isSelectionActive = e.data.active;
+              if (!window.isSelectionActive && currentHovered) {
+                currentHovered.classList.remove('highlight-hover');
+                currentHovered = null;
+              }
+            }
+            if (e.data.type === 'sync-selected-element') {
+              activeSelectorString = e.data.selector || "body";
+              
+              document.querySelectorAll('.highlight-selected').forEach(el => {
+                el.classList.remove('highlight-selected');
+              });
+
+              if (e.data.selector) {
+                try {
+                  const elements = document.querySelectorAll(e.data.selector);
+                  elements.forEach(el => {
+                    el.classList.add('highlight-selected');
+                  });
+                } catch(err){}
+              }
+            }
           });
-          document.addEventListener('click', (e) => { if (!window.isSelectionActive) return; e.preventDefault(); e.stopPropagation(); const target = e.target; window.parent.postMessage({ type: 'element-selected', selector: target.id ? '#' + target.id : 'body' }, '*'); });
+
+          document.addEventListener('mouseover', (e) => {
+            if (!window.isSelectionActive || e.target === document.body || e.target === document.documentElement) return;
+            if (currentHovered && currentHovered !== e.target) {
+              currentHovered.classList.remove('highlight-hover');
+            }
+            currentHovered = e.target;
+            currentHovered.classList.add('highlight-hover');
+          });
+
+          document.addEventListener('mouseout', (e) => {
+            if (!window.isSelectionActive) return;
+            if (currentHovered === e.target) {
+              currentHovered.classList.remove('highlight-hover');
+              currentHovered = null;
+            }
+          });
+
+          document.addEventListener('click', (e) => {
+            if (!window.isSelectionActive) return;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (e.target === document.body || e.target === document.documentElement) return;
+
+            const baseSelector = getSelector(e.target);
+            const hasShift = e.shiftKey;
+            const hasCtrl = e.ctrlKey || e.metaKey;
+
+            // Generate what this click targeting phrase means by itself
+            let segmentToAppend = baseSelector;
+            if (hasShift) {
+              segmentToAppend = baseSelector + ", " + baseSelector + " *";
+              window.getSelection()?.removeAllRanges();
+            }
+
+            let finalSelector = segmentToAppend;
+
+            // If Ctrl is held, join this chunk onto whatever groups are already active
+            if (hasCtrl) {
+              if (activeSelectorString && activeSelectorString !== "body") {
+                const parts = activeSelectorString.split(',').map(p => p.trim());
+                
+                // Add new pieces only if they aren't already part of the selector group string
+                const incomingParts = segmentToAppend.split(',').map(p => p.trim());
+                const filteredIncoming = incomingParts.filter(p => !parts.includes(p));
+
+                if (filteredIncoming.length > 0) {
+                  finalSelector = activeSelectorString + ", " + filteredIncoming.join(", ");
+                } else {
+                  finalSelector = activeSelectorString;
+                }
+              }
+            }
+
+            window.parent.postMessage({ type: 'element-selected', selector: finalSelector }, '*');
+          }, true);
         </script>
       </body>
     </html>`, [loadedPresetCss, shouldCenterPanel])
@@ -159,17 +269,28 @@ export const Canvas = memo(function Canvas({
     const handler = () => {
       const win = iframeRef.current?.contentWindow
       if (!win) return
-      
+
       win.postMessage({ type: 'init-html', html: integratedHtml }, '*')
       win.postMessage({ type: 'update-css', css: `${rootCss}\n${cssCode}` }, '*')
       win.postMessage({ type: 'toggle-selection-mode', active: isSelectionMode }, '*')
+      win.postMessage({ type: 'sync-selected-element', selector: selectedSelector }, '*')
     }
 
     iframeRef.current?.addEventListener('load', handler)
     handler()
-    
+
     return () => iframeRef.current?.removeEventListener('load', handler)
-  }, [integratedHtml, rootCss, cssCode, isSelectionMode])
+  }, [integratedHtml, rootCss, cssCode, isSelectionMode, selectedSelector])
+
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (e.data?.type === 'element-selected' && onElementSelected) {
+        onElementSelected(e.data.selector)
+      }
+    }
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [onElementSelected])
 
   useEffect(() => {
     const wrapper = wrapperRef.current

@@ -27,18 +27,18 @@ export const studioTheme = createTheme({
 
 export const customSearchTheme = EditorView.theme({
   "&.cm-editor": { backgroundColor: "transparent" },
-  
+
   "&": { height: "100%" },
-  ".cm-scroller": { 
+  ".cm-scroller": {
     backgroundColor: "transparent",
-    overflowY: "auto !important", 
-    overflowX: "hidden !important", 
-    maxHeight: "100%" 
+    overflowY: "auto !important",
+    overflowX: "hidden !important",
+    maxHeight: "100%"
   },
-  
-  ".cm-line": { 
-    whiteSpace: "pre-wrap !important", 
-    wordBreak: "break-all !important" 
+
+  ".cm-line": {
+    whiteSpace: "pre-wrap !important",
+    wordBreak: "break-all !important"
   },
 
   ".cm-panel.cm-search": {

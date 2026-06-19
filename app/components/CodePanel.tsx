@@ -3,17 +3,16 @@ import { motion, useDragControls, AnimatePresence } from "motion/react"
 import { GripVertical, Copy, Check, Library, ChevronRight, Maximize2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { EditorView, tooltips } from "@codemirror/view" 
+import { EditorView, tooltips } from "@codemirror/view"
 import { langs } from "@uiw/codemirror-extensions-langs"
 import { studioTheme, customSearchTheme } from "@/codemirror/editor"
 import { ColorPlugin } from "@/codemirror/color-plugin"
 import { SnippetPanel } from "./SnippetPanel"
 import type { SnippetActionType } from "@/store/useSnippetStore"
 
-// Define core baseline dimensions
 const BASE_EDITOR_WIDTH = 450
 const BASE_SNIPPETS_WIDTH = 300
-const BASE_HEIGHT = 320 // 80 * 4 = 320px h-80 equivalent
+const BASE_HEIGHT = 320
 
 const structuralSpring = { type: "spring", stiffness: 450, damping: 45 } as const
 
@@ -25,7 +24,6 @@ interface CodePanelProps {
   setCode: React.Dispatch<React.SetStateAction<string>>
 }
 
-// Available scaling configurations
 const SCALE_OPTIONS = [
   { label: "1x", value: 1.0 },
   { label: "1.2x", value: 1.2 },
@@ -50,7 +48,6 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
     codeRef.current = code
   }, [code])
 
-  // High-Efficiency Debounced Autosave
   useEffect(() => {
     const currentCode = codeRef.current
 
@@ -66,7 +63,6 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
     return () => clearTimeout(timer)
   }, [code])
 
-  // Dynamic dimension calculations based on user selection multiplier
   const currentEditorWidth = BASE_EDITOR_WIDTH * scaleMultiplier
   const currentSnippetsWidth = BASE_SNIPPETS_WIDTH * scaleMultiplier
   const currentHeight = BASE_HEIGHT * scaleMultiplier
@@ -167,8 +163,7 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
           dragMomentum={false}
           onDragStart={() => setIsDragging(true)}
           onDragEnd={() => setIsDragging(false)}
-          // Frame updates dynamically with crisp pixel counts to pass Lighthouse rendering metrics
-          animate={{ 
+          animate={{
             width: currentEditorWidth + (snippetsOpen ? currentSnippetsWidth : 0),
             height: currentHeight
           }}
@@ -177,10 +172,10 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
         >
           <div className="absolute inset-0 backdrop-blur-md bg-background/95 -z-10 pointer-events-none rounded-xl" />
 
-          {/* Editor Core layout */}
+          { }
           <div style={{ width: currentEditorWidth }} className="grid grid-rows-[auto_1fr_auto] h-full shrink-0 z-10 bg-transparent">
-            
-            {/* Header */}
+
+            { }
             <div
               className="h-9 border-b border-border flex items-center justify-between px-3 bg-muted/40 cursor-grab active:cursor-grabbing select-none"
               onPointerDown={(e) => dragControls.start(e)}
@@ -190,7 +185,7 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
                 <span className="text-[11px] font-semibold tracking-wider uppercase text-muted-foreground">Editor</span>
               </div>
               <div className="flex items-center gap-1.5" onPointerDown={(e) => e.stopPropagation()}>
-                {/* Scale Multiplier Action Switcher */}
+                { }
                 <Button
                   variant="ghost"
                   size="sm"
@@ -214,7 +209,7 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
               </div>
             </div>
 
-            {/* Editor Input Wrapper */}
+            { }
             <ScrollArea className="w-full bg-muted/20 overflow-hidden">
               <div className="h-full w-full">
                 <Suspense fallback={<div className="p-4 text-xs font-mono text-muted-foreground">Loading editor...</div>}>
@@ -238,7 +233,7 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
               </div>
             </ScrollArea>
 
-            {/* Footer Control Strings */}
+            { }
             <div className="h-7 border-t border-border flex items-center justify-between px-2 bg-muted/30 select-none">
               <div onPointerDown={(e) => e.stopPropagation()}>
                 <Button
@@ -282,18 +277,18 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
             </div>
           </div>
 
-{/* Snippet Panel Insertion */}
-<AnimatePresence initial={false}>
-  {snippetsOpen && (
-    <SnippetPanel
-      dragControls={dragControls}
-      currentCode={code}
-      onSelectSnippet={handleSelectSnippet}
-      width={currentSnippetsWidth}     
-      scaleMultiplier={scaleMultiplier}
-    />
-  )}
-</AnimatePresence>
+          { }
+          <AnimatePresence initial={false}>
+            {snippetsOpen && (
+              <SnippetPanel
+                dragControls={dragControls}
+                currentCode={code}
+                onSelectSnippet={handleSelectSnippet}
+                width={currentSnippetsWidth}
+                scaleMultiplier={scaleMultiplier}
+              />
+            )}
+          </AnimatePresence>
         </motion.div>
       </div>
     </>
