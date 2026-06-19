@@ -49,7 +49,7 @@ export const PresetCard = memo(function PresetCard({ preset, isPriority = false 
             <Card className="relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-1.5 shadow-sm transition-all duration-500 group-hover:border-primary/40 group-hover:shadow-md">
 
                 <div
-                    className="relative aspect-[4/3] w-full overflow-hidden rounded-xl transition-colors duration-500 ease-out flex items-center justify-center bg-muted/20"
+                    className="relative aspect-4/3 w-full overflow-hidden rounded-xl transition-colors duration-500 ease-out flex items-center justify-center bg-muted/20"
                     style={{ backgroundColor: bgColor }}
                 >
                     {rawThumbnail && !imageError ? (

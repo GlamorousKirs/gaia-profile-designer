@@ -1,4 +1,4 @@
-/** AUTO-GENERATED VIA GENERATE-THEMESWATCHES.TS - DO NOT EDIT MANUALLY **/
+                                                                           
 
 import "./amethyst-haze-light.css";
 import "./amethyst-haze.css";

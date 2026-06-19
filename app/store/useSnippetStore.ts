@@ -1,6 +1,8 @@
 import { useMemo } from 'react'
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
+import type { StateStorage } from 'zustand/middleware'
+import { get, set, del } from 'idb-keyval'
 
 export interface Snippet {
   id: string
@@ -44,37 +46,51 @@ const DYNAMIC_SYSTEM_DEFAULTS: Snippet[] = Object.entries(rawDefaultFiles).map(
   }
 )
 
+const customIndexedDbStorage: StateStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    const value = await get<string>(name)
+    return value ?? null
+  },
+  setItem: async (name: string, value: string): Promise<void> => {
+    await set(name, value)
+  },
+  removeItem: async (name: string): Promise<void> => {
+    await del(name)
+  },
+}
+
 export const useSnippetStore = create<SnippetStore>()(
-  persist(
-    (set) => ({
+  persist<SnippetStore>(
+    (setActions) => ({
       snippets: [],
       showDefaults: true,
-      setShowDefaults: (show) => set({ showDefaults: show }),
+      setShowDefaults: (show) => setActions({ showDefaults: show }),
       addSnippet: (title, code) =>
-        set((state) => ({
+        setActions((state) => ({
           snippets: [
             ...state.snippets,
             { id: crypto.randomUUID(), title, code, isDefault: false },
           ],
         })),
       updateSnippet: (id, code) =>
-        set((state) => ({
+        setActions((state) => ({
           snippets: state.snippets.map((s) => (s.id === id ? { ...s, code } : s)),
         })),
       renameSnippet: (id, title) =>
-        set((state) => ({
+        setActions((state) => ({
           snippets: state.snippets.map((s) => (s.id === id ? { ...s, title } : s)),
         })),
       deleteSnippet: (id) =>
-        set((state) => ({
+        setActions((state) => ({
           snippets: state.snippets.filter((s) => s.id !== id),
         })),
     }),
     {
-      name: 'gaia-snippets-storage',
+      name: 'gstudio-snippets-storage',
+      storage: createJSONStorage(() => customIndexedDbStorage),
       partialize: (state) => ({
         snippets: state.snippets.filter((s) => !s.isDefault),
-      }),
+      }) as any,
     }
   )
 )

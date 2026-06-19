@@ -88,7 +88,7 @@ export function GaiaLogoPanel({ tagName = "gaia-logo", onSelectLogo }: GaiaLogoP
                     <Image className="size-3.5 text-sky-400" />
                     <span>Gaia Logo Assets</span>
                 </div>
-                <span className="text-[10px] font-mono lowercase bg-muted px-1.5 py-0.5 rounded border border-border/60 truncate max-w-[100px]">
+                <span className="text-[10px] font-mono lowercase bg-muted px-1.5 py-0.5 rounded border border-border/60 truncate max-w-25">
                     tag: {normalizedTag}
                 </span>
             </div>
@@ -176,7 +176,7 @@ export function GaiaLogoPanel({ tagName = "gaia-logo", onSelectLogo }: GaiaLogoP
                                             <div
                                                 key={logo.id}
                                                 onClick={() => onSelectLogo?.(`url("${logo.url}")`)}
-                                                className={`group relative flex flex-col bg-background border border-border/60 hover:border-primary/50 rounded-md p-2 transition-all h-[102px] justify-between ${onSelectLogo ? 'cursor-pointer active:scale-[0.98]' : ''}`}
+                                                className={`group relative flex flex-col bg-background border border-border/60 hover:border-primary/50 rounded-md p-2 transition-all h-27.5 justify-between ${onSelectLogo ? 'cursor-pointer active:scale-[0.98]' : ''}`}
                                             >
                                                 <div className="h-12 w-full bg-muted/30 border border-border/30 rounded flex items-center justify-center p-1.5 overflow-hidden group-hover:bg-muted/10 transition-colors relative">
                                                     <img

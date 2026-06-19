@@ -3,9 +3,12 @@ import rawGaiaScript from "@/presets/gaia.js?raw"
 import gaiaHtml from "@/presets/gaia.html?raw"
 import gaiaCss from "@/presets/gaia.css?raw"
 import { type ColumnState } from "@/components/ColumnManager"
+import { useProfileStore } from "~/store/useProfileStore"
 
 const TARGET_WIDTH = 1920
 const TARGET_HEIGHT = 1080
+const DEFAULT_AVATAR = "https://a1cdn.gaiaonline.com/dress-up/avatar/ava/0e/6e/6255ead32c36e0e_flip.png"
+const DEFAULT_USERNAME = "Sunkirs"
 
 const presetCssModules = import.meta.glob("/app/presets/**/preset.css", { query: "?raw", import: "default", eager: true }) as Record<string, string>
 const presetTomlModules = import.meta.glob("/app/presets/**/preset.toml", { query: "?raw", import: "default", eager: true }) as Record<string, string>
@@ -34,11 +37,15 @@ export const Canvas = memo(function Canvas({
   activePanels = [],
   columnLayout = null,
   selectedSelector = "html, body",
-  onElementSelected
+  onElementSelected,
 }: CanvasProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const isSelectionMode = activeTool === "select"
+  
+  // Pull both avatar URL and username parameters from state store
+  const avatarUrl = useProfileStore((state) => state.avatarUrl)
+  const username = useProfileStore((state) => state.username)
 
   const loadedPresetCss = useMemo(() => {
     if (!presetId || !category) return ""
@@ -123,6 +130,9 @@ export const Canvas = memo(function Canvas({
     return globalHeaderHtml ? currentHtml.replace('<div id="columns">', `${globalHeaderHtml}\n<div id="columns">`) : currentHtml
   }, [category, activePanels, shouldCenterPanel, parsedTomlLayout, columnLayout])
 
+  const finalAvatarUrl = avatarUrl || DEFAULT_AVATAR
+  const finalUsername = username || DEFAULT_USERNAME
+
   const initialSrcDoc = useMemo(() => `
     <!DOCTYPE html>
     <html lang="en">
@@ -131,6 +141,7 @@ export const Canvas = memo(function Canvas({
         <style id="base-styles">${gaiaCss}</style>
         <style id="active-preset-styles">${loadedPresetCss}</style>
         <style id="user-overrides"></style>
+        <style id="avatar-styles"></style>
         <style>
           .highlight-hover {
             outline: 2px dashed #6366f1 !important;
@@ -156,32 +167,80 @@ export const Canvas = memo(function Canvas({
         <script>
           ${rawGaiaScript}
           const userStyleTag = document.getElementById('user-overrides');
+          const avatarStyleTag = document.getElementById('avatar-styles');
           let currentHovered = null;
           let activeSelectorString = "html, body";
+          let computedAvatarUrl = "${DEFAULT_AVATAR}";
+          let computedUsername = "${DEFAULT_USERNAME}";
 
           function getSelector(el) {
             if (!el || el === document.body || el === document.documentElement) return 'html, body';
-
             const segments = [];
             let current = el;
-
             while (current && current !== document.body && current !== document.documentElement) {
               let segment = current.id ? ('#' + current.id) : current.tagName.toLowerCase();
               segments.unshift(segment);
               current = current.parentNode;
             }
-
             return segments.join(' ');
           }
+
+          function forceProfileIdentitySwap() {
+            // 1. Direct Target DOM Manipulation for Avatar Assets
+            const targetIds = ['id_details', 'avatar_menu', 'id_avatar'];
+            targetIds.forEach(id => {
+              const panel = document.getElementById(id);
+              if (panel) {
+                const imgs = panel.querySelectorAll('img');
+                imgs.forEach(img => {
+                  if (computedAvatarUrl && img.src !== computedAvatarUrl) {
+                    img.src = computedAvatarUrl;
+                  }
+                });
+              }
+            });
+
+            document.querySelectorAll('.avatar img, #id_avatar img').forEach(img => {
+              if (computedAvatarUrl && img.src !== computedAvatarUrl) img.src = computedAvatarUrl;
+            });
+
+            // 2. Direct Username Replacements inside Details Title Context
+            const detailsPanel = document.getElementById('id_details');
+            if (detailsPanel && computedUsername) {
+              const titleEl = detailsPanel.querySelector('#details_title');
+              if (titleEl && titleEl.textContent !== computedUsername) {
+                titleEl.textContent = computedUsername;
+              }
+              const imgEl = detailsPanel.querySelector('img');
+              if (imgEl && imgEl.alt !== computedUsername + "'s avatar") {
+                imgEl.alt = computedUsername + "'s avatar";
+              }
+            }
+          }
+
+          // Keep watching for dynamic template modifications or script rerenders
+          const observer = new MutationObserver(() => {
+            forceProfileIdentitySwap();
+          });
+          observer.observe(document.documentElement, { childList: true, subtree: true });
 
           window.addEventListener('message', (e) => {
             if (e.data.type === 'init-html' || e.data.type === 'update-html') {
               const scriptTag = document.querySelector('script');
               document.body.innerHTML = e.data.html;
               document.body.appendChild(scriptTag);
+              forceProfileIdentitySwap();
             }
             if (e.data.type === 'update-css') {
               userStyleTag.textContent = e.data.css;
+            }
+            if (e.data.type === 'update-identity') {
+              computedAvatarUrl = e.data.avatarUrl;
+              computedUsername = e.data.username;
+              forceProfileIdentitySwap();
+              if (avatarStyleTag && computedAvatarUrl) {
+                avatarStyleTag.textContent = ':root { --user-avatar-url: url("' + computedAvatarUrl + '"); } [data-avatar], #id_details #id_avatar, #id_details .avatar { content: var(--user-avatar-url) !important; }';
+              }
             }
             if (e.data.type === 'toggle-selection-mode') {
               window.isSelectionActive = e.data.active;
@@ -192,21 +251,17 @@ export const Canvas = memo(function Canvas({
             }
             if (e.data.type === 'sync-selected-element') {
               activeSelectorString = e.data.selector || "html, body";
-              
               document.documentElement.classList.remove('highlight-selected');
               document.querySelectorAll('.highlight-selected').forEach(el => {
                 el.classList.remove('highlight-selected');
               });
-
               if (e.data.selector) {
                 try {
                   if (e.data.selector === "html, body") {
                     document.documentElement.classList.add('highlight-selected');
                   } else {
                     const elements = document.querySelectorAll(e.data.selector);
-                    elements.forEach(el => {
-                      el.classList.add('highlight-selected');
-                    });
+                    elements.forEach(el => el.classList.add('highlight-selected'));
                   }
                 } catch(err){}
               }
@@ -232,10 +287,8 @@ export const Canvas = memo(function Canvas({
 
           document.addEventListener('click', (e) => {
             if (!window.isSelectionActive) return;
-            
             e.preventDefault();
             e.stopPropagation();
-            
             let finalSelector = "html, body";
 
             if (e.target !== document.body && e.target !== document.documentElement) {
@@ -265,12 +318,15 @@ export const Canvas = memo(function Canvas({
                 }
               }
             }
-
             window.parent.postMessage({ type: 'element-selected', selector: finalSelector }, '*');
           }, true);
         </script>
       </body>
     </html>`, [loadedPresetCss, shouldCenterPanel])
+
+  useEffect(() => {
+    (window as any).isSelectionModeActive = isSelectionMode
+  }, [isSelectionMode])
 
   useEffect(() => {
     const handler = () => {
@@ -279,6 +335,7 @@ export const Canvas = memo(function Canvas({
 
       win.postMessage({ type: 'init-html', html: integratedHtml }, '*')
       win.postMessage({ type: 'update-css', css: `${rootCss}\n${cssCode}` }, '*')
+      win.postMessage({ type: 'update-identity', avatarUrl: finalAvatarUrl, username: finalUsername }, '*')
       win.postMessage({ type: 'toggle-selection-mode', active: isSelectionMode }, '*')
       win.postMessage({ type: 'sync-selected-element', selector: selectedSelector }, '*')
     }
@@ -287,7 +344,7 @@ export const Canvas = memo(function Canvas({
     handler()
 
     return () => iframeRef.current?.removeEventListener('load', handler)
-  }, [integratedHtml, rootCss, cssCode, isSelectionMode, selectedSelector])
+  }, [integratedHtml, rootCss, cssCode, isSelectionMode, selectedSelector, finalAvatarUrl, finalUsername])
 
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {

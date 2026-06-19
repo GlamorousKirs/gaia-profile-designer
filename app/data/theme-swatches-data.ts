@@ -1,4 +1,4 @@
-/** AUTO-GENERATED VIA GENERATE-THEMESWATCHES.TS - DO NOT EDIT MANUALLY **/
+                                                                           
 
 export const THEMES = [
   {

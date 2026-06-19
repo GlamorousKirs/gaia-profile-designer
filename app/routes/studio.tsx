@@ -10,6 +10,9 @@ import ColumnManager, { type ColumnState } from "@/components/ColumnManager"
 import CodePanel from "@/components/CodePanel"
 import { ElementPropertiesPanel } from "@/components/ElementPropertiesPanel"
 
+import { UserAvatar } from "@/components/UserAvatar"
+import { LocalProfile } from "@/components/LocalProfile"
+
 const SelectorPanel = lazy(() => import("@/components/SelectorPanel"))
 
 import {
@@ -57,6 +60,8 @@ export default function Studio() {
   const [isCodeOpen, setIsCodeOpen] = useState(false)
   const [isMaximized, setIsMaximized] = useState(false)
   const [, startTransition] = useTransition()
+
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
 
   const [searchParams] = useSearchParams()
   const presetId = searchParams.get("id")
@@ -233,8 +238,11 @@ export default function Studio() {
                 </span>
               </div>
             </div>
+
+            { }
             <div className="flex items-center gap-1.5">
               <ThemePicker />
+              <UserAvatar onOpenProfile={() => setIsProfileOpen(true)} />
               <Button size="sm" className="h-7 gap-1 text-[11px] font-medium px-2.5">
                 <Share2 className="size-3.5" /> Publish
               </Button>
@@ -431,6 +439,12 @@ export default function Studio() {
           isOpen={isCodeOpen}
           code={cssCode}
           setCode={setCssCode}
+        />
+
+        { }
+        <LocalProfile
+          isOpen={isProfileOpen}
+          onClose={() => setIsProfileOpen(false)}
         />
       </div>
     </TooltipProvider>
