@@ -14,6 +14,7 @@ import "./app.css"
 import "@/themes/import-themes"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { AnimatePresence } from "motion/react"
+import { useSnippetStore } from "@/store/useSnippetStore"
 
 const Navbar = lazy(() => import("@/components/Navbar"))
 const Preloader = lazy(() => import("@/components/Preloader"))
@@ -30,7 +31,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const MINIMUM_DELAY = 2000
-
     const startTime = Date.now()
 
     const deactivatePreloader = () => {
@@ -80,7 +80,31 @@ export function Layout({ children }: { children: React.ReactNode }) {
     </html>
   )
 }
+
 export default function App() {
+  const initializeWorker = useSnippetStore((state) => state.initializeWorker)
+
+  // 1. Initialize Web Worker when the application boots
+  useEffect(() => {
+    initializeWorker()
+  }, [initializeWorker])
+
+  // 2. Intercept GitHub Pages custom 404 redirects to preserve sub-routes on refresh
+  useEffect(() => {
+    if (typeof window === "undefined") return
+
+    const params = new URLSearchParams(window.location.search)
+    const redirectPath = params.get("_p")
+    
+    if (redirectPath) {
+      window.history.replaceState(
+        null, 
+        "", 
+        "/gaia-profile-designer/" + decodeURIComponent(redirectPath)
+      )
+    }
+  }, [])
+
   return <Outlet />
 }
 

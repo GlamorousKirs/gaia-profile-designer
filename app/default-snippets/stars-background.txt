@@ -1,5 +1,5 @@
 html, body {
-    background: url(https://i.ibb.co/kxG8j51/Firefly-100s-1084px.png) repeat center;
+    background: url(https://i.ibb.co/kxG8j51/Firefly-100s-1084px.png) #000000 repeat center;
     animation: 20s stars linear infinite;
     user-select: none;
     -webkit-user-select: none;

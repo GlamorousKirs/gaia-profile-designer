@@ -127,15 +127,26 @@ export const Canvas = memo(function Canvas({
         <style id="base-styles">${gaiaCss}</style>
         <style id="active-preset-styles">${loadedPresetCss}</style>
         <style id="user-overrides"></style>
-        <style>.highlight-hover{outline:2px solid #94a3b8 !important;cursor:crosshair !important}.highlight-selected{outline:2px solid #3b82f6 !important}html,body{margin:0 !important;padding:0 !important;width:100% !important;height:100% !important}#base-layer{width:100% !important;height:100% !important;box-sizing:border-box !important;position:relative !important;margin:0 !important;padding:0 !important;}${shouldCenterPanel ? "html,body{overflow:hidden !important}#base-layer > *{position:absolute !important;top:50% !important;left:50% !important;transform:translate(-50%,-50%) !important;margin:0 !important;}" : ""}</style>
+        <style>
+        .highlight-hover{outline:2px solid #94a3b8;cursor:crosshair}
+        .highlight-selected{outline:2px solid #3b82f6}
+        
+        body { box-sizing: border-box; }
+
+        ${shouldCenterPanel ? "html,body{overflow:hidden}body > *{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);margin:0;}" : ""}
+        </style>
       </head>
-      <body>
-        <div id="base-layer"></div>
+      <body id="viewer">
         <script>
           ${rawGaiaScript}
           const userStyleTag = document.getElementById('user-overrides');
           window.addEventListener('message', (e) => {
-            if (e.data.type === 'init-html' || e.data.type === 'update-html') document.getElementById('base-layer').innerHTML = e.data.html;
+            if (e.data.type === 'init-html' || e.data.type === 'update-html') {
+              // Target the body directly but preserve the script tag so it doesn't self-destruct
+              const scriptTag = document.querySelector('script');
+              document.body.innerHTML = e.data.html;
+              document.body.appendChild(scriptTag);
+            }
             if (e.data.type === 'update-css') userStyleTag.textContent = e.data.css;
             if (e.data.type === 'toggle-selection-mode') window.isSelectionActive = e.data.active;
           });
@@ -145,14 +156,20 @@ export const Canvas = memo(function Canvas({
     </html>`, [loadedPresetCss, shouldCenterPanel])
 
   useEffect(() => {
-    const handler = () => iframeRef.current?.contentWindow?.postMessage({ type: 'init-html', html: integratedHtml }, '*')
+    const handler = () => {
+      const win = iframeRef.current?.contentWindow
+      if (!win) return
+      
+      win.postMessage({ type: 'init-html', html: integratedHtml }, '*')
+      win.postMessage({ type: 'update-css', css: `${rootCss}\n${cssCode}` }, '*')
+      win.postMessage({ type: 'toggle-selection-mode', active: isSelectionMode }, '*')
+    }
+
     iframeRef.current?.addEventListener('load', handler)
     handler()
+    
     return () => iframeRef.current?.removeEventListener('load', handler)
-  }, [integratedHtml])
-
-  useEffect(() => { iframeRef.current?.contentWindow?.postMessage({ type: 'update-css', css: `${rootCss}\n${cssCode}` }, '*') }, [rootCss, cssCode])
-  useEffect(() => { iframeRef.current?.contentWindow?.postMessage({ type: 'toggle-selection-mode', active: isSelectionMode }, '*') }, [isSelectionMode])
+  }, [integratedHtml, rootCss, cssCode, isSelectionMode])
 
   useEffect(() => {
     const wrapper = wrapperRef.current
@@ -178,6 +195,7 @@ export const Canvas = memo(function Canvas({
           transform: isMaximized ? "none" : "scale(var(--canvas-scale, 1))",
           transformOrigin: "center center",
           willChange: "transform",
+          background: "white"
         }}
         className="block border-none shrink-0 bg-background"
       />

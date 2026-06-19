@@ -9,8 +9,9 @@
     "typecheck": "react-router typegen && tsc",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "generate-themeswatches": "tsx ./app/scripts/generate-themeswatches.ts",
-    "predev": "npm run generate-themeswatches",
-    "prebuild": "npm run generate-themeswatches",
+    "generate:selectors": "tsx app/scripts/generate-selectors.ts",
+    "predev": "npm run generate-themeswatches && npm run generate:selectors",
+    "prebuild": "npm run generate-themeswatches && npm run generate:selectors",
     "prev": "npm run build && npm run start"
   },
   "dependencies": {

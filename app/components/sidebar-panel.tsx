@@ -45,8 +45,9 @@ export function SidebarPanel<T extends string>({
     ? isOpen ? ChevronLeft : ChevronRight
     : isOpen ? ChevronRight : ChevronLeft
 
+  // Removed background color and structural borders from the action rail wrapper
   const controlActionRail = (
-    <div className={`flex flex-col items-center justify-between w-12 py-3 bg-muted/30 select-none ${isLeft ? "border-r" : "border-l"}`}>
+    <div className="flex flex-col items-center justify-between w-12 py-3 select-none">
       <div className="flex flex-col gap-2 items-center w-full">
         {tabs.map((tab) => {
           const Icon = tab.icon
@@ -79,14 +80,20 @@ export function SidebarPanel<T extends string>({
   )
 
   return (
-    <div className="flex h-full z-10 bg-card overflow-hidden select-none">
+    // Removed outer container bg-card color
+    <div className="flex h-full z-10 overflow-hidden select-none">
       {isLeft && controlActionRail}
 
       <div
-        className={`h-full bg-card overflow-hidden relative flex shrink-0 transition-[width] ease-[cubic-bezier(0.2,0.8,0.2,1)] will-change-[width] ${isOpen ? "w-64 duration-220" : "w-0 duration-180"
-          } ${isLeft ? "border-r" : "border-l"}`}
+        // Removed inner bg-card. Included selective dynamic horizontal padding (p-3) on open to provide spacing against the canvas
+        className={`h-full overflow-hidden relative flex shrink-0 transition-[width,padding] ease-[cubic-bezier(0.2,0.8,0.2,1)] will-change-[width,padding] ${
+          isOpen 
+            ? isLeft 
+              ? "w-[268px] pr-3 duration-220" 
+              : "w-[268px] pl-3 duration-220" 
+            : "w-0 p-0 duration-180"
+        }`}
       >
-        {                                                             }
         <div className="w-64 h-full absolute top-0 left-0 overflow-y-auto overflow-x-hidden">
           {children}
         </div>

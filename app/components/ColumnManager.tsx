@@ -33,11 +33,9 @@ interface ColumnManagerProps {
   setColumns: React.Dispatch<React.SetStateAction<ColumnState>>
 }
 
-// 1. Memoize the Column to prevent unnecessary re-renders
-const DroppableColumn = memo(function DroppableColumn({ id, items }: { id: keyof ColumnState, items: string[] }) {
+const DroppableColumn = memo(function DroppableColumn({ id, items }: { id: keyof ColumnState; items: string[] }) {
   const { setNodeRef } = useDroppable({ id })
-  
-  // Custom display mapping to rename labels only in the UI sidebar
+
   const columnLabels: Record<keyof ColumnState, string> = {
     panels: "Panels",
     column1: "Column 1",
@@ -46,16 +44,16 @@ const DroppableColumn = memo(function DroppableColumn({ id, items }: { id: keyof
   }
 
   return (
-    <div className="flex flex-col">
-      <h3 className="text-[9px] font-bold uppercase text-muted-foreground mb-2 px-1 tracking-wider">
+    <div className="flex flex-col gap-1.5">
+      <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
         {columnLabels[id]}
       </h3>
       <div
         ref={setNodeRef}
-        className="border border-border/50 rounded-md p-2 bg-muted/10 min-h-15 transition-colors hover:bg-muted/20"
+        className="bg-card border border-border rounded-lg shadow-sm p-1.5 min-h-12"
       >
         <SortableContext id={id} items={items} strategy={verticalListSortingStrategy}>
-          <div className="space-y-1">
+          <div className="divide-y divide-border/60">
             {items.map((item) => <SortableItem key={item} id={item} />)}
           </div>
         </SortableContext>
@@ -64,13 +62,12 @@ const DroppableColumn = memo(function DroppableColumn({ id, items }: { id: keyof
   )
 })
 
-// 2. Memoize individual items. This stops un-shifted items from wasting CPU cycles.
 const SortableItem = memo(function SortableItem({ id }: { id: string }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
-  
-  const style = { 
-    transform: CSS.Transform.toString(transform), 
-    transition 
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition
   }
 
   return (
@@ -79,12 +76,12 @@ const SortableItem = memo(function SortableItem({ id }: { id: string }) {
       style={style}
       {...attributes}
       {...listeners}
-      className="flex items-center gap-2 p-1.5 bg-card border border-border rounded shadow-sm text-xs cursor-grab active:cursor-grabbing hover:border-primary/50 touch-none w-full"
+      className="flex items-center gap-2 px-2.5 py-2.5 hover:bg-accent hover:text-accent-foreground cursor-grab active:cursor-grabbing touch-none w-full font-mono text-[11px] rounded-md"
     >
-      <div className="opacity-50 pointer-events-none">
+      <div className="opacity-40 pointer-events-none shrink-0">
         <GripVertical className="size-3" />
       </div>
-      <span className="truncate">{id}</span>
+      <span className="truncate text-foreground group-hover:text-accent-foreground">{id}</span>
     </div>
   )
 })
@@ -92,13 +89,12 @@ const SortableItem = memo(function SortableItem({ id }: { id: string }) {
 export default function ColumnManager({ columns, setColumns }: ColumnManagerProps) {
   const [activeId, setActiveId] = useState<string | null>(null)
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor)
-  )
+  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  const keyboardSensor = useSensor(KeyboardSensor)
+  const sensors = useSensors(pointerSensor, keyboardSensor)
 
-  const findContainer = (id: string) => {
-    return (Object.keys(columns) as (keyof ColumnState)[]).find(k => columns[k].includes(id))
+  const findContainer = (id: string, targetState: ColumnState) => {
+    return (Object.keys(targetState) as (keyof ColumnState)[]).find(k => targetState[k].includes(id))
   }
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -110,8 +106,8 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
     if (!over) return
 
     const overId = over.id as string
-    const activeContainer = findContainer(active.id as string)
-    const overContainer = findContainer(overId) || (overId as keyof ColumnState)
+    const activeContainer = findContainer(active.id as string, columns)
+    const overContainer = findContainer(overId, columns) || (overId as keyof ColumnState)
 
     if (!activeContainer || !overContainer || activeContainer === overContainer) return
 
@@ -142,6 +138,7 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
+
     if (!over) {
       setActiveId(null)
       return
@@ -150,8 +147,8 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
     const activeId = active.id as string
     const overId = over.id as string
 
-    const activeContainer = findContainer(activeId)
-    const overContainer = findContainer(overId) || (overId as keyof ColumnState)
+    const activeContainer = findContainer(activeId, columns)
+    const overContainer = findContainer(overId, columns) || (overId as keyof ColumnState)
 
     if (activeContainer && overContainer && activeContainer === overContainer) {
       const oldIndex = columns[activeContainer].indexOf(activeId)
@@ -164,6 +161,7 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
         }))
       }
     }
+
     setActiveId(null)
   }
 
@@ -177,7 +175,7 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex flex-col gap-4 p-3 h-full overflow-y-auto">
+      <div className="flex flex-col gap-4 p-3 h-full overflow-y-auto min-h-0">
         {columnEntries.map(([id, items]) => (
           <DroppableColumn key={id} id={id} items={items} />
         ))}
@@ -185,8 +183,8 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
 
       <DragOverlay dropAnimation={null}>
         {activeId ? (
-          <div className="flex items-center gap-2 p-1.5 bg-card border border-primary shadow-xl rounded text-xs cursor-grabbing opacity-90 w-full raw-overlay">
-            <GripVertical className="size-3 opacity-50" />
+          <div className="flex items-center gap-2 px-2.5 py-2.5 bg-accent text-accent-foreground cursor-grabbing opacity-90 w-full font-mono text-[11px] rounded-md shadow-md border border-border/40">
+            <GripVertical className="size-3 opacity-60 shrink-0" />
             <span className="truncate">{activeId}</span>
           </div>
         ) : null}

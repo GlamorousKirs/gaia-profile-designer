@@ -1,3 +1,9 @@
+/*!
+ * cache=true
+ * @license Licences are viewable at this URL: https://cdn1.gaiaonline.com/src/=/e143bb5df5304ae98988a03a4dabca2e-2001-64/pkg-gaia_profilesv2_viewing.css
+ */
+
+
 /*! src/css/profiles/v2/common-min.css */
 * {
     margin: 0;
@@ -1631,6 +1637,7 @@ a.gensmall:hover {
 }
 
 
+
 .panel {
     padding: 15px;
 }
@@ -1647,11 +1654,11 @@ a.gensmall:hover {
 }
 
 html {
-    background: transparent;
+    background: url(https://graphics.gaiaonline.com/images/profiles/v2/backgrounds/bg_wallpaper.jpg) repeat;
 }
 
 body {
-    background: transparent;
+    background: no-repeat;
 }
 
 .panel h2 {
@@ -1671,6 +1678,7 @@ a {
 #header a {
     color: #D37B14;
 }
+
 
 #gaia_header {
     display: block !important;
@@ -1741,28 +1749,4 @@ a {
 
 #header_right a {
     display: inline !important;
-}
-
-
-.spoiler-wrapper {
-    padding: 1px;
-}
-
-.spoiler-wrapper .spoiler-control {
-    cursor: pointer;
-    display: inline;
-}
-
-.spoiler-hidden>.spoiler-title>.spoiler-control-hide,
-.spoiler-revealed>.spoiler-title>.spoiler-control-show,
-.spoiler-hidden>.spoiler {
-    display: none;
-}
-
-.spoiler-revealed {
-    border: 1px dotted #000;
-}
-
-.spoiler-revealed>.spoiler {
-    display: inherit;
 }

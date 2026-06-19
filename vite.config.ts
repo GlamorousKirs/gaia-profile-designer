@@ -5,18 +5,17 @@ import compression from 'vite-plugin-compression'
 
 export default defineConfig(({ command }) => {
   return {
-    // Dynamic base path: '/' for dev server, repo subfolder for production builds
     base: command === 'serve' ? '/' : '/gaia-profile-designer/',
-    
-    resolve: { 
-      tsconfigPaths: true 
+
+    resolve: {
+      tsconfigPaths: true
     },
-    
+
     plugins: [
       tailwindcss(),
       reactRouter(),
       compression({ algorithm: 'brotliCompress' })
     ],
-    
+
   }
 })

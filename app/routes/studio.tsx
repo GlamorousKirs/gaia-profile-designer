@@ -7,27 +7,26 @@ import { useIsTablet } from "@/hooks/use-is-tablet"
 import { useIsMobile } from "@/hooks/use-is-mobile"
 import type { SidebarTab } from "@/components/sidebar-panel"
 import ColumnManager, { type ColumnState } from "@/components/ColumnManager"
-
-// FIXED: Statically importing CodePanel to guarantee it never throws a chunk 404
 import CodePanel from "@/components/CodePanel"
+
+const SelectorPanel = lazy(() => import("@/components/SelectorPanel"))
 
 import {
   Monitor,
-  Folder,
   Layers,
   Settings,
-  SlidersHorizontal,
+  Move,
   Braces,
   Share2,
   MousePointer,
   Hand,
   Maximize2,
-  Minimize2
+  Minimize2,
+  Hash
 } from "lucide-react"
 import { ThemePicker } from "~/components/ThemePicker"
 
 const Canvas = lazy(() => import("~/components/Canvas").then(m => ({ default: m.Canvas })))
-const FileExplorer = lazy(() => import("@/components/FileExplorer"))
 const LayerManager = lazy(() => import("@/components/LayerManager"))
 const SettingsPanel = lazy(() => import("@/components/SettingsPanel"))
 const InspectorPanel = lazy(() => import("@/components/InspectorPanel"))
@@ -39,21 +38,21 @@ const INITIAL_PANELS = Object.keys(panelFiles)
   .map((path) => path.split("/").pop()?.replace(".html", ""))
   .filter((name): name is string => !!name && !EXCLUDED_PANELS.includes(name));
 
-const leftTabs: SidebarTab<"files" | "layers" | "columns">[] = [
-  { id: "files", icon: Folder, label: "Toggle File Explorer Sidepanel" },
+const leftTabs: SidebarTab<"selectors" | "layers" | "columns">[] = [
+  { id: "columns", icon: Move, label: "Toggle Column Manager" },
+  { id: "selectors", icon: Hash, label: "Toggle Gaia CSS Selectors Panel" },
   { id: "layers", icon: Layers, label: "Toggle Layer Panel" },
-  { id: "columns", icon: SlidersHorizontal, label: "Toggle Column Manager" },
 ]
 
 const rightTabs: SidebarTab<"settings" | "inspector">[] = [
   { id: "settings", icon: Settings, label: "Toggle Engine Settings Panel" },
-  { id: "inspector", icon: SlidersHorizontal, label: "Toggle Properties Inspector Panel" },
+  { id: "inspector", icon: Move, label: "Toggle Properties Inspector Panel" },
 ]
 
 export default function Studio() {
   const [leftOpen, setLeftOpen] = useState(true)
   const [rightOpen, setRightOpen] = useState(true)
-  const [activeLeftTab, setActiveLeftTab] = useState<"files" | "layers" | "columns">("files")
+  const [activeLeftTab, setActiveLeftTab] = useState<"selectors" | "layers" | "columns">("columns")
   const [activeRightTab, setActiveRightTab] = useState<"settings" | "inspector">("settings")
   const [activeTool, setActiveTool] = useState<"select" | "hand">("select")
   const [isCodeOpen, setIsCodeOpen] = useState(false)
@@ -114,6 +113,12 @@ export default function Studio() {
     )
   }
 
+  const handleSelectorSelect = (selector: string) => {
+    const codeSnippet = `\n${selector} {}\n`
+    setCssCode((prev) => prev + codeSnippet)
+    setIsCodeOpen(true)
+  }
+
   return (
     <TooltipProvider>
       <div className="flex flex-col w-screen h-screen bg-background overflow-hidden select-none text-foreground relative">
@@ -124,7 +129,7 @@ export default function Studio() {
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-xs block leading-none">Gaia Studio</span>
                 <span className="text-[10px] text-muted-foreground flex items-center gap-1 leading-none border-l border-border pl-2">
-                  <span className="size-1 rounded-full bg-emerald-500" /> v2.4.0
+                  <span className="size-1 rounded-full bg-emerald-500" /> WIP
                 </span>
               </div>
             </div>
@@ -148,9 +153,13 @@ export default function Studio() {
               tabs={leftTabs}
             >
               <Suspense fallback={<div className="p-4 text-xs text-muted-foreground animate-pulse">Loading panel...</div>}>
-                {activeLeftTab === "files" ? <FileExplorer /> :
-                  activeLeftTab === "layers" ? <LayerManager /> :
-                    <ColumnManager columns={columns} setColumns={setColumns} />}
+                {activeLeftTab === "selectors" ? (
+                  <SelectorPanel onSelectSelector={handleSelectorSelect} />
+                ) : activeLeftTab === "layers" ? (
+                  <LayerManager />
+                ) : (
+                  <ColumnManager columns={columns} setColumns={setColumns} />
+                )}
               </Suspense>
             </SidebarPanel>
           )}
@@ -249,7 +258,6 @@ export default function Studio() {
           )}
         </div>
 
-        {/* FIXED: Removed dynamic Suspense context; mounts seamlessly on dock interaction */}
         <CodePanel
           isOpen={isCodeOpen}
           code={cssCode}
