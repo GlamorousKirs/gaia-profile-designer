@@ -142,12 +142,27 @@ export const Canvas = memo(function Canvas({
         <style id="user-overrides"></style>
         <style id="avatar-styles"></style>
         <style>
-          html, body { overflow-x: hidden !important; }
-          .highlight-hover { outline: 2px dashed #6366f1 !important; outline-offset: -2px; cursor: crosshair !important; }
-          .highlight-selected { outline: 2px solid #2563eb !important; outline-offset: -2px; }
+          /* Remove layout-breaking horizontal scrollbars */
+          html, body {
+            overflow-x: hidden !important;
+          }
+          .highlight-hover {
+            outline: 2px dashed #6366f1 !important;
+            outline-offset: -2px;
+            cursor: crosshair !important;
+          }
+          .highlight-selected {
+            outline: 2px solid #2563eb !important;
+            outline-offset: -2px;
+          }
           body { box-sizing: border-box; }
-          html.highlight-selected body { outline: 2px solid #2563eb !important; outline-offset: -2px; }
-          * { user-select: none !important; }
+          html.highlight-selected body {
+            outline: 2px solid #2563eb !important;
+            outline-offset: -2px;
+          }
+          * {
+            user-select: none !important;
+          }
           ${shouldCenterPanel ? "html,body{overflow:hidden}body > *{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);margin:0;}" : ""}
         </style>
       </head>
@@ -158,8 +173,8 @@ export const Canvas = memo(function Canvas({
           const avatarStyleTag = document.getElementById('avatar-styles');
           let currentHovered = null;
           let activeSelectorString = "";
-          let computedAvatarUrl = "";
-          let computedUsername = "";
+          let computedAvatarUrl = "${DEFAULT_AVATAR}";
+          let computedUsername = "${DEFAULT_USERNAME}";
 
           function getSelector(el) {
             if (!el || el === document.body || el === document.documentElement) return 'html, body';
@@ -194,9 +209,13 @@ export const Canvas = memo(function Canvas({
             const detailsPanel = document.getElementById('id_details');
             if (detailsPanel && computedUsername) {
               const titleEl = detailsPanel.querySelector('#details_title');
-              if (titleEl) titleEl.textContent = computedUsername; 
+              if (titleEl && titleEl.textContent !== computedUsername) {
+                titleEl.textContent = computedUsername;
+              }
               const imgEl = detailsPanel.querySelector('img');
-              if (imgEl) imgEl.alt = computedUsername + "'s avatar";
+              if (imgEl && imgEl.alt !== computedUsername + "'s avatar") {
+                imgEl.alt = computedUsername + "'s avatar";
+              }
             }
           }
 
@@ -206,8 +225,6 @@ export const Canvas = memo(function Canvas({
           observer.observe(document.documentElement, { childList: true, subtree: true });
 
           window.addEventListener('message', (e) => {
-            if (e.origin !== window.location.origin) return;
-
             if (e.data.type === 'init-html' || e.data.type === 'update-html') {
               const scriptTag = document.querySelector('script');
               document.body.innerHTML = e.data.html;
@@ -222,8 +239,7 @@ export const Canvas = memo(function Canvas({
               computedUsername = e.data.username;
               forceProfileIdentitySwap();
               if (avatarStyleTag && computedAvatarUrl) {
-                const safeUrl = computedAvatarUrl.replace(/[\\"']/g, '\\$&');
-                avatarStyleTag.textContent = ':root { --user-avatar-url: url("' + safeUrl + '"); } [data-avatar], #id_details #id_avatar, #id_details .avatar { content: var(--user-avatar-url) !important; }';
+                avatarStyleTag.textContent = ':root { --user-avatar-url: url("' + computedAvatarUrl + '"); } [data-avatar], #id_details #id_avatar, #id_details .avatar { content: var(--user-avatar-url) !important; }';
               }
             }
             if (e.data.type === 'toggle-selection-mode') {
@@ -305,7 +321,7 @@ export const Canvas = memo(function Canvas({
               }
             }
             
-            window.parent.postMessage({ type: 'element-selected', selector: finalSelector }, window.location.origin);
+            window.parent.postMessage({ type: 'element-selected', selector: finalSelector }, '*');
           }, true);
         </script>
       </body>
@@ -316,32 +332,25 @@ export const Canvas = memo(function Canvas({
   }, [isSelectionMode])
 
   useEffect(() => {
-    const targetOrigin = window.location.origin
-
-    const sendStateUpdates = () => {
+    const handler = () => {
       const win = iframeRef.current?.contentWindow
       if (!win) return
 
-      win.postMessage({ type: 'init-html', html: integratedHtml }, targetOrigin)
-      win.postMessage({ type: 'update-css', css: `${rootCss}\n${cssCode}` }, targetOrigin)
-      win.postMessage({ type: 'update-identity', avatarUrl: finalAvatarUrl, username: finalUsername }, targetOrigin)
-      win.postMessage({ type: 'toggle-selection-mode', active: isSelectionMode }, targetOrigin)
-      win.postMessage({ type: 'sync-selected-element', selector: selectedSelector }, targetOrigin)
+      win.postMessage({ type: 'init-html', html: integratedHtml }, '*')
+      win.postMessage({ type: 'update-css', css: `${rootCss}\n${cssCode}` }, '*')
+      win.postMessage({ type: 'update-identity', avatarUrl: finalAvatarUrl, username: finalUsername }, '*')
+      win.postMessage({ type: 'toggle-selection-mode', active: isSelectionMode }, '*')
+      win.postMessage({ type: 'sync-selected-element', selector: selectedSelector }, '*')
     }
 
-    const iframe = iframeRef.current
-    if (iframe) {
-      iframe.addEventListener('load', sendStateUpdates)
-    }
+    iframeRef.current?.addEventListener('load', handler)
+    handler()
 
-    sendStateUpdates()
-
-    return () => iframe?.removeEventListener('load', sendStateUpdates)
+    return () => iframeRef.current?.removeEventListener('load', handler)
   }, [integratedHtml, rootCss, cssCode, isSelectionMode, selectedSelector, finalAvatarUrl, finalUsername])
 
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
-      if (e.origin !== window.location.origin) return
       if (e.data?.type === 'element-selected' && onElementSelected) {
         onElementSelected(e.data.selector)
       }

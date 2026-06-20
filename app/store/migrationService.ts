@@ -14,22 +14,31 @@ const SnippetValidationSchema = z.object({
 interface MigrationSchema {
     version: string
     timestamp: string
-    profileState: {
-        username: string
-        userId: string
-        avatarUrl: string
-    }
+    gstudioLocalStorage: Record<string, string>
     snippetsState: Record<string, Snippet>
 }
 
 const DATABASE_NAME = 'gaia-profile-designer'
 const STORE_NAME = 'snippets'
+const PREFIX = 'gstudio-'
 
 const migrationDbStore = createStore(DATABASE_NAME, STORE_NAME)
 
+// Helper utility to scan and collect all localStorage keys matching our global studio workspace prefix
+const getGStudioLocalStorageData = (): Record<string, string> => {
+    const data: Record<string, string> = {}
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key && key.startsWith(PREFIX)) {
+            data[key] = localStorage.getItem(key) || ''
+        }
+    }
+    return data
+}
+
 export const migrationService = {
     exportSystemData: async (): Promise<MigrationSchema> => {
-        const profile = useProfileStore.getState()
+        const localStorageData = getGStudioLocalStorageData()
 
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(DATABASE_NAME)
@@ -41,11 +50,7 @@ export const migrationService = {
                     return resolve({
                         version: "2.0.0",
                         timestamp: new Date().toISOString(),
-                        profileState: {
-                            username: profile.username || '',
-                            userId: profile.userId || '',
-                            avatarUrl: profile.avatarUrl || '',
-                        },
+                        gstudioLocalStorage: localStorageData,
                         snippetsState: {}
                     })
                 }
@@ -68,11 +73,7 @@ export const migrationService = {
                         resolve({
                             version: "2.0.0",
                             timestamp: new Date().toISOString(),
-                            profileState: {
-                                username: profile.username,
-                                userId: profile.userId,
-                                avatarUrl: profile.avatarUrl,
-                            },
+                            gstudioLocalStorage: localStorageData,
                             snippetsState: customSnippets,
                         })
                     }
@@ -89,15 +90,45 @@ export const migrationService = {
         if (!data || typeof data !== 'object') {
             throw new Error("Invalid import payload structure")
         }
-        if (!data.profileState || !data.snippetsState) {
+        if (!data.gstudioLocalStorage || !data.snippetsState) {
             throw new Error("Invalid migration schema structural signature")
         }
 
-        useProfileStore.setState({
-            username: String(data.profileState.username || '').slice(0, 100),
-            userId: String(data.profileState.userId || '').slice(0, 100),
-            avatarUrl: String(data.profileState.avatarUrl || '').slice(0, 500),
-        })
+        // Clean out existing localized configurations safely before writing values down
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+            const key = localStorage.key(i)
+            if (key && key.startsWith(PREFIX)) {
+                localStorage.removeItem(key)
+            }
+        }
+
+        // Restore completely dynamic key mappings via incoming object tracking
+        for (const [key, value] of Object.entries(data.gstudioLocalStorage)) {
+            if (key.startsWith(PREFIX)) {
+                localStorage.setItem(key, String(value))
+            }
+        }
+
+        // Force reload state indicators for global React stores to catch current LocalStorage attributes safely bypassing exact type specifications
+        const profileStoreState = useProfileStore.getState() as Record<string, any>
+        if (profileStoreState && typeof profileStoreState.initializeStore === 'function') {
+            await profileStoreState.initializeStore()
+        } else {
+            // Fallback manual hydration mapping values directly from the dynamic namespace parsing if state hooks lack structural bootstrap variants
+            try {
+                const rawUser = localStorage.getItem(`${PREFIX}user`)
+                if (rawUser) {
+                    const parsedUser = JSON.parse(rawUser)
+                    useProfileStore.setState({
+                        username: String(parsedUser.username || '').slice(0, 100),
+                        userId: String(parsedUser.userId || '').slice(0, 100),
+                        avatarUrl: String(parsedUser.avatarUrl || '').slice(0, 500),
+                    })
+                }
+            } catch (e) {
+                console.warn("Failed back-channel client store update sequence:", e)
+            }
+        }
 
         await clear(migrationDbStore)
 
@@ -131,7 +162,6 @@ export const migrationService = {
                         if (key === '__proto__' || key === 'constructor') continue
 
                         const rawSnippet = data.snippetsState[key]
-
                         const cleanSnippet = SnippetValidationSchema.parse(rawSnippet)
 
                         store.put(cleanSnippet, key)
@@ -145,7 +175,14 @@ export const migrationService = {
     },
 
     purgeSystemData: async (): Promise<void> => {
-        localStorage.clear()
+        // Purely wipe gstudio scoped entries to maintain sandbox isolation environments
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+            const key = localStorage.key(i)
+            if (key && key.startsWith(PREFIX)) {
+                localStorage.removeItem(key)
+            }
+        }
+        
         sessionStorage.clear()
 
         try {

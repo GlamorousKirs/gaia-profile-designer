@@ -26,6 +26,11 @@ const GaiaLogoPanel = lazy(() => import("@/components/GaiaLogoPanel").then((m) =
 const panelFiles = import.meta.glob("/app/presets/panels_html/*.html")
 const EXCLUDED_PANELS = ["header", "columns"]
 
+const presetCssFiles = import.meta.glob("/app/presets/**/preset.css", {
+  query: "?raw",
+  import: "default",
+})
+
 const INITIAL_PANELS = Object.keys(panelFiles)
   .map((path) => path.split("/").pop()?.replace(".html", ""))
   .filter((name): name is string => !!name && !EXCLUDED_PANELS.includes(name))
@@ -58,8 +63,12 @@ export default function Studio() {
   const category = searchParams.get("category")
 
   const [rootCss] = useState("")
+
   const [cssCode, setCssCode] = useState<string>(() => {
-    return localStorage.getItem("autosave_draft_code") || ""
+    if (!searchParams.get("id")) {
+      return localStorage.getItem("autosave_draft_code") || ""
+    }
+    return ""
   })
   const [activePanels, setActivePanels] = useState<string[]>([])
 
@@ -99,11 +108,17 @@ export default function Studio() {
   })
 
   useEffect(() => {
-    const hasProfileData = !!(profileUsername || profileUserId || profileAvatarUrl)
-    if (!hasProfileData) {
+    const hasVisited = localStorage.getItem("gstudio-has-visited-studio")
+
+    if (!hasVisited) {
       setIsProfileOpen(true)
     }
   }, [])
+
+  const handleCloseProfile = () => {
+    localStorage.setItem("gstudio-has-visited-studio", "true")
+    setIsProfileOpen(false)
+  }
 
   const handleSetActiveTool = useCallback((tool: "select" | null) => {
     setActiveTool(tool)
@@ -197,6 +212,25 @@ export default function Studio() {
   const { isTablet } = useIsTablet()
 
   useEffect(() => {
+    if (!presetId || !category) return
+
+    const targetPath = `/app/presets/${category}/${presetId}/preset.css`
+    const fetchPresetString = presetCssFiles[targetPath]
+
+    if (fetchPresetString) {
+      fetchPresetString()
+        .then((rawCss) => {
+          const cleanCss = typeof rawCss === "string" ? rawCss : ""
+          setCssCode(cleanCss)
+          localStorage.setItem("myapp_v1_autosave_code", cleanCss)
+        })
+        .catch((err) => {
+          console.error(`Failed to dynamically evaluate configuration at ${targetPath}:`, err)
+        })
+    }
+  }, [presetId, category])
+
+  useEffect(() => {
     localStorage.setItem("autosave_draft_code", cssCode)
   }, [cssCode])
 
@@ -269,6 +303,8 @@ export default function Studio() {
                 />
               </Suspense>
             </div>
+
+            <CodePanel isOpen={isCodeOpen} code={cssCode} setCode={setCssCode} />
 
             <StudioToolbar
               activeTool={activeTool}
@@ -362,8 +398,7 @@ export default function Studio() {
           )}
         </div>
 
-        <CodePanel isOpen={isCodeOpen} code={cssCode} setCode={setCssCode} />
-        <LocalProfile isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
+        <LocalProfile isOpen={isProfileOpen} onClose={handleCloseProfile} />
       </div>
     </TooltipProvider>
   )

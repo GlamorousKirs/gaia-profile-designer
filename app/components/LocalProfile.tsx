@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Sparkles, X, Check, ShieldCheck, PenTool } from "lucide-react"
+import { Sparkles, X, Check, ShieldCheck, PenTool, CornerUpRight } from "lucide-react"
 import { useProfileStore } from "@/store/useProfileStore"
 
 interface LocalProfileProps {
@@ -13,10 +13,10 @@ interface LocalProfileProps {
 }
 
 const SAFE_URL_REGEX = /^https?:\/\//i
+const PREFIX = "gstudio-"
 
 export function LocalProfile({ isOpen, onClose }: LocalProfileProps) {
   const store = useProfileStore()
-
   const [mounted, setMounted] = useState(false)
 
   const [username, setUsername] = useState("")
@@ -65,6 +65,7 @@ export function LocalProfile({ isOpen, onClose }: LocalProfileProps) {
         : `https://${sanitizedAvatar.replace(/^\/+/g, "")}`
     }
 
+    // Persist your profile values down through your standardized local storage wrapper 
     store.setProfile({
       username: username.trim(),
       userId: userId.trim(),
@@ -107,7 +108,10 @@ export function LocalProfile({ isOpen, onClose }: LocalProfileProps) {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Username</Label>
+                    <div className="flex justify-between items-center">
+                      <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Username</Label>
+                      <span className="text-[8px] font-mono opacity-40 text-muted-foreground">{PREFIX}user</span>
+                    </div>
                     <Input
                       className="bg-primary/5 border-primary/10"
                       placeholder="gaia_user"
@@ -138,7 +142,7 @@ export function LocalProfile({ isOpen, onClose }: LocalProfileProps) {
 
                 <div className="flex items-center gap-4">
                   <div className="size-20 rounded-lg border border-primary/20 bg-primary/5 flex items-center justify-center shrink-0 overflow-hidden">
-                    {isSafeAvatar ? (
+                    ={isSafeAvatar ? (
                       <img
                         src={avatarUrl.trim()}
                         alt="Preview"
@@ -152,28 +156,39 @@ export function LocalProfile({ isOpen, onClose }: LocalProfileProps) {
                     )}
                   </div>
 
-                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 space-y-2">
+                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 space-y-2 flex-1">
                     <div className="flex items-center gap-2 text-primary">
                       <ShieldCheck className="size-4" />
                       <span className="text-[10px] font-black uppercase tracking-widest">Privacy Notice</span>
                     </div>
                     <p className="text-[10px] text-muted-foreground leading-relaxed">
-                      These details are stored <strong>locally in your browser</strong>. Your avatar replaces the default one in the Details panel, while your username and Gaia ID are used to generate theme credits in your editor.
+                      These parameters save sandboxed signatures directly under <strong>{PREFIX}</strong> domains within this client framework to prevent storage leakage across active workspace modules.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <Button
-                onClick={handleSave}
-                className="w-full h-12 font-black uppercase tracking-widest gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                {hasData ? (
-                  <> <Check className="size-4" /> Apply Changes </>
-                ) : (
-                  <> <PenTool className="size-4" /> Initialize Profile </>
-                )}
-              </Button>
+              <div className="flex items-center gap-2 w-full">
+                <Button
+                  variant="outline"
+                  onClick={onClose}
+                  className="h-12 px-5 font-black uppercase tracking-widest gap-2 border-primary/20 text-muted-foreground hover:text-foreground"
+                >
+                  <CornerUpRight className="size-4" />
+                  Skip
+                </Button>
+
+                <Button
+                  onClick={handleSave}
+                  className="flex-1 h-12 font-black uppercase tracking-widest gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  {hasData ? (
+                    <> <Check className="size-4" /> Apply Changes </>
+                  ) : (
+                    <> <PenTool className="size-4" /> Initialize Profile </>
+                  )}
+                </Button>
+              </div>
             </div>
           </motion.div>
         </motion.div>
