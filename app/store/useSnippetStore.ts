@@ -1,8 +1,6 @@
 import { useMemo } from 'react'
 import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
-import type { StateStorage } from 'zustand/middleware'
-import { get, set, del } from 'idb-keyval'
+import { get, set, del, entries, createStore } from 'idb-keyval'
 
 export interface Snippet {
   id: string
@@ -11,95 +9,125 @@ export interface Snippet {
   isDefault?: boolean
 }
 
-export type SnippetActionType = 'append-cursor' | 'prepend' | 'append' | 'replace'
-
 interface SnippetStore {
-  snippets: Snippet[]
+  snippets: Record<string, Snippet>
   showDefaults: boolean
+  isLoading: boolean
+
+  initializeStore: () => Promise<void>
   setShowDefaults: (show: boolean) => void
-  addSnippet: (title: string, code: string) => void
-  updateSnippet: (id: string, code: string) => void
-  renameSnippet: (id: string, title: string) => void
-  deleteSnippet: (id: string) => void
+  addSnippet: (title: string, code: string) => Promise<void>
+  updateSnippet: (id: string, code: string) => Promise<void>
+  renameSnippet: (id: string, title: string) => Promise<void>
+  deleteSnippet: (id: string) => Promise<void>
 }
 
 const rawDefaultFiles = import.meta.glob('/app/default-snippets/*.txt', {
   eager: true,
   query: '?raw',
 })
-
-const DYNAMIC_SYSTEM_DEFAULTS: Snippet[] = Object.entries(rawDefaultFiles).map(
-  ([filePath, module]) => {
-    const fileNameWithExtension = filePath.split('/').pop() || ''
-    const rawName = fileNameWithExtension.replace('.txt', '')
-    const formattedTitle = rawName
-      .split('-')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ')
-
-    return {
-      id: `default-${rawName}`,
-      title: formattedTitle,
-      code: (module as any).default || '',
-      isDefault: true,
-    }
+const DYNAMIC_SYSTEM_DEFAULTS: Snippet[] = Object.entries(rawDefaultFiles).map(([filePath, module]) => {
+  const rawName = (filePath.split('/').pop() || '').replace('.txt', '')
+  return {
+    id: `default-${rawName}`,
+    title: rawName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+    code: (module as any).default || '',
+    isDefault: true,
   }
-)
+})
 
-const customIndexedDbStorage: StateStorage = {
-  getItem: async (name: string): Promise<string | null> => {
-    const value = await get<string>(name)
-    return value ?? null
-  },
-  setItem: async (name: string, value: string): Promise<void> => {
-    await set(name, value)
-  },
-  removeItem: async (name: string): Promise<void> => {
-    await del(name)
-  },
+const customDbStore = createStore('gaia-profile-designer', 'snippets')
+
+const generateShortId = (): string => {
+  return Math.random().toString(36).substring(2, 8)
 }
 
-export const useSnippetStore = create<SnippetStore>()(
-  persist<SnippetStore>(
-    (setActions) => ({
-      snippets: [],
-      showDefaults: true,
-      setShowDefaults: (show) => setActions({ showDefaults: show }),
-      addSnippet: (title, code) =>
-        setActions((state) => ({
-          snippets: [
-            ...state.snippets,
-            { id: crypto.randomUUID(), title, code, isDefault: false },
-          ],
-        })),
-      updateSnippet: (id, code) =>
-        setActions((state) => ({
-          snippets: state.snippets.map((s) => (s.id === id ? { ...s, code } : s)),
-        })),
-      renameSnippet: (id, title) =>
-        setActions((state) => ({
-          snippets: state.snippets.map((s) => (s.id === id ? { ...s, title } : s)),
-        })),
-      deleteSnippet: (id) =>
-        setActions((state) => ({
-          snippets: state.snippets.filter((s) => s.id !== id),
-        })),
-    }),
-    {
-      name: 'gstudio-snippets-storage',
-      storage: createJSONStorage(() => customIndexedDbStorage),
-      partialize: (state) => ({
-        snippets: state.snippets.filter((s) => !s.isDefault),
-      }) as any,
+export const useSnippetStore = create<SnippetStore>((setActions) => ({
+  snippets: {},
+  showDefaults: true,
+  isLoading: true,
+
+  initializeStore: async () => {
+    try {
+      const allEntries = await entries<string, Snippet>(customDbStore)
+      const customSnippets: Record<string, Snippet> = {}
+
+      for (const [key, value] of allEntries) {
+        if (key.length === 6) {
+          customSnippets[value.id] = value
+        }
+      }
+
+      setActions({ snippets: customSnippets, isLoading: false })
+    } catch (e) {
+      console.error("Failed to load snippets", e)
+      setActions({ isLoading: false })
     }
-  )
-)
+  },
+
+  setShowDefaults: (show) => setActions({ showDefaults: show }),
+
+  addSnippet: async (title, code) => {
+    setActions((state) => {
+      let id = generateShortId()
+      while (state.snippets[id]) {
+        id = generateShortId()
+      }
+
+      const newSnippet: Snippet = { id, title, code, isDefault: false }
+
+      set(id, newSnippet, customDbStore)
+
+      return {
+        snippets: { ...state.snippets, [id]: newSnippet }
+      }
+    })
+  },
+
+  updateSnippet: async (id, code) => {
+    setActions((state) => {
+      const target = state.snippets[id]
+      if (!target) return state
+
+      const updated = { ...target, code }
+      set(id, updated, customDbStore)
+
+      return {
+        snippets: { ...state.snippets, [id]: updated }
+      }
+    })
+  },
+
+  renameSnippet: async (id, title) => {
+    setActions((state) => {
+      const target = state.snippets[id]
+      if (!target) return state
+
+      const updated = { ...target, title }
+      set(id, updated, customDbStore)
+
+      return {
+        snippets: { ...state.snippets, [id]: updated }
+      }
+    })
+  },
+
+  deleteSnippet: async (id) => {
+    await del(id, customDbStore)
+
+    setActions((state) => {
+      const { [id]: _, ...remaining } = state.snippets
+      return { snippets: remaining }
+    })
+  },
+}))
 
 export const useFilteredSnippets = () => {
   const snippets = useSnippetStore((state) => state.snippets)
   const showDefaults = useSnippetStore((state) => state.showDefaults)
 
   return useMemo(() => {
-    return showDefaults ? [...DYNAMIC_SYSTEM_DEFAULTS, ...snippets] : snippets
+    const customSnippetsArray = Object.values(snippets)
+    return showDefaults ? [...DYNAMIC_SYSTEM_DEFAULTS, ...customSnippetsArray] : customSnippetsArray
   }, [showDefaults, snippets])
 }

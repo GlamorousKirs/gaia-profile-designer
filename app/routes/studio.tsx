@@ -14,7 +14,6 @@ import { StudioMobileFallback } from "./studio/StudioMobileFallback"
 import { StudioHeader } from "./studio/StudioHeader"
 import { StudioToolbar } from "./studio/StudioToolbar"
 
-// Removed 'Layers' from lucide-react imports
 import { Settings, Move, Hash, Component, Image } from "lucide-react"
 
 const SelectorPanel = lazy(() => import("@/components/SelectorPanel"))
@@ -30,7 +29,6 @@ const INITIAL_PANELS = Object.keys(panelFiles)
   .map((path) => path.split("/").pop()?.replace(".html", ""))
   .filter((name): name is string => !!name && !EXCLUDED_PANELS.includes(name))
 
-// Removed layers tab definition
 const leftTabs: SidebarTab<"selectors" | "columns">[] = [
   { id: "columns", icon: Move, label: "Toggle Column Manager" },
   { id: "selectors", icon: Hash, label: "Toggle Gaia CSS Selectors Panel" },
@@ -39,12 +37,11 @@ const leftTabs: SidebarTab<"selectors" | "columns">[] = [
 export default function Studio() {
   const [leftOpen, setLeftOpen] = useState(true)
   const [rightOpen, setRightOpen] = useState(true)
-  // Shifted initial active left tab string type constraint
   const [activeLeftTab, setActiveLeftTab] = useState<"selectors" | "columns">("columns")
   const [activeRightTab, setActiveRightTab] = useState<"settings" | "inspector" | "elements" | "logos">("elements")
-  
+
   const [activeTool, setActiveTool] = useState<"select" | null>(null)
-  
+
   const [isCodeOpen, setIsCodeOpen] = useState(false)
   const [isMaximized, setIsMaximized] = useState(false)
   const [, startTransition] = useTransition()
@@ -60,7 +57,7 @@ export default function Studio() {
     return localStorage.getItem("autosave_draft_code") || ""
   })
   const [activePanels, setActivePanels] = useState<string[]>([])
-  
+
   const [selectedSelector, setSelectedSelector] = useState<string>("")
 
   const [borderRadius, setBorderRadius] = useState<number>(0)

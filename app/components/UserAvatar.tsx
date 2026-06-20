@@ -1,4 +1,5 @@
 import { memo } from "react"
+import { useNavigate } from "react-router"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -20,6 +21,8 @@ interface UserAvatarProps {
 export const UserAvatar = memo(function UserAvatar({
   onOpenProfile,
 }: UserAvatarProps) {
+  const navigate = useNavigate()
+  
   const username = useProfileStore((state) => state.username)
   const userId = useProfileStore((state) => state.userId)
   const avatarUrl = useProfileStore((state) => state.avatarUrl)
@@ -65,11 +68,13 @@ export const UserAvatar = memo(function UserAvatar({
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={onOpenProfile}>
+          <DropdownMenuItem onClick={onOpenProfile} className="cursor-pointer">
             {username ? "Edit Local Profile" : "Setup Local Profile"}
           </DropdownMenuItem>
 
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/settings")} className="cursor-pointer">
+            Settings
+          </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -197,7 +197,7 @@ export function ElementPropertiesPanel({
         setPaddingTop(0); setPaddingBottom(0); setPaddingLeft(0); setPaddingRight(0)
         setMarginTop(0); setMarginBottom(0); setMarginLeft(0); setMarginRight(0)
         setFontSize(14); setLetterSpacing(0); setOpacityVal(100)
-        borderWidth(0); setBorderColor("#000000")
+        setBorderWidth(0); setBorderColor("#000000")
     }
 
     const handleResetStyles = () => {
@@ -259,11 +259,12 @@ export function ElementPropertiesPanel({
     }
 
     return (
-        <div className="flex flex-col gap-4 p-3 h-full overflow-y-auto min-h-0">
-            <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-4 p-3 h-full overflow-y-auto min-h-0 bg-background/50">
+            {/* SECTION 1: SELECTED ELEMENT HEADER */}
+            <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-muted/40 border border-border/60 shadow-xs">
                 <div className="flex items-center justify-between px-1">
                     <h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
-                        Target Selector
+                        Selected Element
                     </h3>
                     <Button
                         variant="ghost"
@@ -277,130 +278,135 @@ export function ElementPropertiesPanel({
                     </Button>
                 </div>
                 <div className="bg-card border border-border rounded-lg shadow-sm p-2 flex items-center w-full font-mono text-[11px] break-all text-primary select-text">
-                    {selectedSelector}
+                    {selectedSelector || "None selected"}
                 </div>
             </div>
 
-            <div className="flex flex-col gap-1.5">
-                <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
-                    Dimensions
-                </h3>
-                <div className="bg-card border border-border rounded-lg shadow-sm p-2.5 space-y-2.5">
-                    <div className="flex gap-3">
-                        <div className="flex-1"><SliderProperty label="W" value={widthVal} max={2000} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setWidthVal(v); updateCssProperty("width", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
-                        <div className="flex-1"><SliderProperty label="H" value={heightVal} max={2000} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setHeightVal(v); updateCssProperty("width", v, "px"); updateCssProperty("height", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between px-1">
-                    <h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
-                        Padding
+            {/* PROPERTIES WRAPPER WITH DISTINCT BACKGROUND */}
+            <div className="flex flex-col gap-5 p-3 rounded-xl bg-muted/20 border border-border/40 shadow-xs">
+                {/* Dimensions */}
+                <div className="flex flex-col gap-1.5">
+                    <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
+                        Dimensions
                     </h3>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-4 px-1 text-[9px] text-muted-foreground hover:text-foreground gap-0.5"
-                        onClick={() => setShowIndividualPadding(!showIndividualPadding)}
-                    >
-                        {showIndividualPadding ? <ChevronDown className="size-2.5" /> : <ChevronRight className="size-2.5" />}
-                        Per Side
-                    </Button>
-                </div>
-                <div className="bg-card border border-border rounded-lg shadow-sm p-2.5 space-y-2.5">
                     <div className="flex gap-3">
-                        <div className="flex-1"><SliderProperty label="P-X" value={paddingLeft === paddingRight ? paddingLeft : 0} suffix="px" onChange={handlePaddingAxisX} /></div>
-                        <div className="flex-1"><SliderProperty label="P-Y" value={paddingTop === paddingBottom ? paddingTop : 0} suffix="px" onChange={handlePaddingAxisY} /></div>
+                        <div className="flex-1"><SliderProperty label="W" value={widthVal} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setWidthVal(v); updateCssProperty("width", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
+                        <div className="flex-1"><SliderProperty label="H" value={heightVal} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setHeightVal(v); updateCssProperty("height", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
                     </div>
-                    {showIndividualPadding && (
-                        <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 pt-2.5 border-t border-dashed border-border/60">
-                            <SliderProperty label="P-T" value={paddingTop} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setPaddingTop(v); updateCssProperty("padding-top", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
-                            <SliderProperty label="P-B" value={paddingBottom} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setPaddingBottom(v); updateCssProperty("padding-bottom", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
-                            <SliderProperty label="P-L" value={paddingLeft} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setPaddingLeft(v); updateCssProperty("padding-left", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
-                            <SliderProperty label="P-R" value={paddingRight} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setPaddingRight(v); updateCssProperty("padding-right", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
-                        </div>
-                    )}
                 </div>
-            </div>
 
-            <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between px-1">
-                    <h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
-                        Margin
+                {/* Padding */}
+                <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between px-1">
+                        <h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
+                            Padding
+                        </h3>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-4 px-1 text-[9px] text-muted-foreground hover:text-foreground gap-0.5"
+                            onClick={() => setShowIndividualPadding(!showIndividualPadding)}
+                        >
+                            {showIndividualPadding ? <ChevronDown className="size-2.5" /> : <ChevronRight className="size-2.5" />}
+                            Per Side
+                        </Button>
+                    </div>
+                    <div className="space-y-2.5">
+                        <div className="flex gap-3">
+                            <div className="flex-1"><SliderProperty label="P-X" value={paddingLeft === paddingRight ? paddingLeft : 0} suffix="px" onChange={handlePaddingAxisX} /></div>
+                            <div className="flex-1"><SliderProperty label="P-Y" value={paddingTop === paddingBottom ? paddingTop : 0} suffix="px" onChange={handlePaddingAxisY} /></div>
+                        </div>
+                        {showIndividualPadding && (
+                            <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 pt-2 border-t border-dashed border-border/40">
+                                <SliderProperty label="P-T" value={paddingTop} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setPaddingTop(v); updateCssProperty("padding-top", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
+                                <SliderProperty label="P-B" value={paddingBottom} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setPaddingBottom(v); updateCssProperty("padding-bottom", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
+                                <SliderProperty label="P-L" value={paddingLeft} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setPaddingLeft(v); updateCssProperty("padding-left", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
+                                <SliderProperty label="P-R" value={paddingRight} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setPaddingRight(v); updateCssProperty("padding-right", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Margin */}
+                <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between px-1">
+                        <h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
+                            Margin
+                        </h3>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-4 px-1 text-[9px] text-muted-foreground hover:text-foreground gap-0.5"
+                            onClick={() => setShowIndividualMargin(!showIndividualMargin)}
+                        >
+                            {showIndividualMargin ? <ChevronDown className="size-2.5" /> : <ChevronRight className="size-2.5" />}
+                            Per Side
+                        </Button>
+                    </div>
+                    <div className="space-y-2.5">
+                        <div className="flex gap-3">
+                            <div className="flex-1"><SliderProperty label="M-X" value={marginLeft === marginRight ? marginLeft : 0} suffix="px" onChange={handleMarginAxisX} /></div>
+                            <div className="flex-1"><SliderProperty label="M-Y" value={marginTop === marginBottom ? marginTop : 0} suffix="px" onChange={handleMarginAxisY} /></div>
+                        </div>
+                        {showIndividualMargin && (
+                            <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 pt-2 border-t border-dashed border-border/40">
+                                <SliderProperty label="M-T" value={marginTop} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setMarginTop(v); updateCssProperty("margin-top", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
+                                <SliderProperty label="M-B" value={marginBottom} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setMarginBottom(v); updateCssProperty("margin-bottom", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
+                                <SliderProperty label="M-L" value={marginLeft} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setMarginLeft(v); updateCssProperty("margin-left", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
+                                <SliderProperty label="M-R" value={marginRight} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setMarginRight(v); updateCssProperty("margin-right", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Typography */}
+                <div className="flex flex-col gap-1.5">
+                    <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
+                        Typography
                     </h3>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-4 px-1 text-[9px] text-muted-foreground hover:text-foreground gap-0.5"
-                        onClick={() => setShowIndividualMargin(!showIndividualMargin)}
-                    >
-                        {showIndividualMargin ? <ChevronDown className="size-2.5" /> : <ChevronRight className="size-2.5" />}
-                        Per Side
-                    </Button>
-                </div>
-                <div className="bg-card border border-border rounded-lg shadow-sm p-2.5 space-y-2.5">
                     <div className="flex gap-3">
-                        <div className="flex-1"><SliderProperty label="M-X" value={marginLeft === marginRight ? marginLeft : 0} min={-200} suffix="px" onChange={handleMarginAxisX} /></div>
-                        <div className="flex-1"><SliderProperty label="M-Y" value={marginTop === marginBottom ? marginTop : 0} min={-200} suffix="px" onChange={handleMarginAxisY} /></div>
+                        <div className="flex-1"><SliderProperty label="Size" value={fontSize} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setFontSize(v); updateCssProperty("font-size", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
+                        <div className="flex-1"><SliderProperty label="Kern" value={letterSpacing} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setLetterSpacing(v); updateCssProperty("letter-spacing", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
                     </div>
-                    {showIndividualMargin && (
-                        <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 pt-2.5 border-t border-dashed border-border/60">
-                            <SliderProperty label="M-T" value={marginTop} min={-200} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setMarginTop(v); updateCssProperty("margin-top", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
-                            <SliderProperty label="M-B" value={marginBottom} min={-200} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setMarginBottom(v); updateCssProperty("margin-bottom", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
-                            <SliderProperty label="M-L" value={marginLeft} min={-200} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setMarginLeft(v); updateCssProperty("margin-left", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
-                            <SliderProperty label="M-R" value={marginRight} min={-200} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setMarginRight(v); updateCssProperty("margin-right", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
+                </div>
+
+                {/* Borders & Shapes */}
+                <div className="flex flex-col gap-1.5">
+                    <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
+                        Borders & Shapes
+                    </h3>
+                    <div className="space-y-2.5">
+                        <div className="flex gap-3">
+                            <div className="flex-1"><SliderProperty label="Rad" value={borderRadius} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setBorderRadius(v); updateCssProperty("border-radius", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
+                            <div className="flex-1"><SliderProperty label="Thick" value={borderWidth} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setBorderWidth(v); updateCssProperty("border-width", v, "px"); updateCssProperty("border-style", "solid"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
                         </div>
-                    )}
-                </div>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-                <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
-                    Typography
-                </h3>
-                <div className="bg-card border border-border rounded-lg shadow-sm p-2.5 space-y-2.5">
-                    <div className="flex gap-3">
-                        <div className="flex-1"><SliderProperty label="Size" value={fontSize} min={6} max={120} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setFontSize(v); updateCssProperty("font-size", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
-                        <div className="flex-1"><SliderProperty label="Kern" value={letterSpacing} min={-10} max={40} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setLetterSpacing(v); updateCssProperty("letter-spacing", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-                <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
-                    Borders & Shapes
-                </h3>
-                <div className="bg-card border border-border rounded-lg shadow-sm p-2.5 space-y-2.5">
-                    <div className="flex gap-3">
-                        <div className="flex-1"><SliderProperty label="Rad" value={borderRadius} max={200} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setBorderRadius(v); updateCssProperty("border-radius", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
-                        <div className="flex-1"><SliderProperty label="Thick" value={borderWidth} max={30} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setBorderWidth(v); updateCssProperty("border-width", v, "px"); updateCssProperty("border-style", "solid"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
-                    </div>
-                    <div className="flex items-center gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors w-full font-mono text-[11px]">
-                        <span className="text-[9px] font-bold text-muted-foreground uppercase pl-1 shrink-0 w-12">Color</span>
-                        <ColorPicker color={borderColor} onChange={(v) => handleColorUpdate("border-color", setBorderColor, v)} />
-                        <span className="truncate text-foreground pl-1 uppercase font-mono tracking-wide">{borderColor}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-                <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
-                    Fills & Appearance
-                </h3>
-                <div className="bg-card border border-border rounded-lg shadow-sm p-2.5 space-y-2.5">
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="flex items-center gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors font-mono text-[11px]">
-                            <ColorPicker color={bgColor} onChange={(v) => handleColorUpdate("background-color", setBgColor, v)} />
-                            <span className="truncate text-foreground uppercase tracking-wide">{bgColor}</span>
-                        </div>
-                        <div className="flex items-center gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors font-mono text-[11px]">
-                            <ColorPicker color={textColor} onChange={(v) => handleColorUpdate("color", setTextColor, v)} />
-                            <span className="truncate text-foreground uppercase tracking-wide">{textColor}</span>
+                        <div className="flex items-center gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors w-full font-mono text-[11px]">
+                            <span className="text-[9px] font-bold text-muted-foreground uppercase pl-1 shrink-0 w-12">Color</span>
+                            <ColorPicker color={borderColor} onChange={(v) => handleColorUpdate("border-color", setBorderColor, v)} />
+                            <span className="truncate text-foreground pl-1 uppercase font-mono tracking-wide">{borderColor}</span>
                         </div>
                     </div>
-                    <div className="pt-0.5">
-                        <SliderProperty label="Opac" value={opacityVal} min={0} max={100} suffix="%" onChange={(v) => { isUpdatingRef.current = true; setOpacityVal(v); updateCssProperty("opacity", v / 100); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
+                </div>
+
+                {/* Fills & Appearance */}
+                <div className="flex flex-col gap-1.5">
+                    <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
+                        Fills & Appearance
+                    </h3>
+                    <div className="space-y-2.5">
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="flex items-center gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors font-mono text-[11px]">
+                                <ColorPicker color={bgColor} onChange={(v) => handleColorUpdate("background-color", setBgColor, v)} />
+                                <span className="truncate text-foreground uppercase tracking-wide">{bgColor}</span>
+                            </div>
+                            <div className="flex items-center gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors font-mono text-[11px]">
+                                <ColorPicker color={textColor} onChange={(v) => handleColorUpdate("color", setTextColor, v)} />
+                                <span className="truncate text-foreground uppercase tracking-wide">{textColor}</span>
+                            </div>
+                        </div>
+                        <div className="pt-0.5">
+                            <SliderProperty label="Opac" value={opacityVal} suffix="%" onChange={(v) => { isUpdatingRef.current = true; setOpacityVal(v); updateCssProperty("opacity", v / 100); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />
+                        </div>
                     </div>
                 </div>
             </div>
