@@ -16,7 +16,7 @@ const panelHtmlModules = import.meta.glob("/app/presets/panels_html/*.html", { q
 
 interface CanvasProps {
   isMaximized: boolean
-  activeTool: "select" | "hand"
+  activeTool: "select" | null
   rootCss?: string
   cssCode?: string
   presetId?: string | null
@@ -36,14 +36,13 @@ export const Canvas = memo(function Canvas({
   category = null,
   activePanels = [],
   columnLayout = null,
-  selectedSelector = "html, body",
+  selectedSelector = "",
   onElementSelected,
 }: CanvasProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const isSelectionMode = activeTool === "select"
-  
-  // Pull both avatar URL and username parameters from state store
+
   const avatarUrl = useProfileStore((state) => state.avatarUrl)
   const username = useProfileStore((state) => state.username)
 
@@ -143,6 +142,10 @@ export const Canvas = memo(function Canvas({
         <style id="user-overrides"></style>
         <style id="avatar-styles"></style>
         <style>
+          /* Remove layout-breaking horizontal scrollbars */
+          html, body {
+            overflow-x: hidden !important;
+          }
           .highlight-hover {
             outline: 2px dashed #6366f1 !important;
             outline-offset: -2px;
@@ -169,7 +172,7 @@ export const Canvas = memo(function Canvas({
           const userStyleTag = document.getElementById('user-overrides');
           const avatarStyleTag = document.getElementById('avatar-styles');
           let currentHovered = null;
-          let activeSelectorString = "html, body";
+          let activeSelectorString = "";
           let computedAvatarUrl = "${DEFAULT_AVATAR}";
           let computedUsername = "${DEFAULT_USERNAME}";
 
@@ -186,7 +189,6 @@ export const Canvas = memo(function Canvas({
           }
 
           function forceProfileIdentitySwap() {
-            // 1. Direct Target DOM Manipulation for Avatar Assets
             const targetIds = ['id_details', 'avatar_menu', 'id_avatar'];
             targetIds.forEach(id => {
               const panel = document.getElementById(id);
@@ -204,7 +206,6 @@ export const Canvas = memo(function Canvas({
               if (computedAvatarUrl && img.src !== computedAvatarUrl) img.src = computedAvatarUrl;
             });
 
-            // 2. Direct Username Replacements inside Details Title Context
             const detailsPanel = document.getElementById('id_details');
             if (detailsPanel && computedUsername) {
               const titleEl = detailsPanel.querySelector('#details_title');
@@ -218,7 +219,6 @@ export const Canvas = memo(function Canvas({
             }
           }
 
-          // Keep watching for dynamic template modifications or script rerenders
           const observer = new MutationObserver(() => {
             forceProfileIdentitySwap();
           });
@@ -250,7 +250,7 @@ export const Canvas = memo(function Canvas({
               }
             }
             if (e.data.type === 'sync-selected-element') {
-              activeSelectorString = e.data.selector || "html, body";
+              activeSelectorString = e.data.selector || "";
               document.documentElement.classList.remove('highlight-selected');
               document.querySelectorAll('.highlight-selected').forEach(el => {
                 el.classList.remove('highlight-selected');
@@ -289,35 +289,38 @@ export const Canvas = memo(function Canvas({
             if (!window.isSelectionActive) return;
             e.preventDefault();
             e.stopPropagation();
-            let finalSelector = "html, body";
+            let finalSelector = "";
 
-            if (e.target !== document.body && e.target !== document.documentElement) {
-              const baseSelector = getSelector(e.target);
-              const hasShift = e.shiftKey;
-              const hasCtrl = e.ctrlKey || e.metaKey;
+            const baseSelector = getSelector(e.target);
+            const hasShift = e.shiftKey;
+            const hasCtrl = e.ctrlKey || e.metaKey;
 
-              let segmentToAppend = baseSelector;
-              if (hasShift) {
-                segmentToAppend = baseSelector + ", " + baseSelector + " *";
-                window.getSelection()?.removeAllRanges();
-              }
+            let segmentToAppend = baseSelector;
+            if (hasShift && e.target !== document.body && e.target !== document.documentElement) {
+              segmentToAppend = baseSelector + ", " + baseSelector + " *";
+              window.getSelection()?.removeAllRanges();
+            }
 
-              finalSelector = segmentToAppend;
+            finalSelector = segmentToAppend;
 
-              if (hasCtrl) {
-                if (activeSelectorString && activeSelectorString !== "html, body") {
-                  const parts = activeSelectorString.split(',').map(p => p.trim());
-                  const incomingParts = segmentToAppend.split(',').map(p => p.trim());
-                  const filteredIncoming = incomingParts.filter(p => !parts.includes(p));
+            if (hasCtrl) {
+              if (activeSelectorString) {
+                const parts = activeSelectorString.split(',').map(p => p.trim());
+                const incomingParts = segmentToAppend.split(',').map(p => p.trim());
+                const filteredIncoming = incomingParts.filter(p => !parts.includes(p));
 
-                  if (filteredIncoming.length > 0) {
-                    finalSelector = activeSelectorString + ", " + filteredIncoming.join(", ");
-                  } else {
-                    finalSelector = activeSelectorString;
-                  }
+                if (filteredIncoming.length > 0) {
+                  finalSelector = activeSelectorString + ", " + filteredIncoming.join(", ");
+                } else {
+                  finalSelector = activeSelectorString;
                 }
               }
+            } else {
+              if (activeSelectorString === finalSelector) {
+                finalSelector = "";
+              }
             }
+            
             window.parent.postMessage({ type: 'element-selected', selector: finalSelector }, '*');
           }, true);
         </script>

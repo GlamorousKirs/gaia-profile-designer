@@ -6,6 +6,7 @@ import {
   Scripts,
   ScrollRestoration,
   isRouteErrorResponse,
+  useLocation,
 } from "react-router"
 
 import type { Route } from "./+types/root"
@@ -24,6 +25,11 @@ export function meta() {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const location = useLocation()
+  const isStudio = location.pathname === '/studio'
+
+  const isHome = location.pathname === '/'
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -36,10 +42,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body>
         <ThemeProvider attribute="data-theme" storageKey="theme" defaultTheme="system" enableSystem>
           <TooltipProvider>
-            <main className="w-full">
+            <main className="w-full min-h-screen flex flex-col">
               <Navbar />
               <Suspense fallback={null}>
-                {children}
+                {isStudio || isHome ? (
+                  children
+                ) : (
+                  <div className="w-full container mx-auto py-20">
+                    {children}
+                  </div>
+                )}
               </Suspense>
             </main>
           </TooltipProvider>

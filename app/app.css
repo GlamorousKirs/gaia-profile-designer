@@ -142,7 +142,7 @@
     background: var(--border);
     opacity: 0.3;
     border-radius: var(--radius);
-    border: 2px solid transparent; 
+    border: 2px solid transparent;
     background-clip: padding-box;
   }
 }
@@ -187,4 +187,19 @@
   border-radius: 50%;
   background: white;
   border: 2px solid var(--border);
+}
+
+/* Studio Button Animation */
+@keyframes conic-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-conic-rotate {
+  animation: conic-rotate 15s linear infinite;
 }
