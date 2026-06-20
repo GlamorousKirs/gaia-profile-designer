@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import type { ChangeEvent } from 'react'
 import {
     Database,
@@ -18,6 +18,7 @@ import type { LucideIcon } from 'lucide-react'
 import { useProfileStore } from '../store/useProfileStore'
 import { migrationService } from '../store/migrationService'
 import { entries, createStore, clear } from 'idb-keyval'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -48,6 +49,15 @@ interface DataItem {
     icon: LucideIcon
 }
 
+const BackupPayloadSchema = z.object({
+    username: z.string().max(100).optional(),
+    userId: z.string().max(100).optional(),
+    avatarUrl: z.string().url().max(500).optional().or(z.string().max(500)),
+    snippets: z.array(z.any()).optional()
+}).strict()
+
+const DB_STORE = createStore('gaia-profile-designer', 'snippets')
+
 const Settings: React.FC = () => {
     const username = useProfileStore((state) => state.username)
     const userId = useProfileStore((state) => state.userId)
@@ -59,9 +69,9 @@ const Settings: React.FC = () => {
     const [hasLocalData, setHasLocalData] = useState<boolean>(true)
     const [allItems, setAllItems] = useState<DataItem[]>([])
 
-    const dbStore = createStore('gaia-profile-designer', 'snippets')
+    const statusTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-    const verifyStoragePayload = async () => {
+    const verifyStoragePayload = useCallback(async () => {
         try {
             const discoveredItems: DataItem[] = []
 
@@ -70,7 +80,7 @@ const Settings: React.FC = () => {
                     id: 'z-username',
                     source: 'zustand',
                     label: 'Profile Username',
-                    displayKey: `username: "${username}"`,
+                    displayKey: `username: "${username.replace(/[<>]/g, '')}"`,
                     icon: User
                 })
             }
@@ -79,7 +89,7 @@ const Settings: React.FC = () => {
                     id: 'z-userid',
                     source: 'zustand',
                     label: 'Profile User ID',
-                    displayKey: `userId: "${userId}"`,
+                    displayKey: `userId: "${userId.replace(/[<>]/g, '')}"`,
                     icon: Key
                 })
             }
@@ -93,7 +103,7 @@ const Settings: React.FC = () => {
                 })
             }
 
-            const dbRecords = await entries(dbStore)
+            const dbRecords = await entries(DB_STORE)
             if (dbRecords.length > 0) {
                 discoveredItems.push({
                     id: 'idb-all-snippets',
@@ -109,16 +119,20 @@ const Settings: React.FC = () => {
         } catch (e) {
             setHasLocalData(!!username || !!userId || !!avatarUrl)
         }
-    }
+    }, [username, userId, avatarUrl])
 
     useEffect(() => {
         verifyStoragePayload()
-    }, [username, userId, avatarUrl])
+        return () => {
+            if (statusTimeoutRef.current) clearTimeout(statusTimeoutRef.current)
+        }
+    }, [verifyStoragePayload])
 
     const triggerStatus = (type: StatusState['type'], message: string): void => {
+        if (statusTimeoutRef.current) clearTimeout(statusTimeoutRef.current)
         setStatus({ type, message })
         if (type !== 'loading') {
-            setTimeout(() => setStatus(null), 3000)
+            statusTimeoutRef.current = setTimeout(() => setStatus(null), 3000)
         }
     }
 
@@ -127,7 +141,7 @@ const Settings: React.FC = () => {
             triggerStatus('loading', 'Deleting selected record...')
 
             if (targetItem.source === 'indexeddb') {
-                await clear(dbStore)
+                await clear(DB_STORE)
             } else {
                 if (targetItem.id === 'z-username') useProfileStore.setState({ username: '' })
                 if (targetItem.id === 'z-userid') useProfileStore.setState({ userId: '' })
@@ -150,7 +164,10 @@ const Settings: React.FC = () => {
             const url = URL.createObjectURL(blob)
             const link = document.createElement('a')
             link.href = url
-            link.download = `GAIA_STUDIO_BACKUP_${(username || 'USER').toUpperCase()}.json`
+
+            const cleanUser = (username || 'USER').replace(/[^a-zA-Z0-9]/g, '_').toUpperCase()
+            link.download = `GAIA_STUDIO_BACKUP_${cleanUser}.json`
+
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
@@ -172,13 +189,15 @@ const Settings: React.FC = () => {
         reader.onload = async (event) => {
             try {
                 const resultText = event.target?.result as string
-                const data = JSON.parse(resultText)
+                const rawData = JSON.parse(resultText)
 
-                await migrationService.importSystemData(data)
+                const validatedData = BackupPayloadSchema.parse(rawData)
+
+                await migrationService.importSystemData(validatedData)
                 triggerStatus('success', 'Workspace successfully restored')
                 await verifyStoragePayload()
             } catch (err) {
-                triggerStatus('error', 'Invalid or corrupted backup file')
+                triggerStatus('error', 'Invalid or corrupted backup file structure')
             }
         }
         reader.readAsText(file)
@@ -205,7 +224,6 @@ const Settings: React.FC = () => {
 
     return (
         <div className="min-h-screen w-full bg-background text-foreground font-sans relative block">
-
             {status && (
                 <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-300">
                     <div className="bg-card border border-border p-8 rounded-lg shadow-lg flex flex-col items-center gap-4 max-w-sm text-center">
@@ -269,7 +287,6 @@ const Settings: React.FC = () => {
 
                 <main className="flex-1 max-w-2xl">
                     <div className="bg-card border border-border rounded-lg p-8 min-h-125 shadow-sm">
-
                         {activeTab === 'account' && (
                             <div className="space-y-8 animate-in fade-in duration-500">
                                 <header>
@@ -292,7 +309,6 @@ const Settings: React.FC = () => {
                                     </div>
                                 </div>
 
-                                { }
                                 <div className="pt-6 border-t border-border space-y-4">
                                     <div>
                                         <h3 className="text-sm font-semibold tracking-wide">Active Browser Storage Contents</h3>
@@ -393,7 +409,7 @@ const Settings: React.FC = () => {
                                         <div className="w-full">
                                             <input type="file" id="backup-file-upload" accept=".json" onChange={handleImport} className="hidden" />
                                             <Button
-                                                asChild
+                                                
                                                 variant="outline"
                                                 className="w-full cursor-pointer"
                                             >
