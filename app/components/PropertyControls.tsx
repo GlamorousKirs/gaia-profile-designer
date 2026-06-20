@@ -17,7 +17,7 @@ export const SliderProperty = ({
   value,
   onChange,
   min = 0,
-  max = 100,
+  max, 
   step = 1,
   suffix = "px",
   className,
@@ -37,7 +37,12 @@ export const SliderProperty = ({
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDragging) return
     const deltaX = e.clientX - startX.current
-    const newValue = Math.min(max, Math.max(min, startValue.current + Math.round(deltaX * step * 0.5)))
+    
+    let newValue = startValue.current + Math.round(deltaX * step * 1)
+    
+    if (min !== undefined) newValue = Math.max(min, newValue)
+    if (max !== undefined) newValue = Math.min(max, newValue)
+    
     onChange(newValue)
   }
 
@@ -48,7 +53,6 @@ export const SliderProperty = ({
 
   return (
     <div className="flex items-center h-7 border border-border rounded bg-background hover:border-muted-foreground/20 focus-within:border-primary group transition-colors">
-      {                                                                   }
       <span
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -73,7 +77,6 @@ export const SliderProperty = ({
     </div>
   )
 }
-
 
 interface ColorInputProps {
   color: string

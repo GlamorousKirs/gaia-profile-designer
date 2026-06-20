@@ -47,6 +47,16 @@ interface ElementPropertiesPanelProps {
     updateCssProperty: (property: string, value: string | number, suffix?: string) => void
 }
 
+const rgbToHex = (rgbStr: string): string => {
+    if (!rgbStr || rgbStr.startsWith("#")) return rgbStr || "#ffffff"
+    const match = rgbStr.match(/\d+/g)
+    if (!match) return "#ffffff"
+    const r = parseInt(match[0], 10)
+    const g = parseInt(match[1], 10)
+    const b = parseInt(match[2], 10)
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+}
+
 export function ElementPropertiesPanel({
     selectedSelector,
     cssCode,
@@ -97,70 +107,97 @@ export function ElementPropertiesPanel({
     useEffect(() => {
         if (!selectedSelector || isUpdatingRef.current) return
 
+        let domElement: HTMLElement | null = null
+        let computed: CSSStyleDeclaration | null = null
+        try {
+            domElement = document.querySelector(selectedSelector) as HTMLElement
+            if (domElement) {
+                computed = window.getComputedStyle(domElement)
+            }
+        } catch (e) {
+            console.error("Invalid selector or element not found in DOM:", e)
+        }
+
         const escapedSelector = selectedSelector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
         const regex = new RegExp(`${escapedSelector}\\s*{([^}]*)}`, "i")
         const match = cssCode.match(regex)
+        const cssBlock = match && match[1] ? match[1] : ""
 
-        if (match && match[1]) {
-            const b = match[1]
+        const getNum = (p: string, fallback = 0): number => {
+            const m = cssBlock.match(new RegExp(`(?<!-)${p}\\s*:\\s*(-?\\d+)(?:px|%)?`, "i"))
+            if (m) return parseInt(m[1], 10)
+            
+            if (p === "width" && domElement) return domElement.offsetWidth
+            if (p === "height" && domElement) return domElement.offsetHeight
 
-            const getNum = (p: string, fallback = 0) => {
-                const m = b.match(new RegExp(`(?<!-)${p}\\s*:\\s*(-?\\d+)(?:px|%)?`, "i"))
-                return m ? parseInt(m[1], 10) : fallback
+            if (computed) {
+                const val = computed.getPropertyValue(p)
+                const parsed = parseInt(val, 10)
+                if (!isNaN(parsed)) return parsed
             }
+            return fallback
+        }
 
-            const getStr = (p: string, fallback = "#ffffff") => {
-                const m = b.match(new RegExp(`(?<!-)${p}\\s*:\\s*([^;}\\s]+)`, "i"))
-                return m ? m[1] : fallback
+        const getStr = (p: string, fallback = "#ffffff"): string => {
+            const m = cssBlock.match(new RegExp(`(?<!-)${p}\\s*:\\s*([^;}\\s]+)`, "i"))
+            if (m) return m[1]
+            if (computed) {
+                const val = computed.getPropertyValue(p)
+                if (val && val !== "initial" && val !== "none" && val !== "rgba(0, 0, 0, 0)") {
+                    return p.includes("color") ? rgbToHex(val) : val
+                }
             }
-
-            isUpdatingRef.current = true
-            setBorderRadius(getNum("border-radius"))
-            setBgColor(getStr("background-color", "#ffffff"))
-            setTextColor(getStr("color", "#ffffff"))
-
-            setWidthVal(getNum("width"))
-            setHeightVal(getNum("height"))
-
-            setPaddingTop(getNum("padding-top"))
-            setPaddingBottom(getNum("padding-bottom"))
-            setPaddingLeft(getNum("padding-left"))
-            setPaddingRight(getNum("padding-right"))
-
-            setMarginTop(getNum("margin-top"))
-            setMarginBottom(getNum("margin-bottom"))
-            setMarginLeft(getNum("margin-left"))
-            setMarginRight(getNum("margin-right"))
-
-            setFontSize(getNum("font-size", 14))
-            setLetterSpacing(getNum("letter-spacing"))
-
-            const opMatch = b.match(/opacity\s*:\s*([0-9.]+)/i)
-            setOpacityVal(opMatch ? Math.round(parseFloat(opMatch[1]) * 100) : 100)
-
-            setBorderWidth(getNum("border-width"))
-            setBorderColor(getStr("border-color", "#ffffff"))
-
-            setTimeout(() => {
-                isUpdatingRef.current = false
-            }, 0)
-            return
+            return fallback
         }
 
         isUpdatingRef.current = true
-        resetLocalStates()
+
+        setBorderRadius(getNum("border-radius"))
+        setBgColor(getStr("background-color", "#ffffff"))
+        setTextColor(getStr("color", "#000000"))
+
+        setWidthVal(getNum("width"))
+        setHeightVal(getNum("height"))
+
+        setPaddingTop(getNum("padding-top"))
+        setPaddingBottom(getNum("padding-bottom"))
+        setPaddingLeft(getNum("padding-left"))
+        setPaddingRight(getNum("padding-right"))
+
+        setMarginTop(getNum("margin-top"))
+        setMarginBottom(getNum("margin-bottom"))
+        setMarginLeft(getNum("margin-left"))
+        setMarginRight(getNum("margin-right"))
+
+        setFontSize(getNum("font-size", 14))
+        setLetterSpacing(getNum("letter-spacing"))
+
+        const opMatch = cssBlock.match(/opacity\s*:\s*([0-9.]+)/i)
+        if (opMatch) {
+            setOpacityVal(Math.round(parseFloat(opMatch[1]) * 100))
+        } else if (computed) {
+            const compOp = parseFloat(computed.getPropertyValue("opacity"))
+            setOpacityVal(!isNaN(compOp) ? Math.round(compOp * 100) : 100)
+        } else {
+            setOpacityVal(100)
+        }
+
+        setBorderWidth(getNum("border-width"))
+        setBorderColor(getStr("border-color", "#000000"))
+
         setTimeout(() => {
             isUpdatingRef.current = false
         }, 0)
+
     }, [selectedSelector, cssCode, setBorderRadius, setBgColor, setTextColor, setWidthVal, setHeightVal, setPaddingTop, setPaddingBottom, setPaddingLeft, setPaddingRight, setMarginTop, setMarginBottom, setMarginLeft, setMarginRight, setFontSize, setLetterSpacing, setOpacityVal, setBorderWidth, setBorderColor])
 
     const resetLocalStates = () => {
-        setBorderRadius(0); setBgColor("#ffffff"); setTextColor("#ffffff")
+        setBorderRadius(0); setBgColor("#ffffff"); setTextColor("#000000")
         setWidthVal(0); setHeightVal(0)
         setPaddingTop(0); setPaddingBottom(0); setPaddingLeft(0); setPaddingRight(0)
         setMarginTop(0); setMarginBottom(0); setMarginLeft(0); setMarginRight(0)
         setFontSize(14); setLetterSpacing(0); setOpacityVal(100)
-        setBorderWidth(0); setBorderColor("#ffffff")
+        borderWidth(0); setBorderColor("#000000")
     }
 
     const handleResetStyles = () => {
@@ -223,7 +260,6 @@ export function ElementPropertiesPanel({
 
     return (
         <div className="flex flex-col gap-4 p-3 h-full overflow-y-auto min-h-0">
-            { }
             <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between px-1">
                     <h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
@@ -245,7 +281,6 @@ export function ElementPropertiesPanel({
                 </div>
             </div>
 
-            { }
             <div className="flex flex-col gap-1.5">
                 <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
                     Dimensions
@@ -253,12 +288,11 @@ export function ElementPropertiesPanel({
                 <div className="bg-card border border-border rounded-lg shadow-sm p-2.5 space-y-2.5">
                     <div className="flex gap-3">
                         <div className="flex-1"><SliderProperty label="W" value={widthVal} max={2000} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setWidthVal(v); updateCssProperty("width", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
-                        <div className="flex-1"><SliderProperty label="H" value={heightVal} max={2000} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setHeightVal(v); updateCssProperty("height", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
+                        <div className="flex-1"><SliderProperty label="H" value={heightVal} max={2000} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setHeightVal(v); updateCssProperty("width", v, "px"); updateCssProperty("height", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
                     </div>
                 </div>
             </div>
 
-            { }
             <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between px-1">
                     <h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
@@ -290,7 +324,6 @@ export function ElementPropertiesPanel({
                 </div>
             </div>
 
-            { }
             <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between px-1">
                     <h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
@@ -322,7 +355,6 @@ export function ElementPropertiesPanel({
                 </div>
             </div>
 
-            { }
             <div className="flex flex-col gap-1.5">
                 <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
                     Typography
@@ -335,7 +367,6 @@ export function ElementPropertiesPanel({
                 </div>
             </div>
 
-            { }
             <div className="flex flex-col gap-1.5">
                 <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
                     Borders & Shapes
@@ -353,7 +384,6 @@ export function ElementPropertiesPanel({
                 </div>
             </div>
 
-            { }
             <div className="flex flex-col gap-1.5">
                 <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
                     Fills & Appearance
