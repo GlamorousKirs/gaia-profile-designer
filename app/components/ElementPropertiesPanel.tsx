@@ -395,7 +395,7 @@ export function ElementPropertiesPanel({
                     </h3>
                     <div className="space-y-2.5">
                         <div className="grid grid-cols-2 gap-3">
-                            <div className="flex items-center gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors font-mono text-[11px]">
+                            <div id="tutorial-4" className="flex items-center gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors font-mono text-[11px]">
                                 <ColorPicker color={bgColor} onChange={(v) => handleColorUpdate("background-color", setBgColor, v)} />
                                 <span className="truncate text-foreground uppercase tracking-wide">{bgColor}</span>
                             </div>

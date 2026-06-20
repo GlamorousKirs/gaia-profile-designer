@@ -20,7 +20,7 @@ export function StudioToolbar({
   setIsMaximized,
 }: StudioToolbarProps) {
   return (
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+    <div id="tutorial-3" className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
       <div className="flex items-center gap-1.5 p-1.5 bg-card/90 backdrop-blur-md border border-border rounded-full shadow-lg pointer-events-auto">
         
         {/* Select Tool */}
@@ -56,13 +56,13 @@ export function StudioToolbar({
           </TooltipTrigger>
           <TooltipContent side="top" className="text-xs">Code</TooltipContent>
         </Tooltip>
-
         <div className="w-px h-4 bg-border mx-1" aria-hidden="true" />
 
         {/* Maximize Toggle */}
         <Tooltip>
           <TooltipTrigger>
             <Button
+            id="tutorial-6"
               variant="ghost"
               size="icon"
               className="rounded-full size-9 shrink-0"

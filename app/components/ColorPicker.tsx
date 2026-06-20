@@ -24,7 +24,7 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
         />
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0 border-none bg-transparent shadow-none" align="start">
-        <div className="custom-layout p-0 rounded-xl backdrop-blur-md bg-background border flex flex-col">
+        <div id="tutorial-5" className="custom-layout p-0 rounded-xl backdrop-blur-md bg-background border flex flex-col">
           <HexAlphaColorPicker color={validColor} onChange={onChange} />
 
           <input

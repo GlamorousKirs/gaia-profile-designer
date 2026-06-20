@@ -179,7 +179,8 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex flex-col gap-4 p-3 h-full overflow-y-auto min-h-0">
+      {/* Target wrapper ID attached here for DriverJS */}
+      <div id="tutorial-1" className="flex flex-col gap-4 p-3 h-full overflow-y-auto min-h-0">
         {columnEntries.map(([id, items]) => (
           <DroppableColumn key={id} id={id} items={items} />
         ))}
