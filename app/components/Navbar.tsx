@@ -1,13 +1,97 @@
 import { useState, useEffect, useRef, memo, useTransition } from "react"
-import { Link, useLocation } from "react-router"
+import { Link, useLocation, useNavigate } from "react-router"
 import { Sparkles, Menu, X } from "lucide-react"
 import { ThemePicker } from "@/components/ThemePicker"
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useProfileStore } from "@/store/useProfileStore"
+import { LocalProfile } from "./LocalProfile"
 
 const NAV_LINKS = [
   { name: "Home", to: "/" },
   { name: "Gallery", to: "/gallery" },
   { name: "Creators", to: "/creators" },
 ] as const
+
+interface UserAvatarProps {
+  onOpenProfile: () => void
+  username: string
+  userId: string
+  avatarUrl: string
+}
+
+export const UserAvatar = memo(function UserAvatar({
+  onOpenProfile,
+  username,
+  userId,
+  avatarUrl,
+}: UserAvatarProps) {
+  const navigate = useNavigate()
+
+  const displayName = username || "Guest"
+  const displayId = userId || "No ID"
+  const initial = username?.[0]?.toUpperCase() || "U"
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-8 rounded-full cursor-pointer shrink-0"
+          aria-label="User menu"
+        >
+          <Avatar className="relative size-8 overflow-hidden">
+            {avatarUrl ? (
+              <AvatarImage
+                src={avatarUrl}
+                alt={displayName}
+                loading="lazy"
+                className="h-27.5 w-20 max-w-none -ml-4.5 -mt-6 object-cover"
+              />
+            ) : (
+              <AvatarFallback>{initial}</AvatarFallback>
+            )}
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" className="w-56 z-55">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="flex flex-col">
+            <span className="text-sm font-medium">{displayName}</span>
+            <span className="text-xs font-normal text-muted-foreground truncate max-w-full">
+              {displayId}
+            </span>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuGroup>
+          <DropdownMenuItem onClick={onOpenProfile} className="cursor-pointer">
+            Edit Local Profile
+          </DropdownMenuItem>
+
+          <DropdownMenuItem onClick={() => navigate("/settings")} className="cursor-pointer">
+            Settings
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+})
+UserAvatar.displayName = "UserAvatar"
 
 const MobileDropdown = memo(({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => (
   <div
@@ -51,9 +135,16 @@ MenuButton.displayName = "MenuButton"
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [, startTransition] = useTransition()
   const location = useLocation()
   const sentinelRef = useRef<HTMLDivElement>(null)
+
+  const username = useProfileStore((state) => state.username)
+  const userId = useProfileStore((state) => state.userId)
+  const avatarUrl = useProfileStore((state) => state.avatarUrl)
+
+  const hasUserData = !!(username || userId || avatarUrl)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -126,7 +217,16 @@ export default function Navbar() {
             <div className="flex items-center gap-3">
               <ThemePicker />
 
-              <div className="relative overflow-hidden rounded-2xl p-0.5">
+              {hasUserData && (
+                <UserAvatar
+                  onOpenProfile={() => setIsProfileOpen(true)}
+                  username={username}
+                  userId={userId}
+                  avatarUrl={avatarUrl}
+                />
+              )}
+
+              <div className="relative overflow-hidden rounded-2xl p-0.5 shrink-0">
                 <div className="absolute inset-0 animate-conic-rotate" style={{ background: "conic-gradient(var(--chart-1), var(--chart-3), var(--chart-5), var(--chart-1))" }} />
                 <Link to="/studio" className="relative z-10 flex items-center justify-center px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-2xl bg-background text-foreground transition-all hover:bg-background/90 outline-hidden">
                   Studio
@@ -140,6 +240,9 @@ export default function Navbar() {
 
         <MobileDropdown isOpen={isOpen} onClose={handleClose} />
       </nav>
+
+      { }
+      <LocalProfile isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
     </>
   )
 }

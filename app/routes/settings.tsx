@@ -49,7 +49,7 @@ interface DataItem {
     icon: LucideIcon
 }
 
-const BackupPayloadSchema = z.object({
+const dataPayloadSchema = z.object({
     version: z.string(),
     timestamp: z.string(),
     profileState: z.object({
@@ -161,7 +161,7 @@ const Settings: React.FC = () => {
 
     const handleExport = async (): Promise<void> => {
         try {
-            triggerStatus('loading', 'Preparing your backup file...')
+            triggerStatus('loading', 'Preparing your data file...')
             const exportData = await migrationService.exportSystemData()
 
             const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
@@ -170,16 +170,16 @@ const Settings: React.FC = () => {
             link.href = url
 
             const cleanUser = (username || 'USER').replace(/[^a-zA-Z0-9]/g, '_').toUpperCase()
-            link.download = `GAIA_STUDIO_BACKUP_${cleanUser}.json`
+            link.download = `GAIA_STUDIO_data_${cleanUser}.json`
 
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
             URL.revokeObjectURL(url)
 
-            triggerStatus('success', 'Backup file downloaded successfully')
+            triggerStatus('success', 'data file downloaded successfully')
         } catch (err) {
-            triggerStatus('error', 'Failed to generate backup')
+            triggerStatus('error', 'Failed to generate data')
         }
     }
 
@@ -195,13 +195,13 @@ const Settings: React.FC = () => {
                 const resultText = event.target?.result as string
                 const rawData = JSON.parse(resultText)
 
-                const validatedData = BackupPayloadSchema.parse(rawData)
+                const validatedData = dataPayloadSchema.parse(rawData)
 
                 await migrationService.importSystemData(validatedData)
                 triggerStatus('success', 'Workspace successfully restored')
                 await verifyStoragePayload()
             } catch (err) {
-                triggerStatus('error', 'Invalid or corrupted backup file structure')
+                triggerStatus('error', 'Invalid or corrupted data file structure')
             }
         }
         reader.readAsText(file)
@@ -223,7 +223,7 @@ const Settings: React.FC = () => {
 
     const navItems: NavItem[] = [
         { id: 'account', label: 'Account Profile', icon: Fingerprint },
-        { id: 'export', label: 'Backup & Restore', icon: Database },
+        { id: 'export', label: 'data & Restore', icon: Database },
     ]
 
     return (
@@ -380,7 +380,7 @@ const Settings: React.FC = () => {
                         {activeTab === 'export' && (
                             <div className="space-y-8 animate-in fade-in duration-500">
                                 <header>
-                                    <h2 className="text-xl font-semibold tracking-wide">Backup & Restore</h2>
+                                    <h2 className="text-xl font-semibold tracking-wide">data & Restore</h2>
                                     <p className="text-sm text-muted-foreground">Save your account configurations and local code snippets into a portable file, or load an existing one.</p>
                                 </header>
 
@@ -389,7 +389,7 @@ const Settings: React.FC = () => {
                                         <div className="flex items-center gap-4">
                                             <Download className="text-primary shrink-0" size={18} />
                                             <div>
-                                                <p className="text-sm font-bold">Export Backup</p>
+                                                <p className="text-sm font-bold">Export data</p>
                                                 <p className="text-xs text-muted-foreground">Download your settings</p>
                                             </div>
                                         </div>
@@ -398,7 +398,7 @@ const Settings: React.FC = () => {
                                             onClick={handleExport}
                                             className="w-full"
                                         >
-                                            Download Backup (.json)
+                                            Download JSON File
                                         </Button>
                                     </div>
 
@@ -406,19 +406,19 @@ const Settings: React.FC = () => {
                                         <div className="flex items-center gap-4">
                                             <Upload className="text-card-foreground shrink-0" size={18} />
                                             <div>
-                                                <p className="text-sm font-bold">Import Backup</p>
+                                                <p className="text-sm font-bold">Import data</p>
                                                 <p className="text-xs text-muted-foreground">Restore saved settings</p>
                                             </div>
                                         </div>
                                         <div className="w-full">
-                                            <input type="file" id="backup-file-upload" accept=".json" onChange={handleImport} className="hidden" />
+                                            <input type="file" id="data-file-upload" accept=".json" onChange={handleImport} className="hidden" />
                                             <Button
 
                                                 variant="outline"
                                                 className="w-full cursor-pointer"
                                             >
-                                                <label htmlFor="backup-file-upload">
-                                                    Choose Backup File
+                                                <label htmlFor="data-file-upload">
+                                                    Choose JSON File
                                                 </label>
                                             </Button>
                                         </div>

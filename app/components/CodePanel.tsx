@@ -13,6 +13,7 @@ import type { SnippetActionType } from "@/store/useSnippetStore"
 const BASE_EDITOR_WIDTH = 450
 const BASE_SNIPPETS_WIDTH = 300
 const BASE_HEIGHT = 320
+const STORAGE_KEY = "myapp_v1_autosave_code"
 
 const structuralSpring = { type: "spring", stiffness: 450, damping: 45 } as const
 
@@ -43,21 +44,23 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
   const panelRef = useRef<HTMLDivElement>(null)
   const editorViewRef = useRef<EditorView | null>(null)
 
+  // Keep a stable mutable ref of the code string to prevent heavy re-renders in side-effects
   const codeRef = useRef(code)
   useEffect(() => {
     codeRef.current = code
   }, [code])
 
+  // Debounced autosave with uniquely scoped key namespacing
   useEffect(() => {
     const currentCode = codeRef.current
 
     if (!currentCode || currentCode.length === 0) {
-      localStorage.removeItem("autosave_draft_code")
+      localStorage.removeItem(STORAGE_KEY)
       return
     }
 
     const timer = setTimeout(() => {
-      localStorage.setItem("autosave_draft_code", codeRef.current)
+      localStorage.setItem(STORAGE_KEY, codeRef.current)
     }, 1000)
 
     return () => clearTimeout(timer)
@@ -67,6 +70,7 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
   const currentSnippetsWidth = BASE_SNIPPETS_WIDTH * scaleMultiplier
   const currentHeight = BASE_HEIGHT * scaleMultiplier
 
+  // Included custom themes to dependency tree to ensure extensions reconstruct safely if configuration mutates
   const editorExtensions = useMemo(() => {
     return [
       langs.css(),
@@ -78,7 +82,7 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
         parent: typeof document !== "undefined" ? document.body : undefined
       })
     ].filter(Boolean)
-  }, [])
+  }, [customSearchTheme, studioTheme])
 
   const handleCopy = async () => {
     try {

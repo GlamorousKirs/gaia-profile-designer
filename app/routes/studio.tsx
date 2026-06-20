@@ -9,6 +9,7 @@ import ColumnManager, { type ColumnState } from "@/components/ColumnManager"
 import CodePanel from "@/components/CodePanel"
 import { ElementPropertiesPanel } from "@/components/ElementPropertiesPanel"
 import { LocalProfile } from "@/components/LocalProfile"
+import { useProfileStore } from "@/store/useProfileStore"
 
 import { StudioMobileFallback } from "./studio/StudioMobileFallback"
 import { StudioHeader } from "./studio/StudioHeader"
@@ -47,6 +48,10 @@ export default function Studio() {
   const [, startTransition] = useTransition()
 
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+
+  const profileUsername = useProfileStore((state) => state.username)
+  const profileUserId = useProfileStore((state) => state.userId)
+  const profileAvatarUrl = useProfileStore((state) => state.avatarUrl)
 
   const [searchParams] = useSearchParams()
   const presetId = searchParams.get("id")
@@ -92,6 +97,13 @@ export default function Studio() {
     column2: [],
     column3: [],
   })
+
+  useEffect(() => {
+    const hasProfileData = !!(profileUsername || profileUserId || profileAvatarUrl)
+    if (!hasProfileData) {
+      setIsProfileOpen(true)
+    }
+  }, [])
 
   const handleSetActiveTool = useCallback((tool: "select" | null) => {
     setActiveTool(tool)

@@ -9,6 +9,8 @@ export interface Snippet {
   isDefault?: boolean
 }
 
+export type SnippetActionType = 'prepend' | 'append' | 'replace' | 'append-cursor'
+
 interface SnippetStore {
   snippets: Record<string, Snippet>
   showDefaults: boolean
