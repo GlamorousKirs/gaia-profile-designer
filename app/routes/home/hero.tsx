@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button"
+import studioshowcaseImg from "@/assets/studioshowcase.png"
 
 export function Hero() {
   return (
@@ -42,7 +43,7 @@ export function Hero() {
 
           <div className="w-full aspect-1905/943 relative bg-muted">
             <img
-              src="/assets/studioshowcase.png"
+              src={studioshowcaseImg}
               alt="Gaia Studio Interface"
               className="absolute inset-0 h-full w-full object-cover"
             />
