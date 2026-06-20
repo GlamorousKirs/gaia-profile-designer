@@ -50,10 +50,14 @@ interface DataItem {
 }
 
 const BackupPayloadSchema = z.object({
-    username: z.string().max(100).optional(),
-    userId: z.string().max(100).optional(),
-    avatarUrl: z.string().url().max(500).optional().or(z.string().max(500)),
-    snippets: z.array(z.any()).optional()
+    version: z.string(),
+    timestamp: z.string(),
+    profileState: z.object({
+        username: z.string().max(100).default(''),
+        userId: z.string().max(100).default(''),
+        avatarUrl: z.string().max(500).default(''),
+    }),
+    snippetsState: z.record(z.string(), z.any())
 }).strict()
 
 const DB_STORE = createStore('gaia-profile-designer', 'snippets')
@@ -409,7 +413,7 @@ const Settings: React.FC = () => {
                                         <div className="w-full">
                                             <input type="file" id="backup-file-upload" accept=".json" onChange={handleImport} className="hidden" />
                                             <Button
-                                                
+
                                                 variant="outline"
                                                 className="w-full cursor-pointer"
                                             >
