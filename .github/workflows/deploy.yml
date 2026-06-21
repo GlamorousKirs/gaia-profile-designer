@@ -32,7 +32,7 @@ jobs:
       - name: 🔧 Setup NodeJS
         uses: actions/setup-node@v4
         with:
-          node-version: 22 # Using Node 22 to match your modern package ecosystem
+          node-version: 22 
           cache: 'npm'
 
       - name: 🔧 Install dependencies
@@ -43,8 +43,14 @@ jobs:
         env:
           VITE_CLOUDINARY_CLOUD_NAME: ${{ secrets.VITE_CLOUDINARY_CLOUD_NAME }}
 
-      - name: 🛠️ Create 404 fallback for React Router client routes
-        run: cp build/client/index.html build/client/404.html
+      - name: 🛠️ Ensure SPA Routing Fallback
+        run: |
+          if [ ! -f build/client/404.html ]; then
+            echo "Custom 404.html not found, fallback to index.html"
+            cp build/client/index.html build/client/404.html
+          else
+            echo "Custom 404.html detected! Preserving your SPA redirect script."
+          fi
 
       - name: 🔧 Setup GitHub Pages
         uses: actions/configure-pages@v5
