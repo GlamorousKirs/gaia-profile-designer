@@ -37,7 +37,7 @@ export default function SelectorPanel({ onSelectSelector }: SelectorPanelProps) 
 
   return (
     <div className="flex flex-col h-full bg-background p-3 gap-3 overflow-hidden">
-      {/* Search Bar matching ColumnManager layout without container */}
+      { }
       <InputGroup className="w-full shrink-0">
         <InputGroupInput
           id="selector-search"
@@ -53,7 +53,7 @@ export default function SelectorPanel({ onSelectSelector }: SelectorPanelProps) 
         </InputGroupAddon>
       </InputGroup>
 
-      {/* Selectors List wrapped with unstylized Card element */}
+      { }
       <Card>
         <CardContent className="h-full overflow-y-auto px-0 py-0">
           <div className="divide-y divide-border/60">

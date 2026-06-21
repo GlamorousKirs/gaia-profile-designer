@@ -32,8 +32,8 @@ const ThemePickerItem = memo(({
   <DropdownMenuItem
     onClick={(e) => onSelect(id, e)}
     className={`flex items-center justify-between px-3 py-2.5 text-xs font-medium rounded-xl cursor-pointer transition-colors outline-none ${isSelected
-        ? "bg-primary/10 text-primary focus:bg-primary/10 focus:text-primary font-bold"
-        : "text-foreground hover:bg-surface/60 focus:bg-surface/60"
+      ? "bg-primary/10 text-primary focus:bg-primary/10 focus:text-primary font-bold"
+      : "text-foreground hover:bg-surface/60 focus:bg-surface/60"
       }`}
   >
     <div className="flex items-center gap-2.5 min-w-0">
@@ -143,16 +143,19 @@ export const ThemePicker = memo(() => {
       )}
 
       <DropdownMenu open={open} onOpenChange={setOpen} modal={false}>
-        <DropdownMenuTrigger>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="group h-7 w-7 rounded-md transition-colors focus-visible:ring-2 focus-visible:ring-primary cursor-pointer shrink-0"
-            aria-label="Select color theme"
-            disabled={isPending}
-          >
-            <Palette size={15} className="text-foreground transition-transform group-hover:scale-110" />
-          </Button>
+        { }
+        <DropdownMenuTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="icon"
+              className="group h-7 w-7 rounded-md transition-colors focus-visible:ring-2 focus-visible:ring-primary cursor-pointer shrink-0"
+              aria-label="Select color theme"
+              disabled={isPending}
+            />
+          }
+        >
+          <Palette size={15} className="text-foreground transition-transform group-hover:scale-110" />
         </DropdownMenuTrigger>
 
         <DropdownMenuContent

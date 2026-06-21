@@ -44,8 +44,8 @@ const DroppableColumn = memo(function DroppableColumn({ id, items }: { id: keyof
   const { setNodeRef } = useDroppable({ id })
   const [search, setSearch] = useState("")
 
-  const filteredItems = useMemo(() => 
-    id === "panels" 
+  const filteredItems = useMemo(() =>
+    id === "panels"
       ? items.filter((item) => item.toLowerCase().includes(search.toLowerCase()))
       : items,
     [items, search, id]
@@ -59,19 +59,18 @@ const DroppableColumn = memo(function DroppableColumn({ id, items }: { id: keyof
   }
 
   return (
-    /* Wrapped with unstylized Card atom */
     <Card>
       <div className="flex items-center justify-between mb-1.5 shrink-0 px-1">
         <h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
           {columnLabels[id]}
         </h3>
       </div>
-      
+
       {id === "panels" && (
         <div className="mb-2 shrink-0">
           <InputGroup className="w-full">
-            <InputGroupInput 
-              placeholder="Filter panels..." 
+            <InputGroupInput
+              placeholder="Filter panels..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="text-[11px] py-1"
@@ -83,6 +82,7 @@ const DroppableColumn = memo(function DroppableColumn({ id, items }: { id: keyof
         </div>
       )}
 
+      { }
       <CardContent ref={setNodeRef} className="min-h-12 px-0">
         <SortableContext id={id} items={filteredItems} strategy={verticalListSortingStrategy}>
           <div className="divide-y divide-border/60">
@@ -126,6 +126,7 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
   const sensors = useSensors(pointerSensor, keyboardSensor)
 
   const findContainer = (id: string, targetState: ColumnState) => {
+    if (id in targetState) return id as keyof ColumnState
     return (Object.keys(targetState) as (keyof ColumnState)[]).find(k => targetState[k].includes(id))
   }
 
@@ -139,9 +140,7 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
 
     const overId = over.id as string
     const activeContainer = findContainer(active.id as string, columns)
-
-    const isContainer = over.data.current?.type === "container" || (overId in columns && !findContainer(overId, columns))
-    const overContainer = isContainer ? (overId as keyof ColumnState) : findContainer(overId, columns)
+    const overContainer = findContainer(overId, columns)
 
     if (!activeContainer || !overContainer || activeContainer === overContainer) return
 
@@ -152,7 +151,7 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
       const overIndex = overItems.indexOf(overId)
 
       let newIndex
-      if (isContainer) {
+      if (overId in prev) {
         newIndex = overItems.length
       } else {
         newIndex = overIndex >= 0 ? overIndex : overItems.length
@@ -182,14 +181,13 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
     const overId = over.id as string
 
     const activeContainer = findContainer(activeId, columns)
-    const isContainer = over.data.current?.type === "container" || (overId in columns && !findContainer(overId, columns))
-    const overContainer = isContainer ? (overId as keyof ColumnState) : findContainer(overId, columns)
+    const overContainer = findContainer(overId, columns)
 
     if (activeContainer && overContainer && activeContainer === overContainer) {
       const oldIndex = columns[activeContainer].indexOf(activeId)
       const newIndex = columns[overContainer].indexOf(overId)
 
-      if (oldIndex !== newIndex && !isContainer) {
+      if (oldIndex !== newIndex) {
         setColumns((prev) => ({
           ...prev,
           [overContainer]: arrayMove(prev[overContainer], oldIndex, newIndex)

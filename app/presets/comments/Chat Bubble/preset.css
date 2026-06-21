@@ -1,82 +1,114 @@
-/* --- MAIN WRAPPER --- */
 dl.style1 {
-  display: block;                
-  position: relative;            
-  max-width: 420px;              
-  height: 110px;                 /* FIXED HEIGHT: Main box remains visually stable */
+  display: block;
+  position: relative;
+  max-width: 420px;
+  height: 110px;
   margin: 20px auto;
   padding: 16px;
   background: #ffffff;
-  border: 1px solid #f0f0f0;     
+  border: 1px solid #f0f0f0;
   border-radius: 12px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-  
-  /* Enable native vertical scrolling ONLY when active content spills over */
-  overflow-y: auto;              
-  overflow-x: hidden;            
+
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-/* --- THE DYNAMIC REVOLUTION --- */
-dl.style1 dt, 
+dl.style1 dt,
 dl.style1 dd {
   position: absolute;
   left: 16px;
-  width: calc(100% - 44px);      
+  width: calc(100% - 44px);
   margin: 0;
   padding: 0;
-  opacity: 0;                    
-  pointer-events: none;          
-  
-  /* Keep display block so animation delays function properly, */
-  /* but collapse the height to 0 so background elements don't stretch the scrollbar. */
+  opacity: 0;
+  pointer-events: none;
+
   display: block;
   max-height: 0;
   overflow: hidden;
-  
-  animation: dynamicCycle 60s infinite ease-in-out; 
+
+  animation: dynamicCycle 60s infinite ease-in-out;
 }
 
-/* --- DYNAMIC STAGGER MATRIX --- */
-dl.style1 dt:nth-of-type(1), dl.style1 dt:nth-of-type(1) ~ dd { animation-delay: 0s; }
-dl.style1 dt:nth-of-type(2), dl.style1 dt:nth-of-type(2) ~ dd { animation-delay: 6s; }
-dl.style1 dt:nth-of-type(3), dl.style1 dt:nth-of-type(3) ~ dd { animation-delay: 12s; }
-dl.style1 dt:nth-of-type(4), dl.style1 dt:nth-of-type(4) ~ dd { animation-delay: 18s; }
-dl.style1 dt:nth-of-type(5), dl.style1 dt:nth-of-type(5) ~ dd { animation-delay: 24s; }
-dl.style1 dt:nth-of-type(6), dl.style1 dt:nth-of-type(6) ~ dd { animation-delay: 30s; }
-dl.style1 dt:nth-of-type(7), dl.style1 dt:nth-of-type(7) ~ dd { animation-delay: 36s; }
-dl.style1 dt:nth-of-type(8), dl.style1 dt:nth-of-type(8) ~ dd { animation-delay: 42s; }
-dl.style1 dt:nth-of-type(9), dl.style1 dt:nth-of-type(9) ~ dd { animation-delay: 48s; }
-dl.style1 dt:nth-of-type(10), dl.style1 dt:nth-of-type(10) ~ dd { animation-delay: 54s; }
+dl.style1 dt:nth-of-type(1),
+dl.style1 dt:nth-of-type(1)~dd {
+  animation-delay: 0s;
+}
 
-/* Sets the text positioning baseline for all active comment bodies */
+dl.style1 dt:nth-of-type(2),
+dl.style1 dt:nth-of-type(2)~dd {
+  animation-delay: 6s;
+}
+
+dl.style1 dt:nth-of-type(3),
+dl.style1 dt:nth-of-type(3)~dd {
+  animation-delay: 12s;
+}
+
+dl.style1 dt:nth-of-type(4),
+dl.style1 dt:nth-of-type(4)~dd {
+  animation-delay: 18s;
+}
+
+dl.style1 dt:nth-of-type(5),
+dl.style1 dt:nth-of-type(5)~dd {
+  animation-delay: 24s;
+}
+
+dl.style1 dt:nth-of-type(6),
+dl.style1 dt:nth-of-type(6)~dd {
+  animation-delay: 30s;
+}
+
+dl.style1 dt:nth-of-type(7),
+dl.style1 dt:nth-of-type(7)~dd {
+  animation-delay: 36s;
+}
+
+dl.style1 dt:nth-of-type(8),
+dl.style1 dt:nth-of-type(8)~dd {
+  animation-delay: 42s;
+}
+
+dl.style1 dt:nth-of-type(9),
+dl.style1 dt:nth-of-type(9)~dd {
+  animation-delay: 48s;
+}
+
+dl.style1 dt:nth-of-type(10),
+dl.style1 dt:nth-of-type(10)~dd {
+  animation-delay: 54s;
+}
+
 dl.style1 dd {
   top: 38px;
 }
 
-/* --- PAUSE ON HOVER --- */
 dl.style1:hover dt,
 dl.style1:hover dd {
   animation-play-state: paused !important;
 }
 
-/* --- THE DYNAMIC TIMELINE ANIMATION --- */
 @keyframes dynamicCycle {
   0% {
     opacity: 0;
-    max-height: 0;             /* Hidden while waiting for delay track */
+    max-height: 0;
     overflow: hidden;
     transform: translateY(2px);
     z-index: 1;
   }
+
   0.5% {
     opacity: 1;
-    max-height: 500px;         /* Open height during its active window */
-    overflow: visible;         /* Let long text spill into the card naturally to trigger wrapper scroll */
+    max-height: 500px;
+    overflow: visible;
     transform: translateY(0);
     pointer-events: auto;
-    z-index: 2;                  
+    z-index: 2;
   }
+
   10% {
     opacity: 1;
     max-height: 500px;
@@ -85,14 +117,16 @@ dl.style1:hover dd {
     pointer-events: auto;
     z-index: 2;
   }
+
   10.5% {
     opacity: 0;
-    max-height: 0;             /* Collapse away instantly when time frame expires */
+    max-height: 0;
     overflow: hidden;
     transform: translateY(-2px);
     pointer-events: none;
     z-index: 1;
   }
+
   100% {
     opacity: 0;
     max-height: 0;
@@ -101,18 +135,16 @@ dl.style1:hover dd {
   }
 }
 
-/* --- COMMENT ENTRY HEADER (dt) --- */
 dl.style1 dt {
-  top: 16px;                     
+  top: 16px;
   padding-bottom: 4px;
-  border-top: none !important;   
-  border-bottom: none !important; 
+  border-top: none !important;
+  border-bottom: none !important;
 }
 
-/* Meta Text Styles */
 dl.style1 dt .username {
   display: inline-block;
-  margin-right: 8px;             
+  margin-right: 8px;
 }
 
 dl.style1 dt .username a {
@@ -130,14 +162,13 @@ dl.style1 dt .username a:hover {
 dl.style1 dt .date {
   font-size: 10px;
   color: #b5b5b5;
-  display: inline-block;         
-  vertical-align: middle;        
+  display: inline-block;
+  vertical-align: middle;
 }
 
-/* HIDE REPORT LINK BY DEFAULT */
 dl.style1 dt .date a[href*="report.php"] {
   display: inline-block;
-  font-size: 0px;                
+  font-size: 0px;
   opacity: 0;
   color: #e2a3a3;
   text-decoration: none;
@@ -146,87 +177,80 @@ dl.style1 dt .date a[href*="report.php"] {
   transition: font-size 0.2s ease, opacity 0.2s ease, margin-right 0.2s ease;
 }
 
-/* ONLY SHOW ON DATE HOVER */
 dl.style1 dt .date:hover a[href*="report.php"] {
-  font-size: 10px;               
+  font-size: 10px;
   opacity: 1;
-  margin-right: 4px;             
+  margin-right: 4px;
 }
 
 dl.style1 dt .date a[href*="report.php"]:hover {
   color: #d97474;
 }
 
-/* --- COMMENT ENTRY BODY & CONTENT (dd) --- */
 dl.style1 dd {
   border-top: none !important;
 }
 
-/* --- RESIZED AVATAR FRAME FIXED --- */
 dl.style1 dd .dropBox {
-  float: left;                   
-  width: 40px !important;    
-  height: 40px !important;   
+  float: left;
+  width: 40px !important;
+  height: 40px !important;
   margin-top: 1px;
-  border-radius: 50%;        
-  overflow: hidden !important; 
+  border-radius: 50%;
+  overflow: hidden !important;
   background: #fbfbfb;
   border: 1px solid #ededed;
   position: relative;
 }
 
 dl.style1 dd .avatarImage {
-  width: 100px !important;   
-  height: 130px !important;  
-  margin: -27px 0 0 -22px !important; 
+  width: 100px !important;
+  height: 130px !important;
+  margin: -27px 0 0 -22px !important;
   display: block;
-  object-fit: fill;          
-  transform: scaleX(-1);     
+  object-fit: fill;
+  transform: scaleX(-1);
 }
 
-/* Pure Comment Text Box */
 dl.style1 dd .postcontent {
-  position: relative;            
-  width: fit-content;            
-  max-width: 290px;              
+  position: relative;
+  width: fit-content;
+  max-width: 290px;
   float: left;
-  margin-left: 15px;             
+  margin-left: 15px;
   margin-top: 5px;
-  box-sizing: border-box;        
+  box-sizing: border-box;
   font-size: 11px;
   color: #555555;
-  word-break: break-word;  
+  word-break: break-word;
   background: #ffdbe8;
-  padding: 10px;                 
+  padding: 10px;
   border-radius: 10px;
-  
+
   display: block;
-  overflow: visible; 
+  overflow: visible;
 }
 
-/* --- SPEECH BUBBLE ARROW TAIL --- */
 dl.style1 dd .postcontent::before {
   content: "";
   position: absolute;
-  top: 15px;                     
-  left: -10px;                   
+  top: 15px;
+  left: -10px;
   width: 0;
   height: 0;
   border-top: 6px solid transparent;
   border-bottom: 6px solid transparent;
-  border-right: 15px solid #ffdbe8; 
+  border-right: 15px solid #ffdbe8;
 }
 
-/* --- IMAGE HANDLING INSIDE POST CONTENT --- */
 dl.style1 dd .postcontent img {
-  max-width: 100% !important;    /* Caps images to never scale wider than the 290px bubble boundary */
-  height: auto !important;       /* Maintains proper structural aspect ratios */
-  border-radius: 6px;            /* Adds a clean border radius matching the bubble theme */
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: 6px;
   display: inline-block;
-  margin-top: 4px;               
+  margin-top: 4px;
 }
 
-/* --- ACTION OVERLAYS --- */
 dl.style1 dd .deletecomment {
-  display: none !important;      
+  display: none !important;
 }

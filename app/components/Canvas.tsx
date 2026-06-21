@@ -60,7 +60,7 @@ export const Canvas = memo(function Canvas({
       column1: [] as string[],
       column2: [] as string[],
       column3: [] as string[],
-      showHeader: true // Default to true instead of conditionally binding to category === "profile"
+      showHeader: true 
     }
 
     const arrayRegex = /(column[1-3])\s*=\s*\[([\s\S]*?)\]/g
@@ -88,7 +88,6 @@ export const Canvas = memo(function Canvas({
     const layoutToUse = columnLayout || parsedTomlLayout
 
     if (layoutToUse && ((layoutToUse.column1?.length ?? 0) > 0 || (layoutToUse.column2?.length ?? 0) > 0 || (layoutToUse.column3?.length ?? 0) > 0)) {
-      // fallback to showing the header unless explicitly disabled via false configuration values
       const showHeader = !("showHeader" in layoutToUse) || layoutToUse.showHeader !== false;
 
       if (showHeader) {
@@ -104,7 +103,6 @@ export const Canvas = memo(function Canvas({
         currentHtml = currentHtml.replace(targetColumnString, `${targetColumnString}\n${compiled}`)
       })
     } else if (category === "profile" || !category) {
-      // Include fallback to showing header when no category is defined as well
       globalHeaderHtml = panelHtmlModules["/app/presets/panels_html/header.html"] || ""
       Object.entries(panelHtmlModules)
         .filter(([k]) => !k.endsWith("avatar_menu.html") && !k.endsWith("header.html"))
@@ -122,7 +120,6 @@ export const Canvas = memo(function Canvas({
         }
       })
     } else if (category) {
-      // Inject header globally if explicitly requested by structural defaults
       globalHeaderHtml = panelHtmlModules["/app/presets/panels_html/header.html"] || ""
       const content = panelHtmlModules[`/app/presets/panels_html/${category}.html`] || ""
       if (category !== "header") {
@@ -146,7 +143,6 @@ export const Canvas = memo(function Canvas({
         <style id="user-overrides"></style>
         <style id="avatar-styles"></style>
         <style>
-          /* Remove layout-breaking horizontal scrollbars */
           html, body {
             overflow-x: hidden !important;
           }

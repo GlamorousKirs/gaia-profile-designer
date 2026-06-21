@@ -1,49 +1,50 @@
-/* --- KEYFRAMES: CRT GLITCH FLICKER --- */
 @keyframes neonFlicker {
-  0%, 100% { opacity: 1; text-shadow: 0 0 4px #adff2f; }
-  50% { opacity: 0.7; text-shadow: 0 0 1px #adff2f; }
+
+  0%,
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 4px #adff2f;
+  }
+
+  50% {
+    opacity: 0.7;
+    text-shadow: 0 0 1px #adff2f;
+  }
 }
 
-/* --- THE MAIN WRAPPER BLOCK --- */
 .spoiler-wrapper,
 .spoiler-revealed {
   max-width: 220px;
   margin: 30px auto;
   box-sizing: border-box;
-  font-family: 'Courier New', Courier, monospace; /* Retro-futuristic mono font */
+  font-family: 'Courier New', Courier, monospace;
   position: relative;
-  
-  /* FORCE KILL NATIVE GAIA DOTTED BORDERS & FOCUS OUTLINES */
+
   border: none !important;
   outline: none !important;
-  box-shadow: none !important; 
+  box-shadow: none !important;
 }
 
-/* --- THE ULTRA-THIN HEADER BAR --- */
 .spoiler-title {
   display: block;
   position: relative;
   width: 100%;
-  background: #000000; /* Pitch black slate */
-  border: 1px solid #adff2f; /* Acid lime neon border */
-  
-  /* Strict Sharp Matching Radius */
-  border-radius: 6px 6px 0 0; 
-  
-  /* Ultra-thin padding optimization */
-  padding: 1px; 
+  background: #000000;
+  border: 1px solid #adff2f;
+
+  border-radius: 6px 6px 0 0;
+
+  padding: 1px;
   overflow: hidden;
   box-sizing: border-box;
   outline: none !important;
   transition: border-radius 0.2s ease, background 0.2s ease;
 }
 
-/* When hidden, close the container completely with uniform corners */
 .spoiler-hidden .spoiler-title {
   border-radius: 6px;
 }
 
-/* --- THE TRIGGER BUTTONS --- */
 .spoiler-control {
   appearance: none;
   -webkit-appearance: none;
@@ -52,32 +53,50 @@
   border: none !important;
   background: transparent;
   width: 100%;
-  
-  /* Shrunk down vertical padding for the thin strip profile */
-  padding: 6px 12px; 
+
+  padding: 6px 12px;
   cursor: pointer;
   text-align: left;
   position: relative;
   outline: none !important;
 }
 
-/* Hide default span text completely */
 .spoiler-control span {
   display: none !important;
 }
 
-/* --- THE HYBRID STATE ENGINE --- */
-.spoiler-control-show { display: block; }
-.spoiler-control-hide { display: none; }
+.spoiler-control-show {
+  display: block;
+}
 
-.spoiler-revealed:not(:hover) .spoiler-control-show { display: block !important; }
-.spoiler-revealed:not(:hover) .spoiler-control-hide { display: none; }
-.spoiler-revealed:hover .spoiler-control-show { display: none; }
-.spoiler-revealed:hover .spoiler-control-hide { display: block; }
-.spoiler-hidden .spoiler-control-show { display: block !important; }
-.spoiler-hidden .spoiler-control-hide { display: none !important; }
+.spoiler-control-hide {
+  display: none;
+}
 
-/* --- FUTURISTIC STRIP LABELS --- */
+.spoiler-revealed:not(:hover) .spoiler-control-show {
+  display: block !important;
+}
+
+.spoiler-revealed:not(:hover) .spoiler-control-hide {
+  display: none;
+}
+
+.spoiler-revealed:hover .spoiler-control-show {
+  display: none;
+}
+
+.spoiler-revealed:hover .spoiler-control-hide {
+  display: block;
+}
+
+.spoiler-hidden .spoiler-control-show {
+  display: block !important;
+}
+
+.spoiler-hidden .spoiler-control-hide {
+  display: none !important;
+}
+
 .spoiler-control-show::before,
 .spoiler-control-hide::before {
   font-size: 9px;
@@ -85,11 +104,19 @@
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
-.spoiler-control-show::before { content: '► RUN_MENU.EXE'; color: #adff2f; animation: neonFlicker 2s infinite; }
-.spoiler-control-hide::before { content: '▼ ABORT.SYS'; color: #ff0055; }
+
+.spoiler-control-show::before {
+  content: '► RUN_MENU.EXE';
+  color: #adff2f;
+  animation: neonFlicker 2s infinite;
+}
+
+.spoiler-control-hide::before {
+  content: '▼ ABORT.SYS';
+  color: #ff0055;
+}
 
 
-/* --- THE REVEAL MECHANIC DRAWER --- */
 .spoiler-wrapper br {
   display: none !important;
 }
@@ -101,24 +128,23 @@
   opacity: 0;
   box-sizing: border-box;
   padding: 0;
-  
+
   background: #0a0a0c;
-  
+
   border-left: 1px solid #adff2f;
   border-right: 1px solid #adff2f;
   border-bottom: 1px solid #adff2f;
-  
-  /* Strict Sharp Matching Bottom Radius */
-  border-radius: 0 0 6px 6px; 
-  
+
+  border-radius: 0 0 6px 6px;
+
   position: relative;
   transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
 }
 
 .spoiler-revealed:hover .spoiler {
-  max-height: 240px; 
+  max-height: 240px;
   opacity: 1;
-  padding: 6px; 
+  padding: 6px;
 }
 
 .spoiler-hidden .spoiler {
@@ -127,53 +153,49 @@
 }
 
 
-/* --- ZERO-OVERLAP ALIEN LINKS --- */
 .spoiler a {
   display: flex;
   align-items: center;
   box-sizing: border-box;
   width: 100%;
-  
+
   font-size: 10px;
   font-weight: 700;
-  color: #ffffff; /* Illuminates your raw user link text cleanly */
+  color: #ffffff;
   text-decoration: none;
   letter-spacing: 1px;
   text-transform: uppercase;
-  
+
   padding: 8px 10px;
   margin: 2px 0 0 0;
-  
+
   outline: none !important;
   border: none !important;
   position: relative;
   border-radius: 4px;
-  transition: all 0.2s step-end; /* Hard retro transition steps */
+  transition: all 0.2s step-end;
 }
 
-/* Neon index numbers acting as static left rails */
 .spoiler a::before {
   content: '//';
   font-size: 9px;
   color: #3e3e42;
-  margin-right: 10px; /* Locked barrier preserves raw link space */
+  margin-right: 10px;
   flex-shrink: 0;
 }
 
-/* Right-side alignment pill deployed via safe flex pushing */
 .spoiler a::after {
   content: 'LOC_0';
-  margin-left: auto; /* Natural spacer safely prevents collisions */
+  margin-left: auto;
   padding-left: 10px;
   font-size: 8px;
   color: #3e3e42;
   flex-shrink: 0;
 }
 
-/* --- INTERACTIVE STATE STYLES --- */
 .spoiler a:hover {
   background: #adff2f;
-  color: #000000; /* Flips your link text to pitch black for maximum visibility contrast */
+  color: #000000;
 }
 
 .spoiler a:hover::before {

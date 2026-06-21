@@ -127,7 +127,7 @@ export function ElementPropertiesPanel({
         const getNum = (p: string, fallback = 0): number => {
             const m = cssBlock.match(new RegExp(`(?<!-)${p}\\s*:\\s*(-?\\d+)(?:px|%)?`, "i"))
             if (m) return parseInt(m[1], 10)
-            
+
             if (p === "width" && domElement) return domElement.offsetWidth
             if (p === "height" && domElement) return domElement.offsetHeight
 
@@ -261,7 +261,7 @@ export function ElementPropertiesPanel({
 
     return (
         <div className="flex flex-col gap-4 p-3 h-full overflow-y-auto min-h-0 bg-background/50">
-            {/* SECTION 1: SELECTED ELEMENT HEADER */}
+            { }
             <Card>
                 <CardContent className="flex flex-col gap-1.5 p-0">
                     <div className="flex items-center justify-between px-1">
@@ -279,7 +279,7 @@ export function ElementPropertiesPanel({
                             Reset
                         </Button>
                     </div>
-                    
+
                     <Card className="p-2 w-full font-mono text-[11px] break-all text-primary select-text">
                         <CardContent className="p-0">
                             {selectedSelector || "None selected"}
@@ -288,10 +288,10 @@ export function ElementPropertiesPanel({
                 </CardContent>
             </Card>
 
-            {/* PROPERTIES WRAPPER */}
+            { }
             <Card>
                 <CardContent className="flex flex-col gap-5 p-0">
-                    {/* Dimensions */}
+                    { }
                     <div className="flex flex-col gap-1.5">
                         <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
                             Dimensions
@@ -302,7 +302,7 @@ export function ElementPropertiesPanel({
                         </div>
                     </div>
 
-                    {/* Padding */}
+                    { }
                     <div className="flex flex-col gap-1.5">
                         <div className="flex items-center justify-between px-1">
                             <h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
@@ -334,7 +334,7 @@ export function ElementPropertiesPanel({
                         </div>
                     </div>
 
-                    {/* Margin */}
+                    { }
                     <div className="flex flex-col gap-1.5">
                         <div className="flex items-center justify-between px-1">
                             <h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
@@ -366,7 +366,7 @@ export function ElementPropertiesPanel({
                         </div>
                     </div>
 
-                    {/* Typography */}
+                    { }
                     <div className="flex flex-col gap-1.5">
                         <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
                             Typography
@@ -377,7 +377,7 @@ export function ElementPropertiesPanel({
                         </div>
                     </div>
 
-                    {/* Borders & Shapes */}
+                    { }
                     <div className="flex flex-col gap-1.5">
                         <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
                             Borders & Shapes
@@ -395,7 +395,7 @@ export function ElementPropertiesPanel({
                         </div>
                     </div>
 
-                    {/* Fills & Appearance */}
+                    { }
                     <div className="flex flex-col gap-1.5">
                         <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
                             Fills & Appearance

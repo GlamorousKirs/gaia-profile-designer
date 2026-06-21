@@ -18,7 +18,6 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
   const validColor = color || "#000000";
   const [isDeleteMode, setIsDeleteMode] = useState(false)
 
-  // Empty array default fallback
   const [savedColors, setSavedColors] = useState<string[]>(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem(STORAGE_KEY)
@@ -47,19 +46,22 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 
   return (
     <Popover onOpenChange={(open) => { if (!open) setIsDeleteMode(false) }}>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          className="size-5 rounded-full border border-border cursor-pointer transition-all hover:ring-2 hover:ring-primary/20 focus:outline-none focus:ring-2 focus:ring-primary"
-          style={{ backgroundColor: validColor }}
-          aria-label="Pick a color"
-        />
-      </PopoverTrigger>
+      {                                                                                       }
+      <PopoverTrigger
+        render={
+          <button
+            type="button"
+            className="size-5 rounded-full border border-border cursor-pointer transition-all hover:ring-2 hover:ring-primary/20 focus:outline-none focus:ring-2 focus:ring-primary"
+            style={{ backgroundColor: validColor }}
+            aria-label="Pick a color"
+          />
+        }
+      />
       <PopoverContent className="w-auto p-0 border-none bg-transparent shadow-none" align="start">
         <div className="custom-layout p-0 rounded-xl backdrop-blur-md bg-background border flex flex-col">
           <HexAlphaColorPicker color={validColor} onChange={onChange} />
 
-          {/* Action Row */}
+          {                }
           <div className="relative flex items-center bg-muted rounded-b">
             <input
               type="text"
@@ -78,9 +80,9 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
             </button>
           </div>
 
-          {/* Saved Colors Swatches Row */}
+          {                               }
           {savedColors.length > 0 && (
-            <div className="flex flex-col gap-1.5 p-2.5 border-t border-border max-w-[200px]">
+            <div className="flex flex-col gap-1.5 p-2.5 border-t border-border max-w-50">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">Saved</span>
                 

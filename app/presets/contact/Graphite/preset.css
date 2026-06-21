@@ -1,25 +1,25 @@
 :root {
-  /* Toggle Switch: 1 for ON, 0 for OFF */
   --show-contact-label: 1;
 
-  /* Type exactly: left , right , or center */
   --dock-position: center;
 
-  --terminal-bg: #0d0e11; /* Abyssal Matte Graphite */
-  --terminal-accent: #ffb703; /* Warning Amber / Hazard Gold */
-  --terminal-sub-accent: #fb8500; /* Kinetic Ignition Orange */
-  --node-bg: #15171c; /* Industrial Plate Gray */
-  --node-bg-hover: #1e222b; /* Active Bay Gray */
-  --text-main: #e0e2e5; /* Stark Terminal White */
-  --text-muted: #4e5460; /* Low-Power Standby Gray */
+  --terminal-bg: #0d0e11;
+  --terminal-accent: #ffb703;
+  --terminal-sub-accent: #fb8500;
+  --node-bg: #15171c;
+  --node-bg-hover: #1e222b;
+  --text-main: #e0e2e5;
+  --text-muted: #4e5460;
 }
 
-/* Kinetic Pulse & Terminal Grid Keyframes */
 @keyframes industrialPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     border-color: var(--terminal-accent);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 0 8px rgba(255, 183, 3, 0.15);
   }
+
   50% {
     border-color: var(--terminal-sub-accent);
     box-shadow: 0 0 16px rgba(251, 133, 0, 0.3), inset 0 0 4px rgba(251, 133, 0, 0.1);
@@ -27,16 +27,27 @@
 }
 
 @keyframes terminalBlink {
-  0%, 100% { opacity: 0.2; }
-  50% { opacity: 1; }
+
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
 
 @keyframes scanningSweep {
-  0% { top: -100%; }
-  100% { top: 100%; }
+  0% {
+    top: -100%;
+  }
+
+  100% {
+    top: 100%;
+  }
 }
 
-/* Fixed Anchor Base Node */
 #id_contact {
   position: fixed;
   bottom: 20px;
@@ -44,7 +55,7 @@
   height: 44px;
   background: var(--node-bg);
   border: 2px solid var(--terminal-accent);
-  border-radius: 4px; /* Subtle industrial filleting */
+  border-radius: 4px;
   overflow: visible;
   z-index: 9999;
   box-sizing: border-box;
@@ -52,31 +63,51 @@
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Dock Configuration Matrix */
 @container style(--dock-position: center) {
-  #id_contact { left: 50%; right: auto; transform: translateX(-50%); }
-  #id_contact:hover { transform: translateX(-50%); }
-}
-@container style(--dock-position: right) {
-  #id_contact { left: auto; right: 20px; transform: none; }
-  #id_contact:hover { transform: none; }
-}
-@container style(--dock-position: left) {
-  #id_contact { left: 20px; right: auto; transform: none; }
-  #id_contact:hover { transform: none; }
+  #id_contact {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+
+  #id_contact:hover {
+    transform: translateX(-50%);
+  }
 }
 
-/* VERTICAL EXPANSION MATRIX: Deploys upward, avoiding right-edge clipping entirely */
+@container style(--dock-position: right) {
+  #id_contact {
+    left: auto;
+    right: 20px;
+    transform: none;
+  }
+
+  #id_contact:hover {
+    transform: none;
+  }
+}
+
+@container style(--dock-position: left) {
+  #id_contact {
+    left: 20px;
+    right: auto;
+    transform: none;
+  }
+
+  #id_contact:hover {
+    transform: none;
+  }
+}
+
 #id_contact:hover {
   width: 180px;
   height: 210px;
   background: var(--terminal-bg);
   border-color: var(--terminal-sub-accent);
   padding: 10px;
-  bottom: 20px; /* Anchored to bottom, grows upwards */
+  bottom: 20px;
 }
 
-/* System Core Core Icon Display */
 #id_contact:before {
   content: "▲";
   position: absolute;
@@ -99,7 +130,6 @@
   color: var(--terminal-sub-accent);
 }
 
-/* Technical Specification Readout Upper Overlay */
 #id_contact h2 {
   display: flex !important;
   align-items: center;
@@ -136,13 +166,12 @@
   letter-spacing: 0.5px;
 }
 
-/* Vertical Module Stack Track Matrix */
 #id_contact ul {
   margin: 0;
   padding: 12px 0 0 0;
   list-style: none;
   display: flex;
-  flex-direction: column; /* Vertical Layout Alignment */
+  flex-direction: column;
   gap: 8px;
   width: 100%;
   height: calc(100% - 10px);
@@ -160,7 +189,6 @@
   visibility: visible;
 }
 
-/* Individual Stack Grid Cells */
 #id_contact ul li {
   width: 100%;
   position: relative;
@@ -170,7 +198,6 @@
   font-weight: bold;
 }
 
-/* Tactile Industrial Command Links */
 #id_contact ul li a {
   display: block;
   padding: 8px 12px;
@@ -190,7 +217,6 @@
   transition: all 0.15s ease-in-out;
 }
 
-/* Sweeping Radar Bar Decor */
 #id_contact ul li a::after {
   content: "";
   position: absolute;
@@ -206,14 +232,13 @@
   background: var(--node-bg-hover);
   color: var(--terminal-accent);
   border-left-color: var(--terminal-sub-accent);
-  padding-left: 16px; /* Soft indention transition on select */
+  padding-left: 16px;
 }
 
 #id_contact ul li:has(a):hover a::after {
   animation: scanningSweep 1.2s infinite linear;
 }
 
-/* Standby Offline Cells */
 #id_contact ul li span {
   display: block;
   padding: 8px 12px;
@@ -238,12 +263,10 @@
   animation: terminalBlink 2s infinite ease;
 }
 
-/* ==========================================
-   TEXT REPLACEMENT ENGINE (MUTUALS OVERRIDE)
-   ========================================== */
 #id_contact ul li:first-child a {
   font-size: 0 !important;
 }
+
 #id_contact ul li:first-child a::before {
   content: "MUTUALS";
   font-size: 11px;
@@ -252,6 +275,7 @@
 #id_contact ul li:first-child span {
   font-size: 0 !important;
 }
+
 #id_contact ul li:first-child span::before {
   content: "MUTUALS";
   font-size: 11px;

@@ -22,7 +22,7 @@ export const UserAvatar = memo(function UserAvatar({
   onOpenProfile,
 }: UserAvatarProps) {
   const navigate = useNavigate()
-  
+
   const username = useProfileStore((state) => state.username)
   const userId = useProfileStore((state) => state.userId)
   const avatarUrl = useProfileStore((state) => state.avatarUrl)
@@ -33,26 +33,30 @@ export const UserAvatar = memo(function UserAvatar({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-8 rounded-full"
-          aria-label="User menu"
-        >
-          <Avatar className="relative size-8 overflow-hidden">
-            {avatarUrl ? (
-              <AvatarImage
-                src={avatarUrl}
-                alt={displayName}
-                loading="lazy"
-                className="h-27.5 w-20 max-w-none -ml-4.5 -mt-6"
-              />
-            ) : (
-              <AvatarFallback>{initial}</AvatarFallback>
-            )}
-          </Avatar>
-        </Button>
+      { }
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8 rounded-full"
+            aria-label="User menu"
+          />
+        }
+      >
+        <Avatar className="relative size-8 overflow-hidden">
+          { }
+          {avatarUrl && avatarUrl.trim() !== "" ? (
+            <AvatarImage
+              src={avatarUrl}
+              alt={displayName}
+              loading="lazy"
+              className="h-27.5 w-20 max-w-none -ml-4.5 -mt-6"
+            />
+          ) : (
+            <AvatarFallback>{initial}</AvatarFallback>
+          )}
+        </Avatar>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-56">

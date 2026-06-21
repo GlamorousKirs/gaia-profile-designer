@@ -1,5 +1,5 @@
+// app/components/ui/card.tsx
 import * as React from "react"
-
 import { cn } from "~/lib/utils"
 
 function Card({
@@ -66,15 +66,21 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function CardContent({ className, ...props }: React.ComponentProps<"div">) {
+// Fixed: CardContent now accepts and passes down the ref element required by @dnd-kit
+const CardContent = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<"div">
+>(({ className, ...props }, ref) => {
   return (
     <div
+      ref={ref}
       data-slot="card-content"
       className={cn("px-(--card-spacing)", className)}
       {...props}
     />
   )
-}
+})
+CardContent.displayName = "CardContent"
 
 function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (

@@ -72,7 +72,7 @@ export function GaiaLogoPanel({ tagName = "gaia-logo", onSelectLogo }: GaiaLogoP
     const rowVirtualizer = useVirtualizer({
         count: logoRows.length,
         getScrollElement: () => parentRef.current,
-        estimateSize: () => 46, 
+        estimateSize: () => 46,
         overscan: 4,
     })
 
@@ -89,7 +89,7 @@ export function GaiaLogoPanel({ tagName = "gaia-logo", onSelectLogo }: GaiaLogoP
 
     return (
         <div className="flex flex-col h-full w-full bg-background select-text p-3 gap-3 overflow-hidden">
-            {/* Header Layout */}
+            { }
             <div className="h-9 shrink-0 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-muted-foreground bg-transparent select-none">
                 <div className="flex items-center gap-1.5">
                     <Image className="size-3.5 text-sky-400" />
@@ -100,7 +100,7 @@ export function GaiaLogoPanel({ tagName = "gaia-logo", onSelectLogo }: GaiaLogoP
                 </span>
             </div>
 
-            {/* InputGroup */}
+            { }
             <InputGroup className="w-full shrink-0">
                 <InputGroupInput
                     id="logo-search"
@@ -197,7 +197,7 @@ export function GaiaLogoPanel({ tagName = "gaia-logo", onSelectLogo }: GaiaLogoP
                                                     style={{ width: "41px", height: "20px" }}
                                                     className="object-contain pointer-events-none content-visibility-auto"
                                                 />
-                                                
+
                                                 {onSelectLogo && (
                                                     <ArrowUpRight className="absolute top-0.5 right-0.5 size-2.5 text-muted-foreground/0 group-hover:text-muted-foreground/70 transition-colors pointer-events-none" />
                                                 )}
@@ -205,7 +205,7 @@ export function GaiaLogoPanel({ tagName = "gaia-logo", onSelectLogo }: GaiaLogoP
                                                 <Button
                                                     variant="secondary"
                                                     size="icon"
-                                                    title={copiedId === logo.id ? "Copied!" : "Copy URL"} // Specific action-oriented title context
+                                                    title={copiedId === logo.id ? "Copied!" : "Copy URL"}
                                                     onClick={(e) => handleCopyUrl(e, logo.url, logo.id)}
                                                     className="absolute bottom-0.5 right-0.5 size-4.5 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100 rounded-[3px] border border-border shadow-sm text-muted-foreground hover:text-foreground shrink-0"
                                                 >

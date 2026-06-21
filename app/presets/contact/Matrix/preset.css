@@ -1,32 +1,58 @@
 :root {
-  /* Toggle Switch: 1 for ON, 0 for OFF */
   --show-contact-label: 1;
 
-  /* Type exactly: left , right , or center */
   --dock-position: center;
 
-  --contact-bg: #030704; 
-  --contact-accent: #00ff66; /* Terminal Lime Green */
-  --btn-bg: #0a140c; 
-  --btn-bg-hover: #122617; 
+  --contact-bg: #030704;
+  --contact-accent: #00ff66;
+  --btn-bg: #0a140c;
+  --btn-bg-hover: #122617;
   --text-color: #70a982;
 }
 
-/* Digital Waterfall Animations */
 @keyframes dataPulse {
-  0%, 100% { border-color: rgba(0, 255, 102, 0.2); box-shadow: 0 0 10px rgba(0, 255, 102, 0.05); }
-  50% { border-color: rgba(0, 255, 102, 0.6); box-shadow: 0 0 20px rgba(0, 255, 102, 0.25); }
+
+  0%,
+  100% {
+    border-color: rgba(0, 255, 102, 0.2);
+    box-shadow: 0 0 10px rgba(0, 255, 102, 0.05);
+  }
+
+  50% {
+    border-color: rgba(0, 255, 102, 0.6);
+    box-shadow: 0 0 20px rgba(0, 255, 102, 0.25);
+  }
 }
 
 @keyframes dropStream {
-  0% { top: -100%; }
-  100% { top: 100%; }
+  0% {
+    top: -100%;
+  }
+
+  100% {
+    top: 100%;
+  }
 }
 
 @keyframes glitchChar {
-  0%, 100% { opacity: 0.9; filter: blur(0px); }
-  90% { opacity: 1; filter: blur(0.5px); text-shadow: 1px 0 rgba(0,255,102,0.5); }
-  95% { opacity: 0.5; filter: blur(0px); text-shadow: -1px 0 #ffffff; }
+
+  0%,
+  100% {
+    opacity: 0.9;
+    filter: blur(0px);
+  }
+
+  90% {
+    opacity: 1;
+    filter: blur(0.5px);
+    text-shadow: 1px 0 rgba(0, 255, 102, 0.5);
+  }
+
+  95% {
+    opacity: 0.5;
+    filter: blur(0px);
+    text-shadow: -1px 0 #ffffff;
+  }
 }
 
 #id_contact {
@@ -36,8 +62,8 @@
   height: 46px;
   background: var(--btn-bg);
   border: 1px solid rgba(0, 255, 102, 0.2);
-  border-radius: 0px; /* Monolithic sharp code block */
-  overflow: visible; 
+  border-radius: 0px;
+  overflow: visible;
   z-index: 9999;
   box-sizing: border-box;
   animation: dataPulse 3s infinite ease-in-out;
@@ -50,6 +76,7 @@
     right: auto;
     transform: translateX(-50%);
   }
+
   #id_contact:hover {
     transform: translateX(-50%) translateY(0);
   }
@@ -61,6 +88,7 @@
     right: 20px;
     transform: none;
   }
+
   #id_contact:hover {
     transform: none;
   }
@@ -72,15 +100,16 @@
     right: auto;
     transform: none;
   }
+
   #id_contact:hover {
     transform: none;
   }
 }
 
 #id_contact:hover {
-  width: 370px; 
-  height: 50px; 
-  border-radius: 0px; 
+  width: 370px;
+  height: 50px;
+  border-radius: 0px;
   background: var(--contact-bg);
   border-color: var(--contact-accent);
   padding: 8px;
@@ -92,9 +121,8 @@
   }
 }
 
-/* Centered Code Glyph (No Emojis) */
 #id_contact:before {
-  content: "M"; /* Mainframe source signature */
+  content: "M";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -110,20 +138,19 @@
 }
 
 #id_contact:hover:before {
-  top: 50%; 
+  top: 50%;
   left: 22px;
   transform: translate(-50%, -50%) scale(0.9);
   animation: glitchChar 1.5s infinite linear;
 }
 
-/* System Header String */
 #id_contact:after {
   content: "SYS_DOCK.EXE // DISK_01";
   position: absolute;
-  top: -16px; 
+  top: -16px;
   left: 0px;
   font-family: monospace;
-  font-size: 9px; 
+  font-size: 9px;
   font-weight: bold;
   letter-spacing: 1px;
   color: var(--contact-accent);
@@ -142,18 +169,17 @@
   display: none !important;
 }
 
-/* Grid Matrix Wire Array */
 #id_contact ul {
   margin: 0;
   padding: 0;
   list-style: none;
   display: flex;
   gap: 6px;
-  height: 32px; 
+  height: 32px;
   position: absolute;
   top: 50%;
   transform: translateY(-50%) translateX(10px);
-  left: 42px; 
+  left: 42px;
   right: 8px;
   align-items: center;
   opacity: 0;
@@ -165,10 +191,9 @@
 #id_contact:hover ul {
   opacity: 1;
   visibility: visible;
-  transform: translateY(-50%) translateX(0); 
+  transform: translateY(-50%) translateX(0);
 }
 
-/* Target Node Fields */
 #id_contact ul li {
   flex: 1;
   position: relative;
@@ -178,7 +203,6 @@
   text-align: center;
 }
 
-/* Cursor Entry Underlines */
 #id_contact ul li::before {
   content: "_";
   position: absolute;
@@ -194,10 +218,9 @@
   opacity: 1;
 }
 
-/* Hyper-Linked Code Blocks */
 #id_contact ul li a {
   display: block;
-  padding: 8px; 
+  padding: 8px;
   color: var(--text-color);
   text-decoration: none;
   background: var(--btn-bg);
@@ -209,7 +232,6 @@
   transition: all 0.2s ease;
 }
 
-/* Falling Laser Stream Backgrounds */
 #id_contact ul li a::after {
   content: "";
   position: absolute;
@@ -232,20 +254,19 @@
   animation: dropStream 1s infinite linear;
 }
 
-/* Defunct Memory Nodes */
 #id_contact ul li span {
   display: block;
-  padding: 8px; 
-  color: rgba(0, 255, 102, 0.15); 
-  background: rgba(0, 0, 0, 0.5); 
+  padding: 8px;
+  color: rgba(0, 255, 102, 0.15);
+  background: rgba(0, 0, 0, 0.5);
   border: 1px solid transparent;
   border-radius: 0px;
-  cursor: not-allowed; 
+  cursor: not-allowed;
   user-select: none;
-  font-size: 0; 
+  font-size: 0;
 }
 
 #id_contact ul li span:after {
   content: "VOID";
-  font-size: 11px; 
+  font-size: 11px;
 }
