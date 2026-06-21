@@ -19,7 +19,14 @@ import {
   arrayMove
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { GripVertical } from "lucide-react"
+import { GripVertical, Search } from "lucide-react"
+
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
+import { Card, CardContent } from "@/components/ui/card"
 
 export interface ColumnState {
   panels: string[]
@@ -35,6 +42,14 @@ interface ColumnManagerProps {
 
 const DroppableColumn = memo(function DroppableColumn({ id, items }: { id: keyof ColumnState; items: string[] }) {
   const { setNodeRef } = useDroppable({ id })
+  const [search, setSearch] = useState("")
+
+  const filteredItems = useMemo(() => 
+    id === "panels" 
+      ? items.filter((item) => item.toLowerCase().includes(search.toLowerCase()))
+      : items,
+    [items, search, id]
+  )
 
   const columnLabels: Record<keyof ColumnState, string> = {
     panels: "Panels",
@@ -44,21 +59,38 @@ const DroppableColumn = memo(function DroppableColumn({ id, items }: { id: keyof
   }
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
-        {columnLabels[id]}
-      </h3>
-      <div
-        ref={setNodeRef}
-        className="bg-card border border-border rounded-lg shadow-sm p-1.5 min-h-12"
-      >
-        <SortableContext id={id} items={items} strategy={verticalListSortingStrategy}>
+    /* Wrapped with unstylized Card atom */
+    <Card>
+      <div className="flex items-center justify-between mb-1.5 shrink-0 px-1">
+        <h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
+          {columnLabels[id]}
+        </h3>
+      </div>
+      
+      {id === "panels" && (
+        <div className="mb-2 shrink-0">
+          <InputGroup className="w-full">
+            <InputGroupInput 
+              placeholder="Filter panels..." 
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="text-[11px] py-1"
+            />
+            <InputGroupAddon>
+              <Search className="size-3 text-muted-foreground" />
+            </InputGroupAddon>
+          </InputGroup>
+        </div>
+      )}
+
+      <CardContent ref={setNodeRef} className="min-h-12 px-0">
+        <SortableContext id={id} items={filteredItems} strategy={verticalListSortingStrategy}>
           <div className="divide-y divide-border/60">
-            {items.map((item) => <SortableItem key={item} id={item} />)}
+            {filteredItems.map((item) => <SortableItem key={item} id={item} />)}
           </div>
         </SortableContext>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 })
 
@@ -76,7 +108,7 @@ const SortableItem = memo(function SortableItem({ id }: { id: string }) {
       style={style}
       {...attributes}
       {...listeners}
-      className="flex items-center gap-2 px-2.5 py-2.5 hover:bg-accent hover:text-accent-foreground cursor-grab active:cursor-grabbing touch-none w-full font-mono text-[11px] rounded-md"
+      className="flex items-center gap-2 px-2 py-2 hover:bg-accent hover:text-accent-foreground cursor-grab active:cursor-grabbing touch-none w-full font-mono text-[11px] rounded-md"
     >
       <div className="opacity-40 pointer-events-none shrink-0">
         <GripVertical className="size-3" />
@@ -108,7 +140,6 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
     const overId = over.id as string
     const activeContainer = findContainer(active.id as string, columns)
 
-    // Check if the over target is an explicitly registered DroppableContainer object rather than an item string string matches
     const isContainer = over.data.current?.type === "container" || (overId in columns && !findContainer(overId, columns))
     const overContainer = isContainer ? (overId as keyof ColumnState) : findContainer(overId, columns)
 
@@ -179,8 +210,7 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      {/* Target wrapper ID attached here for DriverJS */}
-      <div id="tutorial-1" className="flex flex-col gap-4 p-3 h-full overflow-y-auto min-h-0">
+      <div className="flex flex-col gap-4 p-3">
         {columnEntries.map(([id, items]) => (
           <DroppableColumn key={id} id={id} items={items} />
         ))}
@@ -188,7 +218,7 @@ export default function ColumnManager({ columns, setColumns }: ColumnManagerProp
 
       <DragOverlay dropAnimation={null}>
         {activeId ? (
-          <div className="flex items-center gap-2 px-2.5 py-2.5 bg-accent text-accent-foreground cursor-grabbing opacity-90 w-full font-mono text-[11px] rounded-md shadow-md border border-border/40">
+          <div className="flex items-center gap-2 px-2 py-2 bg-accent text-accent-foreground cursor-grabbing opacity-90 w-full font-mono text-[11px] rounded-md border border-border/40">
             <GripVertical className="size-3 opacity-60 shrink-0" />
             <span className="truncate">{activeId}</span>
           </div>

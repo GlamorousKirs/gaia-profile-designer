@@ -60,7 +60,7 @@ export const Canvas = memo(function Canvas({
       column1: [] as string[],
       column2: [] as string[],
       column3: [] as string[],
-      showHeader: category === "profile"
+      showHeader: true // Default to true instead of conditionally binding to category === "profile"
     }
 
     const arrayRegex = /(column[1-3])\s*=\s*\[([\s\S]*?)\]/g
@@ -88,6 +88,7 @@ export const Canvas = memo(function Canvas({
     const layoutToUse = columnLayout || parsedTomlLayout
 
     if (layoutToUse && ((layoutToUse.column1?.length ?? 0) > 0 || (layoutToUse.column2?.length ?? 0) > 0 || (layoutToUse.column3?.length ?? 0) > 0)) {
+      // fallback to showing the header unless explicitly disabled via false configuration values
       const showHeader = !("showHeader" in layoutToUse) || layoutToUse.showHeader !== false;
 
       if (showHeader) {
@@ -102,7 +103,8 @@ export const Canvas = memo(function Canvas({
 
         currentHtml = currentHtml.replace(targetColumnString, `${targetColumnString}\n${compiled}`)
       })
-    } else if (category === "profile") {
+    } else if (category === "profile" || !category) {
+      // Include fallback to showing header when no category is defined as well
       globalHeaderHtml = panelHtmlModules["/app/presets/panels_html/header.html"] || ""
       Object.entries(panelHtmlModules)
         .filter(([k]) => !k.endsWith("avatar_menu.html") && !k.endsWith("header.html"))
@@ -120,6 +122,8 @@ export const Canvas = memo(function Canvas({
         }
       })
     } else if (category) {
+      // Inject header globally if explicitly requested by structural defaults
+      globalHeaderHtml = panelHtmlModules["/app/presets/panels_html/header.html"] || ""
       const content = panelHtmlModules[`/app/presets/panels_html/${category}.html`] || ""
       if (category !== "header") {
         currentHtml = gaiaHtml.replace(`id="column_2" class="column focus_column">`, `id="column_2" class="column focus_column">\n${content}`)
@@ -194,7 +198,8 @@ export const Canvas = memo(function Canvas({
               const panel = document.getElementById(id);
               if (panel) {
                 const imgs = panel.querySelectorAll('img');
-                imgs.forEach(img => {
+                const imgsArray = Array.from(imgs);
+                imgsArray.forEach(img => {
                   if (computedAvatarUrl && img.src !== computedAvatarUrl) {
                     img.src = computedAvatarUrl;
                   }
@@ -202,7 +207,9 @@ export const Canvas = memo(function Canvas({
               }
             });
 
-            document.querySelectorAll('.avatar img, #id_avatar img').forEach(img => {
+            const avatarImgs = document.querySelectorAll('.avatar img, #id_avatar img');
+            const avatarImgsArray = Array.from(avatarImgs);
+            avatarImgsArray.forEach(img => {
               if (computedAvatarUrl && img.src !== computedAvatarUrl) img.src = computedAvatarUrl;
             });
 
@@ -228,11 +235,11 @@ export const Canvas = memo(function Canvas({
             if (e.data.type === 'init-html' || e.data.type === 'update-html') {
               const scriptTag = document.querySelector('script');
               document.body.innerHTML = e.data.html;
-              document.body.appendChild(scriptTag);
+              if (scriptTag) document.body.appendChild(scriptTag);
               forceProfileIdentitySwap();
             }
             if (e.data.type === 'update-css') {
-              userStyleTag.textContent = e.data.css;
+              if (userStyleTag) userStyleTag.textContent = e.data.css;
             }
             if (e.data.type === 'update-identity') {
               computedAvatarUrl = e.data.avatarUrl;
@@ -252,7 +259,9 @@ export const Canvas = memo(function Canvas({
             if (e.data.type === 'sync-selected-element') {
               activeSelectorString = e.data.selector || "";
               document.documentElement.classList.remove('highlight-selected');
-              document.querySelectorAll('.highlight-selected').forEach(el => {
+              const activeHighlights = document.querySelectorAll('.highlight-selected');
+              const activeHighlightsArray = Array.from(activeHighlights);
+              activeHighlightsArray.forEach(el => {
                 el.classList.remove('highlight-selected');
               });
               if (e.data.selector) {
@@ -261,7 +270,8 @@ export const Canvas = memo(function Canvas({
                     document.documentElement.classList.add('highlight-selected');
                   } else {
                     const elements = document.querySelectorAll(e.data.selector);
-                    elements.forEach(el => el.classList.add('highlight-selected'));
+                    const elementsArray = Array.from(elements);
+                    elementsArray.forEach(el => el.classList.add('highlight-selected'));
                   }
                 } catch(err){}
               }
@@ -274,13 +284,13 @@ export const Canvas = memo(function Canvas({
               currentHovered.classList.remove('highlight-hover');
             }
             currentHovered = e.target;
-            currentHovered.classList.add('highlight-hover');
+            if (currentHovered) currentHovered.classList.add('highlight-hover');
           });
 
           document.addEventListener('mouseout', (e) => {
             if (!window.isSelectionActive) return;
             if (currentHovered === e.target) {
-              currentHovered.classList.remove('highlight-hover');
+              if (currentHovered) currentHovered.classList.remove('highlight-hover');
               currentHovered = null;
             }
           });

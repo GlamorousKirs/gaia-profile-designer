@@ -15,8 +15,6 @@ import { StudioMobileFallback } from "./studio/StudioMobileFallback"
 import { StudioHeader } from "./studio/StudioHeader"
 import { StudioToolbar } from "./studio/StudioToolbar"
 
-import { useStudioTutorial } from "@/hooks/useStudioTutorial" // <-- Imported separate hook helper
-
 import { Settings, Move, Hash, Component, Image } from "lucide-react"
 
 const SelectorPanel = lazy(() => import("@/components/SelectorPanel"))
@@ -56,8 +54,6 @@ export default function Studio() {
 
   const [isProfileOpen, setIsProfileOpen] = useState(false)
 
-  const { startTutorial } = useStudioTutorial() // <-- Initialized Driver.js configuration routine hook
-
   const profileUsername = useProfileStore((state) => state.username)
   const profileUserId = useProfileStore((state) => state.userId)
   const profileAvatarUrl = useProfileStore((state) => state.avatarUrl)
@@ -79,8 +75,8 @@ export default function Studio() {
   const [selectedSelector, setSelectedSelector] = useState<string>("")
 
   const [borderRadius, setBorderRadius] = useState<number>(0)
-  const [bgColor, setBgColor] = useState<string>("#ffffff")
-  const [textColor, setTextColor] = useState<string>("#ffffff")
+  const [bgColor, setBgColor] = useState<string>(`#ffffff`)
+  const [textColor, setTextColor] = useState<string>(`#ffffff`)
 
   const [widthVal, setWidthVal] = useState<number>(0)
   const [heightVal, setHeightVal] = useState<number>(0)
@@ -100,7 +96,7 @@ export default function Studio() {
   const [opacityVal, setOpacityVal] = useState<number>(100)
 
   const [borderWidth, setBorderWidth] = useState<number>(0)
-  const [borderColor, setBorderColor] = useState<string>("#ffffff")
+  const [borderColor, setBorderColor] = useState<string>(`#ffffff`)
 
   const isUpdatingRef = useRef(false)
 
@@ -111,27 +107,17 @@ export default function Studio() {
     column3: [],
   })
 
-useEffect(() => {
-  const hasVisited = localStorage.getItem("gstudio-has-visited-studio")
+  useEffect(() => {
+    const hasVisited = localStorage.getItem("gstudio-has-visited-studio")
 
-  if (!hasVisited) {
-    setIsProfileOpen(true)
-  } else {
-    // If they have visited before, run the tutorial directly on page mount!
-    setTimeout(() => {
-      startTutorial()
-    }, 500) // Small delay to make sure elements are fully rendered in DOM
-  }
-}, [startTutorial])
+    if (!hasVisited) {
+      setIsProfileOpen(true)
+    }
+  }, [])
 
   const handleCloseProfile = () => {
     localStorage.setItem("gstudio-has-visited-studio", "true")
     setIsProfileOpen(false)
-
-    // Handover delay sequence triggers once profile profile context closes down
-    setTimeout(() => {
-      startTutorial()
-    }, 400)
   }
 
   const handleSetActiveTool = useCallback((tool: "select" | null) => {
@@ -282,7 +268,7 @@ useEffect(() => {
 
         <div className="flex flex-1 w-full overflow-hidden relative">
           {!isMaximized && (
-            <div className="flex h-full shrink-0"> {/* <-- Hooked Target Wrapper ID */}
+            <div className="flex h-full shrink-0">
               <SidebarPanel<"selectors" | "columns">
                 side="left"
                 isOpen={leftOpen}
@@ -303,7 +289,7 @@ useEffect(() => {
           )}
 
           <div className="flex-1 flex flex-col h-full relative overflow-hidden contain-[layout]">
-            <div id="tutorial-2" className="relative flex-1 w-full h-full"> {/* <-- Hooked Canvas ID Target */}
+            <div className="relative flex-1 w-full h-full">
               <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-sm">Initializing Studio Canvas...</div>}>
                 <Canvas
                   activeTool={activeTool}

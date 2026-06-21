@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Share2, Fullscreen } from "lucide-react"
+import { Fullscreen } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemePicker } from "~/components/ThemePicker"
 import { UserAvatar } from "@/components/UserAvatar"
@@ -53,7 +53,6 @@ export function StudioHeader({ onOpenProfile }: StudioHeaderProps) {
       </div>
 
       <div className="flex items-center gap-1.5" role="toolbar" aria-label="Header actions">
-        {                                                                   }
         <Button
           variant="ghost"
           size="icon"
@@ -64,7 +63,6 @@ export function StudioHeader({ onOpenProfile }: StudioHeaderProps) {
         >
           <Fullscreen className="size-3.5" aria-hidden="true" />
           
-          {                                                                       }
           <span className="sr-only">
             {isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
           </span>
@@ -72,11 +70,6 @@ export function StudioHeader({ onOpenProfile }: StudioHeaderProps) {
 
         <ThemePicker />
         <UserAvatar onOpenProfile={onOpenProfile} />
-        
-        <Button size="sm" className="h-7 gap-1 text-xs font-medium px-2.5">
-          <Share2 className="size-3.5" aria-hidden="true" /> 
-          <span>Publish</span>
-        </Button>
       </div>
     </header>
   )
