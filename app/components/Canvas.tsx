@@ -133,6 +133,8 @@ export const Canvas = memo(function Canvas({
   const finalAvatarUrl = avatarUrl || DEFAULT_AVATAR
   const finalUsername = username || DEFAULT_USERNAME
 
+  // FIXED: Removed dynamic interpolations that depend on state stores.
+  // The variables are initialized safely and dynamically handled purely on message receipt.
   const initialSrcDoc = useMemo(() => `
     <!DOCTYPE html>
     <html lang="en">
@@ -173,8 +175,8 @@ export const Canvas = memo(function Canvas({
           const avatarStyleTag = document.getElementById('avatar-styles');
           let currentHovered = null;
           let activeSelectorString = "";
-          let computedAvatarUrl = "${DEFAULT_AVATAR}";
-          let computedUsername = "${DEFAULT_USERNAME}";
+          let computedAvatarUrl = "";
+          let computedUsername = "";
 
           function getSelector(el) {
             if (!el || el === document.body || el === document.documentElement) return 'html, body';
