@@ -58,6 +58,9 @@ const DB_STORE = createStore('gaia-profile-designer', 'snippets')
 const PREFIX = 'gstudio-'
 
 const Settings: React.FC = () => {
+    // 1. Tracks if we are running safely on the client browser
+    const [mounted, setMounted] = useState<boolean>(false)
+
     const username = useProfileStore((state) => state.username)
     const userId = useProfileStore((state) => state.userId)
     const avatarUrl = useProfileStore((state) => state.avatarUrl)
@@ -109,6 +112,8 @@ const Settings: React.FC = () => {
     }, [])
 
     useEffect(() => {
+        // 2. Triggers only in the browser, matching server markup safely first
+        setMounted(true)
         verifyStoragePayload()
         return () => {
             if (statusTimeoutRef.current) clearTimeout(statusTimeoutRef.current)
@@ -286,7 +291,8 @@ const Settings: React.FC = () => {
 
                                 <div className="flex items-center gap-8 p-6 bg-muted/30 border border-border rounded-lg">
                                     <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary overflow-hidden shrink-0">
-                                        {avatarUrl ? (
+                                        {/* 3. Safe Avatar Hydration Check */}
+                                        {mounted && avatarUrl ? (
                                             <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                                         ) : (
                                             <Fingerprint size={32} />
@@ -294,8 +300,13 @@ const Settings: React.FC = () => {
                                     </div>
                                     <div className="space-y-1 min-w-0">
                                         <p className="text-xs uppercase font-bold text-primary">Logged In As</p>
-                                        <h3 className="text-lg font-bold text-foreground truncate">{username || 'Guest User'}</h3>
-                                        <p className="text-xs text-muted-foreground font-mono truncate">ID: {userId || 'Not Available'}</p>
+                                        {/* 4. Safe Text Fallbacks using the 'mounted' gate */}
+                                        <h3 className="text-lg font-bold text-foreground truncate">
+                                            {(mounted && username) || 'Guest User'}
+                                        </h3>
+                                        <p className="text-xs text-muted-foreground font-mono truncate">
+                                            ID: {(mounted && userId) || 'Not Available'}
+                                        </p>
                                     </div>
                                 </div>
 
@@ -305,7 +316,8 @@ const Settings: React.FC = () => {
                                         <p className="text-xs text-muted-foreground">Inspect or selectively remove independent layout profiles, state models, and credentials currently allocated on this system.</p>
                                     </div>
 
-                                    {allItems.length > 0 ? (
+                                    {/* 5. Storage Items check gated to mount status */}
+                                    {mounted && allItems.length > 0 ? (
                                         <div className="border border-border rounded-md divide-y divide-border bg-muted/10 max-h-80 overflow-y-auto">
                                             {allItems.map((item) => {
                                                 const ItemIcon = item.icon
@@ -351,12 +363,12 @@ const Settings: React.FC = () => {
 
                                         <Button
                                             variant="destructive"
-                                            disabled={!hasLocalData}
+                                            disabled={!mounted || !hasLocalData}
                                             onClick={() => setShowConfirmReset(true)}
                                             className="w-full"
                                         >
                                             <Trash2 size={14} className="mr-2" />
-                                            {hasLocalData ? 'Clear Local Data' : 'No Local Data Found'}
+                                            {mounted && hasLocalData ? 'Clear Local Data' : 'No Local Data Found'}
                                         </Button>
                                     </div>
                                 </div>
