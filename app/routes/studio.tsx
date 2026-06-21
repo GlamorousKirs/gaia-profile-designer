@@ -64,12 +64,8 @@ export default function Studio() {
 
   const [rootCss] = useState("")
 
-  const [cssCode, setCssCode] = useState<string>(() => {
-    if (!searchParams.get("id")) {
-      return localStorage.getItem("autosave_draft_code") || ""
-    }
-    return ""
-  })
+  // Initializing with an empty string matches the pre-rendered shell flawlessly
+  const [cssCode, setCssCode] = useState<string>("")
   const [activePanels, setActivePanels] = useState<string[]>([])
 
   const [selectedSelector, setSelectedSelector] = useState<string>("")
@@ -106,6 +102,16 @@ export default function Studio() {
     column2: [],
     column3: [],
   })
+
+  // Hydration-safe draft loading hook
+  useEffect(() => {
+    if (!searchParams.get("id")) {
+      const savedDraft = localStorage.getItem("autosave_draft_code")
+      if (savedDraft) {
+        setCssCode(savedDraft)
+      }
+    }
+  }, [searchParams])
 
   useEffect(() => {
     const hasVisited = localStorage.getItem("gstudio-has-visited-studio")
@@ -231,7 +237,9 @@ export default function Studio() {
   }, [presetId, category])
 
   useEffect(() => {
-    localStorage.setItem("autosave_draft_code", cssCode)
+    if (cssCode) {
+      localStorage.setItem("autosave_draft_code", cssCode)
+    }
   }, [cssCode])
 
   const handleLeftSelectorAppend = (selector: string) => {

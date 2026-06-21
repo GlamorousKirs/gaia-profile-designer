@@ -1,4 +1,4 @@
-import { Suspense } from "react"
+import { Suspense, useState, useEffect } from "react"
 import {
   Links,
   Meta,
@@ -26,9 +26,15 @@ export function meta() {
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
-  const isStudio = location.pathname === '/studio'
+  
+  const [isMounted, setIsMounted] = useState(false)
+  
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
-  const isHome = location.pathname === '/'
+  const isStudio = isMounted && location.pathname === '/studio'
+  const isHome = isMounted && location.pathname === '/'
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -45,13 +51,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <main className="w-full min-h-screen flex flex-col">
               <Navbar />
               <Suspense fallback={null}>
-                {isStudio || isHome ? (
-                  children
-                ) : (
-                  <div className="w-full container mx-auto py-20">
-                    {children}
-                  </div>
-                )}
+                <div className={(!isStudio && !isHome) ? "w-full container mx-auto py-20" : "w-full"}>
+                  {children}
+                </div>
               </Suspense>
             </main>
           </TooltipProvider>
