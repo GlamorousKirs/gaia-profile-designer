@@ -46,7 +46,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
       </head>
       <body>
-        <ThemeProvider attribute="data-theme" storageKey="theme" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="data-theme" storageKey="theme" defaultTheme="catppuccin" enableSystem>
           <TooltipProvider>
             <main className="w-full min-h-screen flex flex-col">
               <Navbar />

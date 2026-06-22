@@ -1,6 +1,6 @@
 import { useState, useRef, useTransition, useCallback, useEffect, lazy, Suspense, useMemo } from "react"
 import { motion, useDragControls, AnimatePresence } from "motion/react"
-import { GripVertical, Copy, Check, Library, ChevronRight, Maximize2 } from "lucide-react"
+import { Copy, Check, Library, ChevronUp, ChevronDown, Sparkles, MoveDiagonal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { EditorView, tooltips } from "@codemirror/view"
@@ -9,13 +9,19 @@ import { studioTheme, customSearchTheme } from "@/codemirror/editor"
 import { ColorPlugin } from "@/codemirror/color-plugin"
 import { SnippetPanel } from "./SnippetPanel"
 import type { SnippetActionType } from "@/store/useSnippetStore"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
-const BASE_EDITOR_WIDTH = 450
+const BASE_EDITOR_WIDTH = 460
 const BASE_SNIPPETS_WIDTH = 300
-const BASE_HEIGHT = 320
+const BASE_HEIGHT = 340
 const STORAGE_KEY = "myapp_v1_autosave_code"
 
-const structuralSpring = { type: "spring", stiffness: 450, damping: 45 } as const
+const structuralSpring = { type: "spring", stiffness: 380, damping: 38 } as const
 
 const CodeMirror = lazy(() => import("@uiw/react-codemirror"))
 
@@ -26,12 +32,12 @@ interface CodePanelProps {
 }
 
 const SCALE_OPTIONS = [
-  { label: "1x", value: 1.0 },
+  { label: "1.0x (Default)", value: 1.0 },
   { label: "1.2x", value: 1.2 },
   { label: "1.4x", value: 1.4 },
   { label: "1.6x", value: 1.6 },
   { label: "1.8x", value: 1.8 },
-  { label: "2x", value: 2 },
+  { label: "2.0x", value: 2.0 },
 ]
 
 export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
@@ -44,16 +50,13 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
   const panelRef = useRef<HTMLDivElement>(null)
   const editorViewRef = useRef<EditorView | null>(null)
 
-  // Keep a stable mutable ref of the code string to prevent heavy re-renders in side-effects
   const codeRef = useRef(code)
   useEffect(() => {
     codeRef.current = code
   }, [code])
 
-  // Debounced autosave with uniquely scoped key namespacing
   useEffect(() => {
     const currentCode = codeRef.current
-
     if (!currentCode || currentCode.length === 0) {
       localStorage.removeItem(STORAGE_KEY)
       return
@@ -70,7 +73,6 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
   const currentSnippetsWidth = BASE_SNIPPETS_WIDTH * scaleMultiplier
   const currentHeight = BASE_HEIGHT * scaleMultiplier
 
-  // Included custom themes to dependency tree to ensure extensions reconstruct safely if configuration mutates
   const editorExtensions = useMemo(() => {
     return [
       langs.css(),
@@ -88,18 +90,10 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
     try {
       await navigator.clipboard.writeText(codeRef.current)
       setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      setTimeout(() => setCopied(false), 1800)
     } catch (err) {
       console.error("Failed to copy code text: ", err)
     }
-  }
-
-  const cycleScale = () => {
-    setScaleMultiplier((prev) => {
-      const currentIndex = SCALE_OPTIONS.findIndex(opt => opt.value === prev)
-      const nextIndex = (currentIndex + 1) % SCALE_OPTIONS.length
-      return SCALE_OPTIONS[nextIndex].value
-    })
   }
 
   const scrollToTop = () => {
@@ -158,7 +152,7 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
         <>
           {isDragging && <div className="fixed inset-0 z-40 cursor-grabbing pointer-events-auto" />}
 
-          <div className="fixed bottom-24 left-0 right-0 flex justify-center pointer-events-none z-50">
+          <div className="fixed bottom-12 left-0 right-0 flex justify-center pointer-events-none z-50 px-4">
             <motion.div
               ref={panelRef}
               drag
@@ -167,54 +161,70 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
               dragMomentum={false}
               onDragStart={() => setIsDragging(true)}
               onDragEnd={() => setIsDragging(false)}
-              initial={{
-                opacity: 0,
-                y: 20,
-                width: currentEditorWidth + (snippetsOpen ? currentSnippetsWidth : 0),
-                height: currentHeight
-              }}
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
               animate={{
                 opacity: 1,
                 y: 0,
+                scale: 1,
                 width: currentEditorWidth + (snippetsOpen ? currentSnippetsWidth : 0),
                 height: currentHeight
               }}
-              exit={{ opacity: 0, y: 20 }}
+              exit={{ opacity: 0, y: 12, scale: 0.98 }}
               transition={structuralSpring}
               style={{
                 width: currentEditorWidth + (snippetsOpen ? currentSnippetsWidth : 0),
                 height: currentHeight
               }}
-              className="flex overflow-hidden p-0 pointer-events-auto will-change-[width,height,transform] bg-background border border-border rounded-xl contain-layouts text-card-foreground shadow-xl"
+              className="flex overflow-hidden p-0 pointer-events-auto RegalPanel will-change-[width,height,transform] bg-card border border-border rounded-xl shadow-2xl ring-1 ring-border/20"
             >
-              <div className="absolute inset-0 backdrop-blur-md bg-background/95 -z-10 pointer-events-none rounded-xl" />
+              { }
+              <div style={{ width: currentEditorWidth }} className="grid grid-rows-[40px_1fr_36px] h-full shrink-0 z-10 bg-transparent">
 
-              <div style={{ width: currentEditorWidth }} className="grid grid-rows-[auto_1fr_auto] h-full shrink-0 z-10 bg-transparent">
+                { }
                 <div
-                  className="h-9 border-b border-border flex items-center justify-between px-3 bg-muted/40 cursor-grab active:cursor-grabbing select-none"
+                  className="relative flex items-center justify-between px-4 bg-muted/40 border-b border-border cursor-grab active:cursor-grabbing select-none"
                   onPointerDown={(e) => dragControls.start(e)}
                 >
-                  <div className="flex items-center gap-1.5 text-foreground/40">
-                    <GripVertical className="size-4 shrink-0" />
-                    <span className="text-[11px] font-semibold tracking-wider uppercase text-muted-foreground">Editor</span>
+                  <div className="absolute left-1/2 top-1.5 -translate-x-1/2 w-8 h-1 rounded-full bg-muted-foreground/20 pointer-events-none" />
+
+                  <div className="flex items-center gap-2 mt-1">
+                    <Sparkles className="size-3.5 text-primary" />
+                    <span className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">Styles</span>
                   </div>
-                  <div className="flex items-center gap-1.5" onPointerDown={(e) => e.stopPropagation()}>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={cycleScale}
-                      className="gap-1 h-6 text-[11px] px-2 font-medium transition-colors"
-                      aria-label={`Change layout scale. Current scale: ${scaleMultiplier}x`}
-                    >
-                      <Maximize2 className="size-3" />
-                      <span>{SCALE_OPTIONS.find(opt => opt.value === scaleMultiplier)?.label}</span>
-                    </Button>
+
+                  <div className="flex items-center gap-1.5 mt-1" onPointerDown={(e) => e.stopPropagation()}>
+                    <DropdownMenu modal={false}>
+                      <DropdownMenuTrigger>
+                        <Button
+                          variant="ghost"
+                          className="h-6 text-[11px] px-2 font-medium bg-muted/50 hover:bg-muted border border-border text-foreground rounded-md transition-all gap-1"
+                          aria-label={`Open scale menu. Current scale is ${scaleMultiplier}x`}
+                        >
+                          <MoveDiagonal className="size-2.5 text-muted-foreground/70" />
+                          {scaleMultiplier.toFixed(1)}x
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-32 bg-popover border-border text-popover-foreground">
+                        {SCALE_OPTIONS.map((opt) => (
+                          <DropdownMenuItem
+                            key={opt.value}
+                            onClick={() => setScaleMultiplier(opt.value)}
+                            className={`text-[11px] focus:bg-accent focus:text-accent-foreground ${scaleMultiplier === opt.value ? "font-bold text-primary bg-muted/40" : ""
+                              }`}
+                          >
+                            {opt.label}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
 
                     <Button
                       variant={snippetsOpen ? "secondary" : "ghost"}
-                      size="sm"
                       onClick={() => startTransition(() => setSnippetsOpen(!snippetsOpen))}
-                      className="gap-1 h-6 text-[11px] px-2 font-medium transition-colors"
+                      className={`h-6 text-[11px] px-2.5 font-medium border rounded-md transition-all gap-1 ${snippetsOpen
+                          ? "bg-accent border-primary text-accent-foreground hover:bg-accent/80"
+                          : "bg-muted/50 hover:bg-muted border-border text-foreground"
+                        }`}
                       aria-label={snippetsOpen ? "Close snippets panel" : "Open snippets panel"}
                     >
                       <Library className="size-3" /> Snippets
@@ -222,9 +232,14 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
                   </div>
                 </div>
 
-                <ScrollArea className="w-full bg-muted/20 overflow-hidden">
+                { }
+                <ScrollArea className="w-full bg-background/40 overflow-hidden">
                   <div className="h-full w-full">
-                    <Suspense fallback={<div className="p-4 text-xs font-mono text-muted-foreground">Loading editor...</div>}>
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-full text-xs font-mono text-muted-foreground animate-pulse">
+                        Loading ecosystem...
+                      </div>
+                    }>
                       <CodeMirror
                         value={code}
                         extensions={editorExtensions}
@@ -232,7 +247,7 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
                         onCreateEditor={(view) => {
                           editorViewRef.current = view
                         }}
-                        className="text-xs font-mono h-full"
+                        className="text-xs font-mono h-full bg-transparent text-foreground"
                         basicSetup={{
                           lineNumbers: true,
                           foldGutter: true,
@@ -245,21 +260,23 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
                   </div>
                 </ScrollArea>
 
-                <div className="h-7 border-t border-border flex items-center justify-between px-2 bg-muted/30 select-none">
+                { }
+                <div className="h-9 border-t border-border flex items-center justify-between px-3 bg-muted/20 select-none">
                   <div onPointerDown={(e) => e.stopPropagation()}>
                     <Button
                       onClick={handleCopy}
                       variant="ghost"
-                      size="sm"
-                      className="gap-1 h-5 w-auto px-2 font-medium"
+                      className="gap-1.5 h-6 px-2.5 font-medium border border-border bg-muted/30 text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {copied ? (
                         <>
-                          <Check className="size-3 text-green-500" /> <span className="text-[10px]">Copied</span>
+                          <Check className="size-3 text-emerald-500" />
+                          <span className="text-[10px] text-emerald-500">Copied payload</span>
                         </>
                       ) : (
                         <>
-                          <Copy className="size-3" /> <span className="text-[10px]">Copy Code</span>
+                          <Copy className="size-3" />
+                          <span className="text-[10px]">Copy CSS</span>
                         </>
                       )}
                     </Button>
@@ -269,25 +286,26 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="size-5 rounded-full"
+                      className="size-6 rounded-md bg-muted/30 border border-border text-muted-foreground hover:text-foreground transition-colors"
                       onClick={scrollToTop}
                       aria-label="Scroll to top of code"
                     >
-                      <ChevronRight className="size-3 -rotate-90 text-foreground" />
+                      <ChevronUp className="size-3.5" />
                     </Button>
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="size-5 rounded-full"
+                      className="size-6 rounded-md bg-muted/30 border border-border text-muted-foreground hover:text-foreground transition-colors"
                       onClick={scrollToBottom}
                       aria-label="Scroll to bottom of code"
                     >
-                      <ChevronRight className="size-3 rotate-90 text-foreground" />
+                      <ChevronDown className="size-3.5" />
                     </Button>
                   </div>
                 </div>
               </div>
 
+              { }
               <AnimatePresence initial={false}>
                 {snippetsOpen && (
                   <SnippetPanel

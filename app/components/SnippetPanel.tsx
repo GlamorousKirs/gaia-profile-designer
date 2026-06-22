@@ -16,7 +16,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-const structuralSpring = { type: "spring", stiffness: 450, damping: 45 } as const
+const structuralSpring = { type: "spring", stiffness: 380, damping: 38 } as const
 
 const SnippetRow = memo(({
     snippet,
@@ -58,14 +58,14 @@ const SnippetRow = memo(({
     return (
         <div
             onClick={handleRowClick}
-            className={`group relative flex flex-col justify-center items-stretch rounded-md border p-2 text-xs font-mono cursor-pointer transition-all w-full h-full ${snippet.isDefault
-                ? 'bg-muted/30 border-dashed border-border/40 hover:bg-muted/50 hover:border-sky-500/30'
-                : 'border-transparent hover:border-border/60 hover:bg-background/60'
+            className={`group relative flex flex-col justify-center items-stretch rounded-lg border p-2.5 text-xs font-mono cursor-pointer transition-all w-full h-full ${snippet.isDefault
+                    ? 'bg-muted/30 border-border/60 hover:bg-muted/50 hover:border-border'
+                    : 'bg-accent/10 border-accent/30 hover:border-accent hover:bg-accent/20'
                 }`}
         >
             <div className="flex items-center justify-between gap-2 w-full">
                 <div className="flex items-center gap-2 overflow-hidden flex-1 min-w-0">
-                    <FileCode className={`size-3.5 shrink-0 ${snippet.isDefault ? 'text-sky-400/80' : 'text-muted-foreground'}`} />
+                    <FileCode className={`size-3.5 shrink-0 ${snippet.isDefault ? 'text-muted-foreground/60' : 'text-accent-foreground'}`} />
                     {isEditing ? (
                         <input
                             type="text"
@@ -74,11 +74,11 @@ const SnippetRow = memo(({
                             onKeyDown={(e) => e.key === "Enter" && saveRename(snippet.id)}
                             onMouseDown={(e) => e.stopPropagation()}
                             onClick={(e) => e.stopPropagation()}
-                            className="bg-transparent font-sans border-b border-primary/50 text-foreground text-xs focus:outline-none w-full py-0 px-0.5"
+                            className="bg-muted font-sans border border-border rounded px-1.5 py-0.5 text-foreground text-xs focus:outline-none focus:ring-1 focus:ring-ring w-full"
                             autoFocus
                         />
                     ) : (
-                        <span className="truncate font-medium text-foreground/90">
+                        <span className="truncate font-medium text-muted-foreground group-hover:text-foreground transition-colors">
                             {snippet.title}
                         </span>
                     )}
@@ -94,38 +94,38 @@ const SnippetRow = memo(({
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="size-5 h-5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                                className="size-5 rounded bg-muted/60 border border-border text-muted-foreground hover:text-foreground"
                             >
-                                <MoreHorizontal className="size-3.5" />
+                                <MoreHorizontal className="size-3" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40 font-sans text-xs">
-                            <DropdownMenuItem className="gap-2 text-[11px]" onClick={() => onSelectSnippet(snippet.code, 'append-cursor')}>
-                                <FileStack className="size-3.5 text-muted-foreground" /> Insert at Cursor
+                        <DropdownMenuContent align="end" className="w-44 bg-popover border-border text-popover-foreground">
+                            <DropdownMenuItem className="gap-2 text-[11px] focus:bg-accent focus:text-accent-foreground" onClick={() => onSelectSnippet(snippet.code, 'append-cursor')}>
+                                <FileStack className="size-3.5 text-muted-foreground/70" /> Insert at Cursor
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2 text-[11px]" onClick={() => onSelectSnippet(snippet.code, 'prepend')}>
-                                <ArrowUp className="size-3.5 text-muted-foreground" /> Prepend to File
+                            <DropdownMenuItem className="gap-2 text-[11px] focus:bg-accent focus:text-accent-foreground" onClick={() => onSelectSnippet(snippet.code, 'prepend')}>
+                                <ArrowUp className="size-3.5 text-muted-foreground/70" /> Prepend to File
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2 text-[11px]" onClick={() => onSelectSnippet(snippet.code, 'append')}>
-                                <ArrowDown className="size-3.5 text-muted-foreground" /> Append to File
+                            <DropdownMenuItem className="gap-2 text-[11px] focus:bg-accent focus:text-accent-foreground" onClick={() => onSelectSnippet(snippet.code, 'append')}>
+                                <ArrowDown className="size-3.5 text-muted-foreground/70" /> Append to File
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2 text-[11px]" onClick={() => onSelectSnippet(snippet.code, 'replace')}>
-                                <ArrowRightLeft className="size-3.5 text-muted-foreground" /> Replace Whole File
+                            <DropdownMenuItem className="gap-2 text-[11px] focus:bg-accent focus:text-accent-foreground" onClick={() => onSelectSnippet(snippet.code, 'replace')}>
+                                <ArrowRightLeft className="size-3.5 text-muted-foreground/70" /> Replace Whole File
                             </DropdownMenuItem>
 
-                            <DropdownMenuSeparator />
+                            <DropdownMenuSeparator className="bg-border/60" />
 
-                            <DropdownMenuItem className="gap-2 text-[11px]" onClick={(e) => openEditorModal(snippet, e)}>
-                                <FileCode className="size-3.5 text-sky-500" /> {snippet.isDefault ? "View Code" : "Edit Code"}
+                            <DropdownMenuItem className="gap-2 text-[11px] focus:bg-accent focus:text-accent-foreground" onClick={(e) => openEditorModal(snippet, e)}>
+                                <FileCode className="size-3.5 text-accent-foreground" /> {snippet.isDefault ? "View Source" : "Edit Blueprint"}
                             </DropdownMenuItem>
 
                             {!snippet.isDefault && (
                                 <>
-                                    <DropdownMenuItem className="gap-2 text-[11px]" onClick={(e) => startRename(snippet, e)}>
-                                        <Edit2 className="size-3.5 text-muted-foreground" /> Rename Title
+                                    <DropdownMenuItem className="gap-2 text-[11px] focus:bg-accent focus:text-accent-foreground" onClick={(e) => startRename(snippet, e)}>
+                                        <Edit2 className="size-3.5 text-muted-foreground/70" /> Rename Title
                                     </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="gap-2 text-[11px] text-destructive focus:text-destructive" onClick={() => deleteSnippet(snippet.id)}>
+                                    <DropdownMenuSeparator className="bg-border/60" />
+                                    <DropdownMenuItem className="gap-2 text-[11px] text-destructive focus:text-destructive focus:bg-destructive/10" onClick={() => deleteSnippet(snippet.id)}>
                                         <Trash2 className="size-3.5" /> Delete Permanently
                                     </DropdownMenuItem>
                                 </>
@@ -160,7 +160,6 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
     const renameSnippet = useSnippetStore((state) => state.renameSnippet)
 
     const visibleSnippets = useFilteredSnippets()
-
     const scrollContainerRef = useRef<HTMLDivElement>(null)
 
     const [editingId, setEditingId] = useState<string | null>(null)
@@ -174,7 +173,7 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
     const rowVirtualizer = useVirtualizer({
         count: visibleSnippets.length,
         getScrollElement: () => scrollContainerRef.current,
-        estimateSize: () => 58,
+        estimateSize: () => 62,
         overscan: 10,
     })
 
@@ -186,7 +185,7 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
             setModalCode(snippet.code)
         } else {
             setModalSnippet(null)
-            setModalTitle("Snippet Name")
+            setModalTitle("Untitled Snippet")
             setModalCode(currentCode.trim())
         }
         setIsModalOpen(true)
@@ -217,26 +216,30 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
         <div className="flex shrink-0 h-full relative">
             <div className="w-px h-full bg-border shrink-0 z-20" />
             <motion.div
-                initial={{ opacity: 0, scaleX: 0.95 }}
+                initial={{ opacity: 0, scaleX: 0.96 }}
                 animate={{ opacity: 1, scaleX: 1 }}
-                exit={{ opacity: 0, scaleX: 0.95 }}
+                exit={{ opacity: 0, scaleX: 0.96 }}
                 transition={structuralSpring}
                 style={{ width: width, transformOrigin: "left center" }}
-                className="h-full overflow-hidden flex flex-col bg-background will-change-transform contain-strict"
+                className="h-full overflow-hidden flex flex-col bg-card will-change-transform contain-strict"
             >
                 <div className="h-full flex flex-col select-text overflow-hidden">
+                    { }
                     <div
-                        className="h-9 shrink-0 border-b border-border flex items-center justify-between px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted/40 cursor-grab active:cursor-grabbing select-none"
+                        className="h-10 shrink-0 border-b border-border flex items-center justify-between px-4 text-[11px] font-medium uppercase tracking-wide text-muted-foreground bg-muted/40 cursor-grab active:cursor-grabbing select-none"
                         onPointerDown={(e) => dragControls.start(e)}
                     >
-                        <span>Snippets Library</span>
-                        <div className="flex items-center gap-1" onPointerDown={(e) => e.stopPropagation()}>
+                        <span>Library</span>
+                        <div className="flex items-center gap-1.5" onPointerDown={(e) => e.stopPropagation()}>
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className={`size-5 rounded-md transition-colors ${showDefaults ? 'text-sky-500 hover:bg-sky-500/10' : 'text-muted-foreground hover:bg-muted'}`}
+                                className={`size-6 rounded-md border transition-all ${showDefaults
+                                        ? 'border-accent bg-accent text-accent-foreground hover:bg-accent/80'
+                                        : 'border-border bg-muted/30 text-muted-foreground hover:text-foreground'
+                                    }`}
                                 onClick={() => setShowDefaults(!showDefaults)}
-                                title={showDefaults ? "Hide built-in snippets" : "Show built-in snippets"}
+                                title={showDefaults ? "Hide System Snippets" : "Show System Snippets"}
                                 aria-label="Toggle defaults"
                             >
                                 <Database className="size-3.5" />
@@ -245,9 +248,9 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="size-5 rounded-md text-foreground hover:bg-muted"
+                                className="size-6 rounded-md border border-border bg-muted/30 text-muted-foreground hover:text-foreground"
                                 onClick={() => openEditorModal()}
-                                title="Create new custom CSS snippet"
+                                title="Create custom snippet"
                                 aria-label="Create snippet"
                             >
                                 <Plus className="size-3.5" />
@@ -255,12 +258,13 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
                         </div>
                     </div>
 
+                    { }
                     <div
                         ref={scrollContainerRef}
-                        className="flex-1 bg-muted/20 overflow-y-auto min-h-0 relative"
+                        className="flex-1 bg-background/40 overflow-y-auto min-h-0 relative p-2"
                     >
                         {visibleSnippets.length === 0 ? (
-                            <div className="text-[11px] font-mono p-4 text-muted-foreground italic text-center">
+                            <div className="text-[11px] font-mono p-6 text-muted-foreground/60 italic text-center">
                                 No templates found here.
                             </div>
                         ) : (
@@ -285,9 +289,7 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
                                                 width: '100%',
                                                 height: `${virtualItem.size}px`,
                                                 transform: `translateY(${virtualItem.start}px)`,
-                                                paddingLeft: '8px',
-                                                paddingRight: '8px',
-                                                paddingBottom: '4px'
+                                                paddingBottom: '6px'
                                             }}
                                         >
                                             <SnippetRow
@@ -302,7 +304,7 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
                                                 onSelectSnippet={onSelectSnippet}
                                             />
                                         </div>
-                                    )
+                                    );
                                 })}
                             </div>
                         )}
@@ -310,30 +312,31 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
                 </div>
             </motion.div>
 
+            { }
             <AnimatePresence>
                 {isModalOpen && (
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-background/95 backdrop-blur-sm z-50 p-3 flex flex-col justify-between border-l border-border"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="absolute inset-0 bg-popover/95 backdrop-blur-md z-50 p-4 flex flex-col justify-between border-l border-border"
                     >
-                        <div className="flex flex-col gap-2 flex-1 overflow-hidden">
-                            <div className="flex items-center justify-between">
+                        <div className="flex flex-col gap-3 flex-1 overflow-hidden">
+                            <div className="flex items-center justify-between border-b border-border pb-2">
                                 <input
                                     type="text"
                                     disabled={!!modalSnippet?.isDefault}
                                     value={modalTitle}
                                     onChange={(e) => setModalTitle(e.target.value)}
-                                    className="bg-transparent border-b border-border text-xs font-semibold text-foreground focus:outline-none focus:border-primary py-0.5 px-1 flex-1 mr-2 disabled:border-transparent disabled:opacity-80"
-                                    placeholder="Snippet Name"
+                                    className="bg-transparent border-0 text-xs font-medium text-foreground focus:outline-none focus:ring-0 flex-1 mr-2 disabled:opacity-60 font-sans placeholder-muted-foreground/40"
+                                    placeholder="Snippet Designation"
                                 />
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="size-5 rounded"
+                                    className="size-5 rounded border border-border text-muted-foreground hover:text-foreground bg-muted/30"
                                     onClick={() => setIsModalOpen(false)}
-                                    aria-label="Close CSS modal"
+                                    aria-label="Close template customizer"
                                 >
                                     <X className="size-3.5" />
                                 </Button>
@@ -343,19 +346,26 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
                                 value={modalCode}
                                 readOnly={!!modalSnippet?.isDefault}
                                 onChange={(e) => setModalCode(e.target.value)}
-                                className="w-full flex-1 bg-muted/30 border border-border rounded-md p-2 font-mono text-[11px] text-foreground resize-none focus:outline-none focus:ring-1 focus:ring-primary overflow-y-auto read-only:opacity-70"
-                                placeholder="Type/paste a line of CSS code here."
+                                className="w-full flex-1 bg-background/50 border border-border rounded-lg p-3 font-mono text-[11px] text-foreground resize-none focus:outline-none focus:ring-1 focus:ring-ring overflow-y-auto read-only:opacity-60 placeholder-muted-foreground/30"
+                                placeholder="Type or paste CSS styling block rules..."
                                 spellCheck={false}
                             />
                         </div>
 
-                        <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-border mt-2 shrink-0">
-                            <Button variant="outline" size="sm" className="h-6 text-[10px] px-2" onClick={() => setIsModalOpen(false)}>
-                                Close
+                        <div className="flex items-center justify-end gap-1.5 pt-3 border-t border-border mt-3 shrink-0">
+                            <Button
+                                variant="ghost"
+                                className="h-6.5 text-[10px] px-3 font-medium bg-muted/40 hover:bg-muted border border-border text-muted-foreground hover:text-foreground"
+                                onClick={() => setIsModalOpen(false)}
+                            >
+                                Cancel
                             </Button>
                             {!modalSnippet?.isDefault && (
-                                <Button size="sm" className="h-6 text-[10px] px-2 gap-1" onClick={handleSaveModal}>
-                                    <Save className="size-3" /> Save Changes
+                                <Button
+                                    className="h-6.5 text-[10px] px-3 font-medium bg-primary hover:bg-primary/90 text-primary-foreground gap-1 shadow-sm transition-colors"
+                                    onClick={handleSaveModal}
+                                >
+                                    <Save className="size-3" /> Commit Changes
                                 </Button>
                             )}
                         </div>

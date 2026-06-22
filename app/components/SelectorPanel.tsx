@@ -37,7 +37,7 @@ export default function SelectorPanel({ onSelectSelector }: SelectorPanelProps) 
 
   return (
     <div className="flex flex-col h-full bg-background p-3 gap-3 overflow-hidden">
-      { }
+      
       <InputGroup className="w-full shrink-0">
         <InputGroupInput
           id="selector-search"
@@ -53,7 +53,7 @@ export default function SelectorPanel({ onSelectSelector }: SelectorPanelProps) 
         </InputGroupAddon>
       </InputGroup>
 
-      { }
+      
       <Card>
         <CardContent className="h-full overflow-y-auto px-0 py-0">
           <div className="divide-y divide-border/60">
@@ -63,12 +63,12 @@ export default function SelectorPanel({ onSelectSelector }: SelectorPanelProps) 
                   <ContextMenuTrigger>
                     <button
                       onClick={() => onSelectSelector(selector)}
-                      className="w-full text-left px-2.5 py-2.5 hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none group flex items-center justify-between gap-2 font-mono text-[11px] rounded-md first:rounded-t-md last:rounded-b-md transition-colors"
+                      className="w-full text-left px-2.5 py-2.5 hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none group flex items-center justify-between gap-2 font-mono text-[11px] rounded-md first:rounded-t-md last:rounded-b-md"
                     >
                       <span className="truncate text-foreground group-hover:text-accent-foreground">
                         {selector}
                       </span>
-                      <span className="text-[9px] shrink-0 font-sans opacity-0 group-hover:opacity-60 group-focus-visible:opacity-60 transition-opacity">
+                      <span className="text-[9px] shrink-0 font-sans opacity-0 group-hover:opacity-60 group-focus-visible:opacity-60">
                         + Add
                       </span>
                     </button>

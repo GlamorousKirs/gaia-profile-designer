@@ -371,9 +371,16 @@ export function ElementPropertiesPanel({
                         <h3 className="text-[9px] font-bold uppercase text-muted-foreground px-1 tracking-wider">
                             Typography
                         </h3>
-                        <div className="flex gap-3">
-                            <div className="flex-1"><SliderProperty label="Size" value={fontSize} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setFontSize(v); updateCssProperty("font-size", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
-                            <div className="flex-1"><SliderProperty label="Kern" value={letterSpacing} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setLetterSpacing(v); updateCssProperty("letter-spacing", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
+                        <div className="space-y-2.5">
+                            <div className="flex gap-3">
+                                <div className="flex-1"><SliderProperty label="Size" value={fontSize} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setFontSize(v); updateCssProperty("font-size", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
+                                <div className="flex-1"><SliderProperty label="Kern" value={letterSpacing} suffix="px" onChange={(v) => { isUpdatingRef.current = true; setLetterSpacing(v); updateCssProperty("letter-spacing", v, "px"); setTimeout(() => { isUpdatingRef.current = false }, 50) }} /></div>
+                            </div>
+                            <div className="flex items-center gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors w-full font-mono text-[11px]">
+                                <span className="text-[9px] font-bold text-muted-foreground uppercase pl-1 shrink-0 w-12">Color</span>
+                                <ColorPicker color={textColor} onChange={(v) => handleColorUpdate("color", setTextColor, v)} />
+                                <span className="truncate text-foreground pl-1 uppercase font-mono tracking-wide">{textColor}</span>
+                            </div>
                         </div>
                     </div>
 
@@ -401,15 +408,10 @@ export function ElementPropertiesPanel({
                             Fills & Appearance
                         </h3>
                         <div className="space-y-2.5">
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="flex items-center gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors font-mono text-[11px]">
-                                    <ColorPicker color={bgColor} onChange={(v) => handleColorUpdate("background-color", setBgColor, v)} />
-                                    <span className="truncate text-foreground uppercase tracking-wide">{bgColor}</span>
-                                </div>
-                                <div className="flex items-center gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors font-mono text-[11px]">
-                                    <ColorPicker color={textColor} onChange={(v) => handleColorUpdate("color", setTextColor, v)} />
-                                    <span className="truncate text-foreground uppercase tracking-wide">{textColor}</span>
-                                </div>
+                            <div className="flex items-center gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors w-full font-mono text-[11px]">
+                                <span className="text-[9px] font-bold text-muted-foreground uppercase pl-1 shrink-0 w-12">Fill</span>
+                                <ColorPicker color={bgColor} onChange={(v) => handleColorUpdate("background-color", setBgColor, v)} />
+                                <span className="truncate text-foreground pl-1 uppercase font-mono tracking-wide">{bgColor}</span>
                             </div>
                             <div className="pt-0.5">
                                 <SliderProperty label="Opac" value={opacityVal} suffix="%" onChange={(v) => { isUpdatingRef.current = true; setOpacityVal(v); updateCssProperty("opacity", v / 100); setTimeout(() => { isUpdatingRef.current = false }, 50) }} />

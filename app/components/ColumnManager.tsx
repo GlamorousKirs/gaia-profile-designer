@@ -82,7 +82,6 @@ const DroppableColumn = memo(function DroppableColumn({ id, items }: { id: keyof
         </div>
       )}
 
-      { }
       <CardContent ref={setNodeRef} className="min-h-12 px-0">
         <SortableContext id={id} items={filteredItems} strategy={verticalListSortingStrategy}>
           <div className="divide-y divide-border/60">
@@ -95,11 +94,11 @@ const DroppableColumn = memo(function DroppableColumn({ id, items }: { id: keyof
 })
 
 const SortableItem = memo(function SortableItem({ id }: { id: string }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
+  const { attributes, listeners, setNodeRef, transform } = useSortable({ id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition
+    transition: "none" // Removed dnd-kit layout slide transitions
   }
 
   return (
@@ -108,9 +107,9 @@ const SortableItem = memo(function SortableItem({ id }: { id: string }) {
       style={style}
       {...attributes}
       {...listeners}
-      className="flex items-center gap-2 px-2 py-2 hover:bg-accent hover:text-accent-foreground cursor-grab active:cursor-grabbing touch-none w-full font-mono text-[11px] rounded-md"
+      className="group flex items-center gap-2 px-2 py-2 hover:bg-accent hover:text-accent-foreground cursor-grab active:cursor-grabbing touch-none w-full font-mono text-[11px] rounded-md"
     >
-      <div className="opacity-40 pointer-events-none shrink-0">
+      <div className="opacity-40 pointer-events-none shrink-0 text-muted-foreground group-hover:text-accent-foreground">
         <GripVertical className="size-3" />
       </div>
       <span className="truncate text-foreground group-hover:text-accent-foreground">{id}</span>
