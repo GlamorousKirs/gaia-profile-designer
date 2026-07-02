@@ -1,4 +1,3 @@
-// SnippetPanel.tsx
 import { useState, memo, useMemo, useRef, useEffect } from "react"
 import { motion } from "motion/react"
 import { useVirtualizer } from "@tanstack/react-virtual"
