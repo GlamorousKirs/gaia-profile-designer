@@ -1,3 +1,7 @@
-.menu_seperator, .premium_sparkle, #id_comments #alerts_banner {
-    display: none;
+.menu_seperator, #id_wishlist .premium_sparkle, #id_comments #alerts_banner, #id_wishlist .glow, #id_wishlist div:not(.item) {
+    display: none !important;
+}
+
+#id_wishlist {
+  font-size: 0;
 }

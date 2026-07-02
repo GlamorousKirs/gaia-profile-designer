@@ -172,15 +172,16 @@ export const Canvas = memo(function Canvas({
           ${rawGaiaScript}
           ${canvasIframeController}
         </script>
-      </body>
+      </head>
     </html>`, [loadedPresetCss, shouldCenterPanel])
 
   useEffect(() => {
     (window as any).isSelectionModeActive = isSelectionMode
   }, [isSelectionMode])
 
+  // 1. Stream structural markup changes directly on state update or load
   useEffect(() => {
-    const handler = () => {
+    const pushStateToIframe = () => {
       const win = iframeRef.current?.contentWindow
       if (!win) return
 
@@ -191,11 +192,39 @@ export const Canvas = memo(function Canvas({
       win.postMessage({ type: 'sync-selected-element', selector: selectedSelector }, '*')
     }
 
-    iframeRef.current?.addEventListener('load', handler)
-    handler()
+    // Run immediately if the iframe structure changes in state
+    pushStateToIframe()
 
-    return () => iframeRef.current?.removeEventListener('load', handler)
-  }, [integratedHtml, rootCss, cssCode, isSelectionMode, selectedSelector, finalAvatarUrl, finalUsername])
+    // Also register the handler on native loader transitions
+    const iframe = iframeRef.current
+    iframe?.addEventListener('load', pushStateToIframe)
+    return () => iframe?.removeEventListener('load', pushStateToIframe)
+  }, [integratedHtml]) // Fires reliably whenever activePanels / columnLayout recalculates integratedHtml
+
+  // 2. Stream CSS changes without re-rendering HTML
+  useEffect(() => {
+    const win = iframeRef.current?.contentWindow
+    if (win) {
+      win.postMessage({ type: 'update-css', css: `${rootCss}\n${cssCode}` }, '*')
+    }
+  }, [rootCss, cssCode])
+
+  // 3. Stream Selection updates smoothly
+  useEffect(() => {
+    const win = iframeRef.current?.contentWindow
+    if (win) {
+      win.postMessage({ type: 'toggle-selection-mode', active: isSelectionMode }, '*')
+      win.postMessage({ type: 'sync-selected-element', selector: selectedSelector }, '*')
+    }
+  }, [isSelectionMode, selectedSelector])
+
+  // 4. Stream Identity updates without a full redraw
+  useEffect(() => {
+    const win = iframeRef.current?.contentWindow
+    if (win) {
+      win.postMessage({ type: 'update-identity', avatarUrl: finalAvatarUrl, username: finalUsername }, '*')
+    }
+  }, [finalAvatarUrl, finalUsername])
 
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
