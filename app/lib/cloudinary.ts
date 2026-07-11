@@ -30,6 +30,11 @@ export interface CloudinaryLogo {
 export const fetchLogosFromCloudinary = async (
   tagNames: string | string[]
 ): Promise<CloudinaryLogo[]> => {
+  if (!CLOUD_NAME) {
+    console.error('Cloudinary configuration is missing. Check your environment variables.');
+    return [];
+  }
+
   try {
     const rawTags = Array.isArray(tagNames) ? tagNames : [tagNames];
     const tags = rawTags.map(tag => encodeURIComponent(tag.trim()));
