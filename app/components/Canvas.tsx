@@ -145,7 +145,6 @@ export const Canvas = memo(function Canvas({
 				<style id="base-styles">${versionData.css}</style>
 				<style id="active-preset-styles"></style>
 				<style id="user-overrides"></style>
-		
 				<style id="extension-features-styles"></style>
 				<style>
 					.highlight-hover { outline: 2px dashed #ff4500 !important; outline-offset: 4px; cursor: crosshair !important; }

@@ -44,29 +44,36 @@
 		return pathSegments.length > 0 ? pathSegments.join(' ') : element.tagName.toLowerCase();
 	}
 
-function applyIdentityOverrides() {
-		const avatarMedia = document.querySelectorAll('[data-avatar], .avatar img, [id*="avatar"] img');
+	function applyIdentityOverrides() {
+		const avatarSelectors = 'img.avatar, [data-avatar], .avatar img, [id*="avatar"] img, #id_details img';
+		const avatarMedia = document.querySelectorAll(avatarSelectors);
+
 		Array.from(avatarMedia).forEach(img => {
 			if (targetAvatar && img.src !== targetAvatar) {
 				img.src = targetAvatar;
+				img.alt = `${targetUsername}'s avatar`;
+				if (img.tagName === 'IMG') img.title = targetUsername;
 			}
 		});
 
-		const profileHeaders = document.querySelectorAll('#profile-header .username, #profile-header .profile-title');
+		const usernameSelectors = '.profile-header-username, #profile-header .username, #profile-header .profile-title, #id_details h2';
+		const profileHeaders = document.querySelectorAll(usernameSelectors);
+
 		Array.from(profileHeaders).forEach(header => {
 			if (targetUsername && header.textContent !== targetUsername) {
 				header.textContent = targetUsername;
+				header.setAttribute('title', targetUsername);
 			}
 		});
 
-		const identityImages = document.querySelectorAll('img[alt*="avatar"], .avatar img');
-		Array.from(identityImages).forEach(img => {
-			if (targetUsername && img.alt !== `${targetUsername}'s avatar`) {
-				img.alt = `${targetUsername}'s avatar`;
+		const commentUsernames = document.querySelectorAll('.message p a');
+		Array.from(commentUsernames).forEach(link => {
+			if (targetUsername && link.textContent !== targetUsername && link.getAttribute('href')?.includes('/profiles/')) {
+				link.textContent = targetUsername;
 			}
 		});
 	}
-
+	
 	const structuralObserver = new MutationObserver(() => applyIdentityOverrides());
 	structuralObserver.observe(document.documentElement, { childList: true, subtree: true });
 
