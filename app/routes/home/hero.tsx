@@ -83,7 +83,7 @@ export function Hero() {
 
 					<div className="w-full aspect-1905/943 relative bg-muted">
 						<img
-							src=`${baseUrl}optimized-assets/studioshowcase.webp`"
+							src={`${baseUrl}optimized-assets/studioshowcase.webp`}
 							alt="Gaia Studio Interface"
 							className="absolute inset-0 h-full w-full object-cover"
 						/>
