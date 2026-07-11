@@ -106,9 +106,18 @@ export function LogoRecolor({ rawSvgContent, isSvgLoading, onSave }: LogoRecolor
 		img.src = url;
 	}, [memoizedSvg, exportName, dimensions]);
 
-	const handleSaveToGallery = useCallback(async () => {
+const handleSaveToGallery = useCallback(async () => {
 		await addLogo(exportName, memoizedSvg);
-		toast.success("Saved to gallery");
+
+		toast.success(
+			<div className="flex items-center justify-between w-[300px]">
+				<span>Saved to gallery</span>
+				<div 
+					className="size-8 flex items-center justify-center" 
+					dangerouslySetInnerHTML={{ __html: memoizedSvg }} 
+				/>
+			</div>
+		);
 	}, [addLogo, exportName, memoizedSvg]);
 
 	return (
