@@ -8,6 +8,7 @@ import {
 	isRouteErrorResponse,
 	useLocation,
 } from "react-router"
+import { Toaster } from "@/components/ui/sonner"
 
 import type { Route } from "./+types/root"
 import { ThemeProvider } from "next-themes"
@@ -69,6 +70,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 								</Suspense>
 								{showFooter && <Footer />}
 							</main>
+							<Toaster position="top-center"/>
 						</SmoothScroll>
 					</TooltipProvider>
 				</ThemeProvider>

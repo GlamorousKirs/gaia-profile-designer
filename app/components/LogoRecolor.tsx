@@ -1,5 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
-import { Palette, Loader2, Download, Check, Copy, Save } from "lucide-react";
+import { useLocation } from "react-router";
+import { toast } from "sonner";
+import { Loader2, Download, Check, Copy, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +16,10 @@ interface LogoRecolorProps {
 }
 
 export function LogoRecolor({ rawSvgContent, isSvgLoading, onSave }: LogoRecolorProps) {
+	const location = useLocation();
+	const isLogoRecolorPage = location.pathname.includes("logo-recolor");
+	const isStudioPage = location.pathname.includes("studio");
+
 	const [logoColor, setLogoColor] = useState("#605270");
 	const [exportName, setExportName] = useState("gaia-header-logo");
 	const [scale, setScale] = useState<string>("1");
@@ -102,6 +108,7 @@ export function LogoRecolor({ rawSvgContent, isSvgLoading, onSave }: LogoRecolor
 
 	const handleSaveToGallery = useCallback(async () => {
 		await addLogo(exportName, memoizedSvg);
+		toast.success("Saved to gallery");
 	}, [addLogo, exportName, memoizedSvg]);
 
 	return (
@@ -142,24 +149,26 @@ export function LogoRecolor({ rawSvgContent, isSvgLoading, onSave }: LogoRecolor
 					<Label className="text-[10px] uppercase font-bold tracking-wider">Data URI</Label>
 					<div className="relative border rounded-md p-3 bg-secondary/30 h-40 overflow-auto">
 						<code className="text-[9px] text-muted-foreground font-mono break-all">{convertSvgToDataUrl(memoizedSvg)}</code>
-						<Button size="icon" variant="ghost" className="absolute top-1 right-1 size-6" onClick={() => navigator.clipboard.writeText(convertSvgToDataUrl(memoizedSvg))}><Copy className="size-3" /></Button>
 					</div>
 				</div>
 			</div>
 			<div className="p-4 border-t bg-secondary/20 flex gap-2">
-				<Button
-					onClick={async () => {
-						const dataUrl = convertSvgToDataUrl(memoizedSvg);
-						await addLogo(exportName, memoizedSvg);
-						onSave(`url('${dataUrl}')`);
-					}}
-					className="flex-1"
-				>
-					<Check className="size-3.5 mr-2" /> Apply Header Logo
-				</Button>
-				<Button variant="outline" onClick={handleSaveToGallery}>
-					<Save className="size-3.5 mr-2" /> Save to Gallery
-				</Button>
+				{!isLogoRecolorPage && (
+					<Button
+						onClick={async () => {
+							const dataUrl = convertSvgToDataUrl(memoizedSvg);
+							onSave(`url('${dataUrl}')`);
+						}}
+						className="flex-1"
+					>
+						<Check className="size-3.5 mr-2" /> Apply Header Logo
+					</Button>
+				)}
+				{!isStudioPage && (
+					<Button variant="outline" onClick={handleSaveToGallery}>
+						<Save className="size-3.5 mr-2" /> Save to Gallery
+					</Button>
+				)}
 			</div>
 		</div>
 	);
