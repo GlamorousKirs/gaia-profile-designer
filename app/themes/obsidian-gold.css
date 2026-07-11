@@ -1,0 +1,47 @@
+[data-theme="obsidian-gold"] {
+  --background: oklch(10% 0.01 260);
+  --foreground: oklch(96% 0.01 95);
+
+  --card: oklch(14% 0.01 260);
+  --card-foreground: oklch(96% 0.01 95);
+
+  --popover: oklch(16% 0.01 260);
+  --popover-foreground: oklch(96% 0.01 95);
+
+  --primary: oklch(75% 0.12 85);
+  --primary-foreground: oklch(10% 0.01 85);
+
+  --secondary: oklch(20% 0.01 260);
+  --secondary-foreground: oklch(96% 0.01 95);
+
+  --accent: oklch(70% 0.10 60);
+  --accent-foreground: oklch(10% 0.01 60);
+
+  --muted: oklch(18% 0.01 260);
+  --muted-foreground: oklch(72% 0.01 95);
+
+  --destructive: oklch(55% 0.18 25);
+  --destructive-foreground: oklch(100% 0 0);
+
+  --border: oklch(100% 0 0 / 10%);
+  --input: oklch(100% 0 0 / 14%);
+  --ring: oklch(75% 0.12 85);
+
+  --chart-1: oklch(75% 0.12 85);
+  --chart-2: oklch(70% 0.10 60);
+  --chart-3: oklch(65% 0.08 120);
+  --chart-4: oklch(60% 0.07 200);
+  --chart-5: oklch(68% 0.09 300);
+
+  --sidebar: oklch(12% 0.01 260);
+  --sidebar-foreground: oklch(96% 0.01 95);
+
+  --sidebar-primary: oklch(75% 0.12 85);
+  --sidebar-primary-foreground: oklch(10% 0.01 85);
+
+  --sidebar-accent: oklch(18% 0.01 260);
+  --sidebar-accent-foreground: oklch(96% 0.01 95);
+
+  --sidebar-border: oklch(100% 0 0 / 10%);
+  --sidebar-ring: oklch(75% 0.12 85);
+}

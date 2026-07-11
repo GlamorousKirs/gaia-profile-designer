@@ -1,0 +1,1775 @@
+/*!
+ * cache=true
+ * @license Licences are viewable at this URL: https://cdn1.gaiaonline.com/src/=/e143bb5df5304ae98988a03a4dabca2e-2001-64/pkg-gaia_profilesv2_viewing.css
+ */
+
+
+/*! src/css/profiles/v2/common-min.css */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+body #gaia_header {
+    font-size: 11px;
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+}
+
+h1 {
+    font-size: 16px;
+}
+
+h2 {
+    font-size: 14px;
+    text-align: left;
+}
+
+h3 {
+    font-size: 12px;
+}
+
+a {
+    color: #BD8440;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+img {
+    border: 0;
+}
+
+li {
+    list-style-type: none;
+}
+
+.clear {
+    clear: both;
+}
+
+p {
+    margin-bottom: 10px;
+}
+
+#header {
+    width: 100%;
+    height: 170px;
+    font-size: 10px;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+* .yui-hidden {
+    display: none;
+}
+
+.journal-date {
+    font-size: x-small;
+}
+
+#column_1 img {
+    max-width: 205px;
+}
+
+#column_2 img {
+    max-width: 475px;
+}
+
+#column_3 img {
+    max-width: 205px;
+}
+
+#columns {
+    position: absolute;
+    top: 172px;
+    overflow: hidden;
+    float: left;
+}
+
+#column_1 {
+    width: 230px;
+    margin-left: 25px;
+    display: inline;
+}
+
+#column_2 {
+    width: 500px;
+    margin: 0 10px;
+}
+
+#column_3 {
+    width: 230px;
+}
+
+#column_1,
+#column_2,
+#column_3 {
+    float: left;
+    overflow: hidden;
+}
+
+FORM#profile li {
+    float: none;
+    margin: 0;
+}
+
+FORM#profile ul.buttons li,
+FORM#profile ul.style1 li {
+    float: left;
+}
+
+#id_badges li,
+#id_equipment li,
+FORM#profile #id_badges li,
+FORM#profile #id_equipment li {
+    float: left;
+    margin: 0 3px;
+}
+
+#id_badges img {
+    height: 60px;
+    width: 60px;
+}
+
+#id_equipment img {
+    height: 30px;
+    width: 30px;
+}
+
+#id_equipment .clickable,
+#id_badges .clickable {
+    cursor: hand;
+    cursor: pointer;
+}
+
+#id_wishlist a {
+    text-decoration: none;
+}
+
+#find_friends_banner {
+    background: url(https://graphics.gaiaonline.com/images/gaia_global/body/mygaia/ic_findfriendsm.gif) top left no-repeat;
+    padding: 5px 0 10px 30px;
+    margin-left: 10px;
+    float: right;
+    text-align: right;
+}
+
+#find_friends_banner a {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#find_friends_banner a:hover {
+    text-decoration: underline;
+}
+
+#modal,
+#modal .hd {
+    background: #fff;
+    border: 0;
+}
+
+#modal .hd h2 {
+    color: #fff;
+    background: #3d8ad0;
+    font-weight: bold;
+    font-size: 100%;
+    text-transform: uppercase;
+    padding: 3px;
+}
+
+#modal .close {
+    background: url(https://graphics.gaiaonline.com/images/gaia_global/body/icons/ic_close_13x13.png) no-repeat;
+    display: block;
+    width: 13px;
+    height: 13px;
+    text-indent: -5000em;
+    overflow: hidden;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    cursor: pointer;
+}
+
+#modal iframe {
+    width: 750px;
+    height: 300px;
+    border: 0;
+}
+
+#dialogArrow {
+    margin: -2px 0 0 0 !important;
+}
+
+.premium_sparkle {
+    position: absolute;
+    z-index: 3;
+    margin-left: -37px;
+    margin-top: 3px;
+}
+
+.owner_checkmark {
+    position: absolute;
+    z-index: 3;
+    margin-left: -12px;
+    margin-top: 2px;
+}
+
+.private_checkmark {
+    position: absolute;
+    z-index: 3;
+    margin-left: -10px;
+    margin-top: 18px;
+    font-size: 15px;
+    color: red;
+}
+
+.glow {
+    text-shadow: 0 0 4px #FF0, 0px 0 4px #FF0;
+}
+
+/*! src/css/profiles/v2/dropdown-min.css */
+.pushBox {
+    float: right;
+    height: 15px;
+    width: 12px;
+    margin: 0;
+    padding: 0;
+    font-size: 1px;
+    line-height: 1px;
+}
+
+.forum_userstatus {
+    margin: auto;
+    left: 20px;
+    top: 170px;
+    background: #FFF;
+    width: 114px;
+    border: 1px solid #BBB;
+    padding: 3px;
+    margin-bottom: 10px;
+}
+
+.forum_userstatus.trig .statuslinks {
+    background: url(https://graphics.gaiaonline.com/images/template/icons/ic_avatar_dropdown.gif) right -15px no-repeat;
+    text-align: left;
+}
+
+.forum_userstatus.hover .statuslinks {
+    background: url(https://graphics.gaiaonline.com/images/template/icons/ic_avatar_dropdown.gif) right -15px no-repeat;
+    text-align: left;
+}
+
+.forum_userstatus .statuslinks {
+    background: url(https://graphics.gaiaonline.com/images/template/icons/ic_avatar_dropdown.gif) top right no-repeat;
+    text-align: left;
+    height: 15px;
+    padding: 0;
+}
+
+.forum_userstatus .statuslinks a,
+.forum_userstatus .statuslinks span {
+    overflow: hidden;
+    display: block;
+    margin: 0;
+    padding: 0;
+    height: 15px;
+    width: 100%;
+    font-size: 11px;
+    font-weight: normal;
+    text-align: left;
+}
+
+.forum_userstatus .statuslinks span.online {
+    background: url(https://graphics.gaiaonline.com/images/template/icons/ic_status_smile.gif) no-repeat 0 0;
+    padding-left: 20px;
+    width: 80px;
+    height: 15px;
+    float: left;
+    color: #333;
+}
+
+.forum_userstatus .statuslinks span.offline {
+    background: url(https://graphics.gaiaonline.com/images/template/icons/ic_status_smile.gif) left -15px no-repeat;
+    padding-left: 20px;
+    width: 80px;
+    color: #666;
+    height: 15px;
+    float: left;
+}
+
+/*! src/css/profiles/v2/viewer-min.css */
+dd .dropBox {
+    float: left;
+}
+
+.dropBox {
+    margin: 0 auto;
+}
+
+.deletecomment {
+    display: block;
+    float: right;
+}
+
+#avatar_dropbox {
+    position: absolute;
+    z-index: 500;
+    height: 52px;
+    width: 65px;
+    background: url(https://graphics.gaiaonline.com/images/template/dropdown/hoverbox_65x104.png) no-repeat;
+    display: none;
+}
+
+#avatar_dropbox #trigger {
+    height: 48px;
+    width: 12px;
+    float: right;
+}
+
+#avatar_dropbox.trigger {
+    background: url(https://graphics.gaiaonline.com/images/template/dropdown/hoverbox_65x104.png) no-repeat 0 -52px;
+}
+
+#avatar_menu {
+    background: #FFF;
+    position: absolute;
+    z-index: 500;
+    display: none;
+    margin: 0;
+    list-style: none;
+    border: 1px solid #bbb;
+    border-right: 1px solid #777;
+    border-bottom: 1px solid #777;
+    width: 120px;
+    font-size: 13px;
+    font-family: Arial;
+}
+
+#avatar_menu a {
+    color: #3E53A2;
+    display: block;
+    font-size: 85%;
+    height: 1%;
+    padding: 2px;
+    margin: 1px;
+    text-decoration: none;
+    font-weight: normal;
+    text-align: left;
+}
+
+#avatar_menu a:hover {
+    background: #e7edf4;
+}
+
+#avatar_menu li {
+    margin: 0;
+    list-style: none;
+}
+
+#avatar_menu li.menu_seperator {
+    width: 100%;
+    height: 1px;
+    font-size: 0;
+    line-height: 0;
+    margin: 3px 0;
+    background: #bbb;
+}
+
+#viewer #tooltip-badge .bd {
+    background: none;
+    background-color: #ffd;
+    width: 250px;
+    height: auto;
+}
+
+#viewer #tooltip-badge .bd div {
+    padding-left: 65px;
+}
+
+#viewer #tooltip-badge .bd img {
+    height: 60px;
+    width: 60px;
+    float: left;
+}
+
+#viewer img .clickable {
+    cursor: hand;
+    cursor: pointer;
+}
+
+/*! src/css/profiles/v2/panels-min.css */
+.panel {
+    position: relative;
+    margin-bottom: 10px;
+    background: #FFF;
+    font-size: 10px;
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    padding: 10px;
+    height: 1%;
+    word-wrap: break-word;
+}
+
+.dd_panel {
+    background: #FFF no-repeat;
+    margin-bottom: 10px;
+    width: 200px;
+    cursor: move;
+    opacity: .35;
+    -moz-opacity: .35;
+    filter: alpha(opacity=35);
+}
+
+html>body .panel {
+    height: auto;
+}
+
+.details_panel {
+    text-align: center;
+}
+
+.gifts_panel li {
+    float: left;
+    text-align: center;
+    padding: 0 5px 0 5px;
+}
+
+.gifts_panel li p {
+    text-align: left;
+}
+
+.gifts_panel img {
+    padding: 0 5px 0 5px;
+}
+
+.gifts_panel .gift_anonymous {
+    color: #333;
+}
+
+.friends_panel .style1 li {
+    float: left;
+    width: 90px;
+    height: 80px;
+    text-align: center;
+}
+
+.friends_panel .style2 li {
+    float: left;
+    width: 90px;
+    height: 20px;
+    text-align: center;
+}
+
+.media_panel {
+    text-align: center;
+}
+
+.comments_panel #add_comment {
+    display: none;
+    border-bottom: 1px solid #000;
+    border-top: 1px solid #000;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.comments_panel #add_comment textarea {
+    width: 100%;
+    height: 120px;
+}
+
+.comments_panel .style1 dt {
+    clear: left;
+    border-bottom: 1px solid #000;
+    height: 20px;
+    line-height: 20px;
+    padding: 0 4px;
+    text-align: right;
+}
+
+.comments_panel .style1 dt .username {
+    float: left;
+    display: block;
+}
+
+.comments_panel .style1 dd,
+.comments_panel .style2 dd {
+    overflow: hidden;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.comments_panel .style1 dd .avatar {
+    float: left;
+}
+
+.comments_panel .style1 dd p {
+    margin-left: 72px;
+}
+
+.wish_list_panel .item {
+    float: left;
+}
+
+.equipped_list_panel .item {
+    float: left;
+}
+
+.house_panel {
+    text-align: center;
+}
+
+.house_panel .house_img img {
+    width: 200px;
+}
+
+.aquarium_panel {
+    text-align: center;
+}
+
+.aquarium_panel .aquarium_img img {
+    width: 200px;
+}
+
+.forums_panel {
+    text-align: center;
+}
+
+.signature_panel {
+    text-align: center;
+}
+
+.signature_panel h2 {
+    text-align: left;
+}
+
+.interests_panel .interest_tags li {
+    display: inline;
+}
+
+#friendGroup {
+    padding: 10px;
+    top: 172px;
+    margin-left: 25px;
+    margin-right: 25px;
+}
+
+#friendGroup ul {
+    margin-top: 10px;
+}
+
+#friendGroup li {
+    float: left;
+    text-align: center;
+    width: 100px;
+    padding: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/*! src/css/profiles/v2/decorations-min.css */
+.decoration {
+    position: absolute;
+    min-height: 40px;
+}
+
+.caption .caption_top {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v2/caption_top.gif) no-repeat top left;
+    width: 100px;
+    height: 5px;
+    position: absolute;
+    top: -5px;
+}
+
+.caption p {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v2/caption_middle.gif) repeat-y top left;
+    width: 100px;
+    text-align: center;
+}
+
+.caption .caption_bottom_left {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v2/caption_bottom_left.gif) no-repeat;
+    width: 100px;
+    height: 21px;
+    margin-top: -10px;
+}
+
+.caption .caption_bottom_right {
+    background: url(https://graphics.gaiaonline.com/images/profiles/v2/caption_bottom_right.gif) no-repeat;
+    width: 100px;
+    height: 21px;
+    margin-top: -10px;
+}
+
+.wish_list_decoration {
+    width: 150px;
+}
+
+.wish_list_decoration .decoration_content {
+    height: 80px;
+    overflow-y: scroll;
+}
+
+.wish_list_decoration .decoration_content li {
+    display: inline;
+}
+
+.equipped_list_decoration {
+    width: 150px;
+}
+
+.equipped_list_decoration .decoration_content {
+    height: 80px;
+    overflow-y: scroll;
+}
+
+.equipped_list_decoration .decoration_content li {
+    display: inline;
+}
+
+/*! src/css/profiles/v2/header-min.css */
+#gaia_header {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 25px;
+    background: #000;
+    z-index: 99999;
+    margin: 0;
+    padding: 0;
+}
+
+#gaia_header #header_left {
+    background: #000;
+    color: #fff;
+    float: left;
+    width: 49%;
+    height: 25px;
+    line-height: 24px;
+}
+
+#gaia_header #header_left img {
+    top: 0;
+    vertical-align: middle;
+}
+
+#gaia_header #header_right {
+    background: #000;
+    height: 25px;
+    color: #fff;
+    float: left;
+    width: 49%;
+    z-index: 9999;
+    text-align: right;
+    line-height: 24px;
+}
+
+#gaia_header #header_right img {
+    top: 0;
+    vertical-align: middle;
+}
+
+#header_right li img {
+    padding-right: 4px;
+}
+
+#gaia_header ul li {
+    display: inline;
+}
+
+#gaia_header a {
+    color: #ccc !important;
+}
+
+.spacer {
+    padding-left: 10px;
+}
+
+/*! src/css/profiles/v2/smilies-min.css */
+div.postcontent .quote {
+    padding-left: 20px;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    clear: both;
+}
+
+div.postcontent .quote .cite {
+    font-weight: bold;
+    font-size: 80%;
+}
+
+div.postcontent .quote .quoted {
+    background: #efefef;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+div.postcontent .clear {
+    clear: both;
+}
+
+div.postcontent .code {
+    border: 1px solid #006;
+    background: #ccc;
+    font-family: Courier, "Courier New", monospace;
+}
+
+div.postcontent ul {
+    margin-left: 15px;
+}
+
+div.postcontent span.smilies {
+    padding-left: 2px;
+    padding-bottom: 3px;
+}
+
+div.postcontent span.smilies b {
+    visibility: hidden;
+    font-size: 1px;
+    padding-right: 12px;
+}
+
+div.postcontent span.smilies_biggrin {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_biggrin.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_biggrin {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_biggrin.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_biggrin {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_biggrin.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_smile {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_smile.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_smile {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_smile.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_smile {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_smile.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_redface {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_redface.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_crying {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_crying.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_stare {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_stare.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_xd {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_xd.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_3nodding {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_3nodding.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_blaugh {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_blaugh.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_gonk {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_gonk.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_scream {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_scream.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_stressed {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_stressed.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_sweatdrop {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_sweatdrop.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_heart {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_heart.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_domokun {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_domokun.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_xp {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_xp.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_whee {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_whee.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_wink {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_wink.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_wink {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_wink.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_wink {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_wink.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_sad {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_sad.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_sad {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_sad.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_sad {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_sad.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_surprised {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_surprised.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_surprised {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_surprised.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_surprised {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_surprised.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_eek {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_eek.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_confused {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_confused.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_confused {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_confused.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_confused {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_confused.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_cool {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_cool.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_cool {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_cool.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_cool {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_cool.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_lol {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_lol.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_mad {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_mad.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_mad {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_mad.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_mad {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_mad.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_razz {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_razz.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_razz {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_razz.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_razz {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_razz.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_cry {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_cry.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_evil {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_evil.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_twisted {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_twisted.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_rolleyes {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_rolleyes.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_exclaim {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_exclaim.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_question {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_question.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_idea {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_idea.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_arrow {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_arrow.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_neutral {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_neutral.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_neutral {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_neutral.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_neutral {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_neutral.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_mrgreen {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_mrgreen.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_ninja {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_ninja.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_4laugh {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_4laugh.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_rofl {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_rofl.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_pirate {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_pirate.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_talk2hand {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_talk2hand.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_burning_eyes {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_burning.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_cheese_whine {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_cheese.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_dramallama {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_dramallama.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_wahmbulance {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_wahmbulance.gif) left top no-repeat;
+}
+
+div.postcontent span.smilies_emo {
+    background: url(https://graphics.gaiaonline.com/images/common/smilies/icon_emo.gif) left top no-repeat;
+}
+
+/*! src/css/quote.css */
+.genmed {
+    font-size: 11px;
+}
+
+.gensmall {
+    font-size: 10px;
+}
+
+.gensmallwhite {
+    font-size: 11px;
+    color: #FFFFFF;
+}
+
+.gen,
+.genmed,
+.gensmall {
+    color: #437383;
+}
+
+a.gen,
+a.genmed,
+a.gensmall {
+    color: #427184;
+    text-decoration: none;
+}
+
+a.gen:hover,
+a.genmed:hover,
+a.gensmall:hover {
+    color: #DD6900;
+    text-decoration: underline;
+}
+
+/* Quote & Code blocks */
+.code {
+    font-family: Courier, 'Courier New', sans-serif;
+    font-size: 11px;
+    color: #006600;
+    background-color: #FAFAFA;
+    border: #D1D7DC;
+    border-style: solid;
+    border-left-width: 1px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px
+}
+
+.quote {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #444444;
+    line-height: 125%;
+    background-color: #FAFAFA;
+    border: #D1D7DC;
+    border-style: solid;
+    border-left-width: 1px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px
+}
+
+/*! src/css/profiles/v2/alert-min.css */
+#alerts_banner {
+    background: url(https://graphics.gaiaonline.com/images/gaia_global/body/mygaia/ic_alerts_17x22.gif) no-repeat 0 0;
+    padding: 5px 0 10px 30px;
+    margin-left: 10px;
+    float: right;
+    text-align: right;
+}
+
+#alerts_banner a {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#alerts_banner a:hover {
+    text-decoration: underline;
+}
+
+#alert_container {
+    float: left;
+    padding-top: 5px;
+}
+
+/*! src/yui/container/assets/container-min.css */
+.yui-overlay,
+.yui-panel-container {
+    visibility: hidden;
+    position: absolute;
+    z-index: 2;
+}
+
+.yui-tt {
+    visibility: hidden;
+    position: absolute;
+    color: #333;
+    background-color: #FDFFB4;
+    font-family: arial, helvetica, verdana, sans-serif;
+    padding: 2px;
+    border: 1px solid #FCC90D;
+    font: 100% sans-serif;
+    width: auto;
+}
+
+.yui-tt-shadow {
+    display: none;
+}
+
+* html body.masked select {
+    visibility: hidden;
+}
+
+* html div.yui-panel-container select {
+    visibility: inherit;
+}
+
+* html div.drag select {
+    visibility: hidden;
+}
+
+* html div.hide-select select {
+    visibility: hidden;
+}
+
+.mask {
+    z-index: 1;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    -moz-opacity: .5;
+    opacity: .50;
+    filter: alpha(opacity=50);
+    background-color: #CCC;
+}
+
+.hide-scrollbars,
+.hide-scrollbars * {
+    overflow: hidden;
+}
+
+.hide-scrollbars select {
+    display: none;
+}
+
+.show-scrollbars {
+    overflow: auto;
+}
+
+.yui-panel-container.show-scrollbars {
+    overflow: visible;
+}
+
+.yui-panel-container.show-scrollbars .underlay {
+    overflow: auto;
+}
+
+.yui-panel-container .underlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.yui-panel-container.matte {
+    padding: 3px;
+    background-color: #fff;
+}
+
+.yui-panel-container.shadow .underlay {
+    top: 3px;
+    bottom: -3px;
+    right: -3px;
+    left: 3px;
+    background-color: #000;
+    opacity: .12;
+    filter: alpha(opacity=12);
+}
+
+.yui-panel-container.shadow .underlay.yui-force-redraw {
+    padding-bottom: 1px;
+}
+
+.yui-effect-fade .underlay {
+    display: none;
+}
+
+.yui-panel {
+    visibility: hidden;
+    border-collapse: separate;
+    position: relative;
+    left: 0;
+    top: 0;
+    font: 1em Arial;
+    background-color: #FFF;
+    border: 1px solid #000;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.yui-panel .hd {
+    background-color: #3d77cb;
+    color: #FFF;
+    font-size: 100%;
+    line-height: 100%;
+    border: 1px solid #FFF;
+    border-bottom: 1px solid #000;
+    font-weight: bold;
+    padding: 4px;
+    white-space: nowrap;
+}
+
+.yui-panel .bd {
+    overflow: hidden;
+    padding: 4px;
+}
+
+.yui-panel .bd p {
+    margin: 0 0 1em;
+}
+
+.yui-panel .container-close {
+    position: absolute;
+    top: 5px;
+    right: 4px;
+    z-index: 6;
+    height: 12px;
+    width: 12px;
+    margin: 0;
+    padding: 0;
+    background: url(https://graphics.gaiaonline.com/images/template/profile/profile_close_btn.gif) no-repeat;
+    cursor: pointer;
+    visibility: inherit;
+    text-indent: -10000em;
+    overflow: hidden;
+    text-decoration: none;
+}
+
+.yui-panel .ft {
+    padding: 4px;
+    overflow: hidden;
+}
+
+.yui-simple-dialog .bd .yui-icon {
+    background-repeat: no-repeat;
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+    float: left;
+}
+
+.yui-simple-dialog .bd span.blckicon {
+    background: url("blck16_1.gif") no-repeat;
+}
+
+.yui-simple-dialog .bd span.alrticon {
+    background: url("alrt16_1.gif") no-repeat;
+}
+
+.yui-simple-dialog .bd span.hlpicon {
+    background: url("hlp16_1.gif") no-repeat;
+}
+
+.yui-simple-dialog .bd span.infoicon {
+    background: url("info16_1.gif") no-repeat;
+}
+
+.yui-simple-dialog .bd span.warnicon {
+    background: url("warn16_1.gif") no-repeat;
+}
+
+.yui-simple-dialog .bd span.tipicon {
+    background: url("tip16_1.gif") no-repeat;
+}
+
+.yui-dialog .ft,
+.yui-simple-dialog .ft {
+    padding-bottom: 5px;
+    padding-right: 5px;
+    text-align: right;
+}
+
+.yui-dialog form,
+.yui-simple-dialog form {
+    margin: 0;
+}
+
+.button-group button {
+    font: 100 76% verdana;
+    text-decoration: none;
+    background-color: #E4E4E4;
+    color: #333;
+    cursor: hand;
+    vertical-align: middle;
+    border: 2px solid #797979;
+    border-top-color: #FFF;
+    border-left-color: #FFF;
+    margin: 2px;
+    padding: 2px;
+}
+
+.button-group button.default {
+    font-weight: bold;
+}
+
+.button-group button:hover,
+.button-group button.hover {
+    border: 2px solid #90A029;
+    background-color: #EBF09E;
+    border-top-color: #FFF;
+    border-left-color: #FFF;
+}
+
+.button-group button:active {
+    border: 2px solid #E4E4E4;
+    background-color: #BBB;
+    border-top-color: #333;
+    border-left-color: #333;
+}
+
+.yui-override-padding {
+    padding: 0 !important;
+}
+
+/*! src/css/equip/equip-min.css */
+#equipped-list_mask {
+    background: #000;
+    opacity: .5;
+    filter: alpha(opacity=50);
+}
+
+#equipped-list {
+    width: 690px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    font-size: 13px;
+}
+
+#equipped-list a {
+    font-weight: normal;
+}
+
+#equipped-list .hd_equipped-list {
+    overflow: hidden;
+    height: 32px;
+}
+
+#equipped-list .hd_equipped-list .leftCorner,
+#equipped-list .hd_equipped-list .rightCorner {
+    width: 10px;
+    height: 32px;
+}
+
+#equipped-list .hd_equipped-list .leftCorner {
+    background: url(https://graphics.gaiaonline.com/images/equip/rs_5a4564_title_corners.png) no-repeat;
+    float: left;
+}
+
+#equipped-list .hd_equipped-list .rightCorner {
+    background: url(https://graphics.gaiaonline.com/images/equip/rs_5a4564_title_corners.png) -10px 0 no-repeat;
+    float: right;
+}
+
+#equipped-list .hd_equipped-list .titleBar {
+    background: #5a4564 url(https://graphics.gaiaonline.com/images/equip/hd_equipped_items.png) left center no-repeat;
+    float: left;
+    height: 32px;
+    width: 670px;
+    color: #FFF;
+    font-size: 85%;
+}
+
+#equipped-list .hd_equipped-list .titleBar .title {
+    padding: 11px 0 0 135px;
+    font-size: 100%;
+}
+
+#equipped-list .hd_equipped-list .titleBar #icon-close-list {
+    background: url(https://graphics.gaiaonline.com/images/gaia_global/body/icons/ic_close_13x13.png);
+    width: 13px;
+    height: 13px;
+    font-size: 0;
+    line-height: 0;
+    float: right;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+#equipped-list .bd_equipped-list {
+    background: url(https://graphics.gaiaonline.com/images/equip/il_mannequin_equip_bd.png) bottom no-repeat #FFF;
+    padding: 15px 15px 0;
+    min-height: 163px;
+    height: auto !important;
+    height: 163px;
+    overflow: hidden;
+}
+
+#equipped-list .bd_equipped-list ul {
+    list-style: none;
+}
+
+#equipped-list .bd_equipped-list ul li {
+    float: left;
+    width: 220px;
+    overflow: hidden;
+}
+
+#equipped-list .bd_equipped-list ul li div.itemIcon {
+    float: left;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    line-height: 32px;
+}
+
+#equipped-list .bd_equipped-list ul li a.itemDesc {
+    padding: 0 3px;
+    display: block;
+    line-height: 32px;
+    color: #3e53a2;
+    font-size: 85%;
+    text-decoration: none;
+    height: 32px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+#equipped-list .bd_equipped-list ul li a.itemDesc:hover {
+    text-decoration: underline;
+}
+
+#equipped-list .ft_equipped-list {
+    background: url(https://graphics.gaiaonline.com/images/equip/il_mannequin_equip_ft.png) no-repeat;
+    height: 20px;
+}
+
+#equipped-item-details_mask {
+    opacity: .3;
+    filter: alpha(opacity=30);
+    background: #000;
+    visibility: hidden;
+}
+
+#equipped-item-details {
+    width: 271px;
+    border: 0;
+    text-align: left;
+    font-size: 13px;
+    font-family: Arial;
+    overflow: visible;
+    background: url(https://graphics.gaiaonline.com/images/equip/empty.png);
+}
+
+#equipped-item-details a {
+    color: #3e53a2;
+    text-decoration: none;
+}
+
+#equipped-item-details a:hover {
+    text-decoration: underline;
+}
+
+#equipped-item-details .hd_equipped-details {
+    background: url(https://graphics.gaiaonline.com/images/equip/rs_corners_5A4564_FFF_4.png) no-repeat;
+    height: 4px;
+    font-size: 0;
+    line-height: 0;
+}
+
+#equipped-item-details .bd_equipped-details {
+    background: #FFF url(https://graphics.gaiaonline.com/images/equip/rs_corners_5A4564_FFF_4.png) -271px 0 repeat-y;
+    padding: 7px 11px;
+    height: auto !important;
+}
+
+#equipped-item-details .bd_equipped-details #icon-close-details {
+    background: url(https://graphics.gaiaonline.com/images/gaia_global/body/icons/ic_close_13x13.png) no-repeat;
+    height: 13px;
+    width: 13px;
+    font-size: 0;
+    line-height: 0;
+    cursor: pointer;
+    float: right;
+}
+
+#equipped-item-details .bd_equipped-details div#itemIcon {
+    float: left;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+}
+
+#equipped-item-details .bd_equipped-details h1#itemTitle {
+    font-size: 108%;
+    height: 30px;
+    overflow: hidden;
+    line-height: 30px;
+    color: #5a4564;
+    margin-left: 32px;
+}
+
+#equipped-item-details .bd_equipped-details p#itemDesc,
+#equipped-item-details .bd_equipped-details p#itemAvail,
+#equipped-item-details .bd_equipped-details p#itemMarket,
+#equipped-item-details .bd_equipped-details p#itemBuyMarket {
+    color: #000;
+    font-size: 85%;
+}
+
+#equipped-item-details .bd_equipped-details p#itemDesc {
+    max-height: 50px;
+    overflow: auto;
+}
+
+#equipped-item-details .bd_equipped-details p#itemBuyMarket {
+    font-weight: bold;
+}
+
+#equipped-item-details .bd_equipped-details div.seperate {
+    height: 1px;
+    background: #c3cdd5;
+    font-size: 0;
+    line-height: 0;
+    margin: 10px 0;
+}
+
+#equipped-item-details .bd_equipped-details div.itemBuy {
+    padding: 15px 0;
+    text-align: center;
+    overflow: hidden;
+}
+
+#equipped-item-details .bd_equipped-details div.itemBuy span {
+    overflow: hidden;
+    display: inline-block;
+}
+
+#equipped-item-details .ft_equipped-details {
+    background: url(https://graphics.gaiaonline.com/images/equip/rs_corners_5A4564_FFF_4.png) 0 -4px no-repeat;
+    height: 4px;
+    font-size: 0;
+    line-height: 0;
+}
+
+#gotoShop,
+#addWishlist {
+    display: block;
+    background: url(https://graphics.gaiaonline.com/images/equip/btn_gotoshop.gif) no-repeat;
+    height: 21px;
+    width: 87px;
+    overflow: hidden;
+    line-height: 1000px;
+    float: left;
+    margin-right: 10px;
+}
+
+#gotoShop:hover {
+    background: url(https://graphics.gaiaonline.com/images/equip/btn_gotoshop.gif) 0 -21px no-repeat;
+}
+
+#gaia_content #bd #playzomg,
+#gaia_content #bd .get-more-items {
+    margin-top: 4px;
+}
+
+#gaia_content #bd #playzomg A,
+#gaia_content #bd #playzomg A:link,
+#gaia_content #bd #playzomg A:active,
+#gaia_content #bd .get-more-items A,
+#gaia_content #bd .get-more-items A:link,
+#gaia_content #bd .get-more-items A:active {
+    background: transparent url(https://graphics.gaiaonline.com/images/gaia_global/body/arrows/ic_hyperlink_arrow_15x15.png) no-repeat scroll 0;
+    bottom: 10px;
+    color: #3e52a2;
+    font-weight: bold;
+    height: 25px;
+    line-height: 25px;
+    vertical-align: middle;
+    font-size: 12px;
+    padding: 0 0 0 18px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+#gaia_content #bd #playzomg A:hover,
+#gaia_content #bd .get-more-items A:hover {
+    color: #29c;
+    text-decoration: underline;
+}
+
+#gaia_content #bd #playzomg A:visited,
+#gaia_content #bd .get-more-items A:visited {
+    color: #3e52a2;
+    text-decoration: none;
+}
+
+#addWishlist {
+    background: url(https://graphics.gaiaonline.com/images/equip/btn_addtowishlist.gif) no-repeat;
+    width: 110px;
+    margin: 0;
+}
+
+#addWishlist:hover {
+    background: url(https://graphics.gaiaonline.com/images/equip/btn_addtowishlist.gif) 0 -21px no-repeat;
+}
+
+#itemMarket .deltaDown {
+    background: url(https://graphics.gaiaonline.com/images/marketplace/ic_arrow_falling_9x9.gif) left center no-repeat;
+    padding-left: 12px;
+    color: #BC0000;
+    font-weight: bold;
+}
+
+#itemMarket .deltaUp {
+    background: url(https://graphics.gaiaonline.com/images/marketplace/ic_arrow_rising_9x9.gif) left center no-repeat;
+    padding-left: 12px;
+    color: #009604;
+    font-weight: bold;
+}
+
+#itemMarket .deltaSame {
+    color: #124AAC;
+    font-weight: bold;
+}
+
+#dialogArrow {
+    display: block;
+    width: 100%;
+    position: relative;
+    margin: -1px 0 0 0;
+    text-align: center;
+}
+
+
+
+.panel {
+    padding: 15px;
+}
+
+.panel h2 {
+    margin: -5px -5px 10px -5px;
+    padding: 5px 6px;
+    background: #aaa;
+    text-align: left;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #fff;
+    font-size: 10px;
+}
+
+html {
+    background: url() repeat;
+}
+
+body {
+    background: no-repeat;
+}
+
+.panel h2 {
+    background: #3D8AD0;
+    color: #fff;
+}
+
+.panel {
+    background: #fff;
+    color: #000;
+}
+
+a {
+    color: #D37B14;
+}
+
+#header a {
+    color: #D37B14;
+}
+
+
+#gaia_header {
+    display: block !important;
+    position: relative !important;
+    top: 0px !important;
+    left: 0px !important;
+    width: 100% !important;
+    height: 25px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 9999 !important;
+    font-size: 11px !important;
+}
+
+#header_left {
+    display: block !important;
+    position: relative !important;
+    top: 0px !important;
+    float: left !important;
+    width: 49% !important;
+    height: 25px !important;
+    line-height: 24px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 9999 !important;
+    font-size: 11px !important;
+    text-align: left !important;
+}
+
+#header_right {
+    display: block !important;
+    position: relative !important;
+    top: 0px !important;
+    right: 0px !important;
+    width: 49% !important;
+    height: 25px !important;
+    line-height: 24px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 9999 !important;
+    font-size: 11px !important;
+    text-align: right !important;
+}
+
+#header_left img {
+    display: inline !important;
+}
+
+#header_left ul {
+    display: inline !important;
+}
+
+#header_right ul {
+    display: inline !important;
+}
+
+#header_left li {
+    display: inline !important;
+}
+
+#header_right li {
+    display: inline !important;
+}
+
+#header_left a {
+    display: inline !important;
+}
+
+#header_right a {
+    display: inline !important;
+}
+
+.spoiler-wrapper {
+    padding: 1px;
+}
+
+.spoiler-wrapper .spoiler-control {
+    cursor: pointer;
+    display: inline;
+}
+
+.spoiler-hidden>.spoiler-title>.spoiler-control-hide,
+.spoiler-revealed>.spoiler-title>.spoiler-control-show,
+.spoiler-hidden>.spoiler {
+    display: none;
+}
+
+.spoiler-revealed {
+    border: 1px dotted #000;
+}
+
+.spoiler-revealed>.spoiler {
+    display: inherit;
+}
