@@ -5,7 +5,7 @@
 	let currentlyHovered = null;
 	let activeSelector = "";
 
-	let targetAvatar = "https://a1cdn.gaiaonline.com/dress-up/avatar/ava/0e/6e/6255ead32c36e0e_flip.png";
+	let targetAvatar = "https://a1cdn.gaiaonline.com/dress-up/avatar/ava/f3/77/5e4a907513377f3_flip.png";
 	let targetUsername = "Sunkirs";
 
 	document.addEventListener('click', (event) => {

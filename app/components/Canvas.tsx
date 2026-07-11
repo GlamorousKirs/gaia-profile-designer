@@ -6,7 +6,7 @@ import { useProfileStore } from "~/store/useProfileStore"
 
 const TARGET_WIDTH = 1920
 const TARGET_HEIGHT = 1080
-const DEFAULT_AVATAR = "https://a1cdn.gaiaonline.com/dress-up/avatar/ava/0e/6e/6255ead32c36e0e_flip.png"
+const DEFAULT_AVATAR = "https://a1cdn.gaiaonline.com/dress-up/avatar/ava/f3/77/5e4a907513377f3_flip.png"
 const DEFAULT_USERNAME = "Your Username"
 
 const presetCssModules = import.meta.glob("/app/premade/**/preset.css", { query: "?raw", import: "default", eager: true }) as Record<string, string>
