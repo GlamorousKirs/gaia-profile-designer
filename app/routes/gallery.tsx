@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/pagination"
 import { ArrowUp, ArrowDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { motion, AnimatePresence } from "motion/react";
 
 interface Preset {
 	id: string
@@ -22,27 +23,33 @@ interface Preset {
 
 const PresetList = memo(({ presets, gridClass }: { presets: Preset[], gridClass: string }) => {
 	return (
-		<section 
+		<motion.section 
+			layout
 			className={`grid gap-6 ${gridClass}`}
-			style={{ 
-				contentVisibility: 'auto', 
-				containIntrinsicSize: 'auto 5000px' 
-			}}
 		>
-			{presets.map((preset, index) => (
-				<div
-					key={preset.id}
-					className="transition-all duration-300 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2"
-					style={{ 
-						animationDelay: `${Math.min(index * 40, 300)}ms`,
-						animationFillMode: 'both'
-					}}
-				>
-					<PresetCard preset={preset} isPriority={index < 4} />
-				</div>
-			))}
+			<AnimatePresence mode="popLayout">
+				{presets.map((preset, index) => (
+					<motion.div
+						key={preset.id}
+						layout
+						transition={{ 
+							layout: {
+								type: "spring",
+								stiffness: 200,
+								damping: 25
+							},
+							opacity: { duration: 0.2 }
+						}}
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+					>
+						<PresetCard preset={preset} isPriority={index < 4} />
+					</motion.div>
+				))}
+			</AnimatePresence>
 			<div id="gallery-bottom" />
-		</section>
+		</motion.section>
 	)
 })
 PresetList.displayName = "PresetList"
