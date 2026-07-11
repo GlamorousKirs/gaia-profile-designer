@@ -64,7 +64,7 @@ const DroppableColumn = memo(function DroppableColumn({ id, items }: { id: keyof
 				<div className="mb-2 shrink-0">
 					<InputGroup className="w-full">
 						<InputGroupInput
-							placeholder="Filter panels..."
+							placeholder="Search panels..."
 							value={search}
 							onChange={(e) => setSearch(e.target.value)}
 							className="text-[11px] py-1"
