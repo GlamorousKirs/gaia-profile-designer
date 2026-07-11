@@ -93,7 +93,7 @@ export function StudioHeader({ onOpenProfile, version, onVersionChange }: Studio
 					<Fullscreen className="size-4" aria-hidden="true" />
 				</Button>
 				
-				<div className="h-4 w-[1px] bg-border mx-1" />
+				<div className="h-4 w-px bg-border mx-1" />
 
 				<ThemePicker />
 				<div className="ml-2">

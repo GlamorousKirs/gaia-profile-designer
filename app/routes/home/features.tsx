@@ -1,27 +1,27 @@
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion"
+import { motion, useMotionValue, useSpring, useTransform } from "motion/react"
 import { Link } from "react-router"
-import { useRef, MouseEvent } from "react"
+import { useRef, type MouseEvent } from "react"
 
 const FEATURES_DATA = [
-		{
+	{
 		name: "Snippets",
 		desc: "Save and reuse lines of code instantly.",
-		image: "/app/assets/snippet-feature.gif",
+		image: "/optimized-assets/snippet-feature.webp",
 		to: "/studio",
 	},
 	{
 		name: "Logo Recolor",
 		desc: "Recolor the Gaia logo for your profile header.",
-		image: "/app/assets/logo-recolor-preview.gif",
+		image: "/optimized-assets/logo-recolor-preview.webp",
 		to: "/logo-recolor",
 	},
 	{
 		name: "Avatar Animator",
 		desc: "Stylize your friend's or your avatar for your profile.",
-		image: "/app/assets/avatar-animator.gif",
+		image: "/optimized-assets/avatar-animator.webp",
 		to: "/avatar-animation",
 	},
-] as const
+] as const;
 
 function TiltImage({ src, alt }: { src: string; alt: string }) {
 	const ref = useRef<HTMLDivElement>(null)
@@ -65,7 +65,7 @@ function TiltImage({ src, alt }: { src: string; alt: string }) {
 			ref={ref}
 			onMouseMove={handleMouseMove}
 			onMouseLeave={handleMouseLeave}
-			className="relative w-full aspect-[16/10] rounded-3xl border border-border/80 bg-gradient-to-br from-card to-muted p-2 overflow-hidden [perspective:1200px] shadow-lg hover:shadow-2xl hover:border-primary/30 transition-all duration-500 group"
+			className="relative w-full aspect-16/10 rounded-3xl border border-border/80 bg-linear-to-br from-card to-muted p-2 overflow-hidden perspective-distant shadow-lg hover:shadow-2xl hover:border-primary/30 transition-all duration-500 group"
 		>
 			<motion.div
 				style={{
@@ -75,7 +75,7 @@ function TiltImage({ src, alt }: { src: string; alt: string }) {
 				}}
 				className="relative w-full h-full rounded-2xl overflow-hidden"
 			>
-				<div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent z-10" />
+				<div className="absolute inset-0 bg-linear-to-t from-background/40 to-transparent z-10" />
 				
 				<motion.div
 					className="absolute inset-0 opacity-0 group-hover:opacity-100 z-20 transition-opacity duration-500 mix-blend-screen"
@@ -103,14 +103,14 @@ function TiltImage({ src, alt }: { src: string; alt: string }) {
 export function Features() {
 	return (
 		<section className="relative py-32 overflow-hidden">
-			<div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
+			<div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-125 h-125 bg-primary/5 rounded-full blur-[120px]" />
 
 			<div className="container mx-auto px-4 relative z-10">
 				<div className="flex flex-col items-center mb-28">
 					<motion.h2 
 						className="text-center text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl"
-						initial={{ opacity: 0, tracking: "-0.05em" }}
-						whileInView={{ opacity: 1, tracking: "-0.02em" }}
+						initial={{ opacity: 0, letterSpacing: "-0.05em" }}
+						whileInView={{ opacity: 1, letterSpacing: "-0.02em" }}
 						viewport={{ once: true }}
 						transition={{ duration: 0.8 }}
 					>
@@ -137,7 +137,7 @@ export function Features() {
 
 								<div className="w-full md:w-1/2 space-y-6 px-4">
 									<div className="space-y-3">
-										<h3 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground bg-clip-text transition-all duration-300">
+										<h3 className="text-3xl font-bold tracking-tight bg-linear-to-r from-foreground to-foreground bg-clip-text transition-all duration-300">
 											{feature.name}
 										</h3>
 										<p className="text-base text-muted-foreground leading-relaxed max-w-md font-medium">
@@ -152,7 +152,7 @@ export function Features() {
 										>
 											<span>Explore Tool</span>
 											<span className="transition-transform duration-300 group-hover:translate-x-1.5">&rarr;</span>
-											<span className="absolute bottom-0 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full" />
+											<span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
 										</Link>
 									</div>
 								</div>

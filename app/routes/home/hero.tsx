@@ -1,10 +1,9 @@
 import { Link } from "react-router"
 import { Button } from "@/components/ui/button"
-import { motion } from "framer-motion"
-import studioshowcaseImg from "@/assets/studioshowcase.png"
+import { motion, type Variants } from "motion/react"
 
 export function Hero() {
-	const containerVariants = {
+	const containerVariants: Variants = {
 		hidden: { opacity: 0 },
 		visible: {
 			opacity: 1,
@@ -15,12 +14,12 @@ export function Hero() {
 		}
 	}
 
-	const itemVariants = {
+	const itemVariants: Variants = {
 		hidden: { opacity: 0, y: 30 },
 		visible: {
 			opacity: 1,
 			y: 0,
-			transition: { type: "spring", stiffness: 100, damping: 20 }
+			transition: { type: "spring", stiffness: 100, damping: 20 } as const
 		}
 	}
 
@@ -28,36 +27,36 @@ export function Hero() {
 		<section className="relative flex min-h-screen w-full flex-col items-center justify-start overflow-hidden px-4 pt-32 md:pt-40 text-foreground">
 			<div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-size-[14px_24px] mask-[radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
-			<motion.div 
+			<motion.div
 				className="z-10 flex w-full max-w-4xl flex-col items-center text-center mb-12 md:mb-16"
 				variants={containerVariants}
 				initial="hidden"
 				animate="visible"
 			>
-				<motion.h1 
+				<motion.h1
 					className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-heading font-extrabold tracking-tight leading-[0.9] bg-clip-text text-transparent bg-linear-to-b from-foreground to-primary/70 pb-5"
 					variants={itemVariants}
 				>
 					GAIA PROFILE<br />DESIGNER
 				</motion.h1>
-				
-				<motion.p 
+
+				<motion.p
 					className="mt-8 mx-auto max-w-150 text-base md:text-lg text-muted-foreground tracking-wide"
 					variants={itemVariants}
 				>
 					A code editor for Gaia Online profiles.
 				</motion.p>
-				
-				<motion.div 
+
+				<motion.div
 					className="flex flex-wrap items-center justify-center gap-4 mt-8"
 					variants={itemVariants}
 				>
-					<Button size="lg" variant="outline" className="px-8" asChild>
+					<Button size="lg" variant="outline" className="px-8">
 						<Link to="/gallery">
 							Browse Presets
 						</Link>
 					</Button>
-					<Button size="lg" className="px-8" asChild>
+					<Button size="lg" className="px-8">
 						<Link to="/studio">
 							Go to Studio
 						</Link>
@@ -65,7 +64,7 @@ export function Hero() {
 				</motion.div>
 			</motion.div>
 
-			<motion.div 
+			<motion.div
 				className="relative w-full max-w-6xl z-10 px-2 mb-20"
 				initial={{ opacity: 0, y: 60, scale: 0.98 }}
 				animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -82,7 +81,7 @@ export function Hero() {
 
 					<div className="w-full aspect-1905/943 relative bg-muted">
 						<img
-							src={studioshowcaseImg}
+							src="/optimized-assets/studioshowcase.webp"
 							alt="Gaia Studio Interface"
 							className="absolute inset-0 h-full w-full object-cover"
 						/>

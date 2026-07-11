@@ -16,7 +16,7 @@ export function FAQ() {
 				<div className="flex flex-col md:flex-row gap-12">
 					<div className="md:w-1/3">
 						<h2 className="text-6xl font-heading tracking-tighter leading-none text-foreground sticky top-24">
-							<span className="block bg-clip-text text-transparent bg-gradient-to-br from-white to-blue-200">
+							<span className="block bg-clip-text text-transparent bg-linear-to-br from-white to-blue-200">
 								ASKED
 							</span>
 							<span className="text-muted-foreground/20 italic font-light">

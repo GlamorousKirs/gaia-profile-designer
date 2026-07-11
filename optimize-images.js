@@ -2,76 +2,92 @@ import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 
-const SRC_PRESETS_DIR = path.join(process.cwd(), 'app', 'presets');
-const PUBLIC_OUTPUT_DIR = path.join(process.cwd(), 'public', 'presets');
+sharp.concurrency(1);
+sharp.cache(false);
 
-async function processDirectory(currentDir) {
-    const files = await fs.promises.readdir(currentDir, { withFileTypes: true });
+const TASKS = [
+	{
+		src: path.join(process.cwd(), 'app', 'assets'),
+		dest: path.join(process.cwd(), 'public', 'optimized-assets')
+	},
+	{
+		src: path.join(process.cwd(), 'app', 'premade'),
+		dest: path.join(process.cwd(), 'public', 'optimized-assets')
+	}
+];
 
-    for (const file of files) {
-        const fullPath = path.join(currentDir, file.name);
+async function processDirectory(currentDir, baseSrc, baseDest) {
+	const files = await fs.promises.readdir(currentDir, { withFileTypes: true });
 
-        if (file.isDirectory()) {
-            await processDirectory(fullPath);
-        } else {
-            const ext = path.extname(file.name).toLowerCase();
-            
-            if (['.png', '.jpg', '.jpeg', '.gif'].includes(ext)) {
-                
-                const relativePathFromSrc = path.relative(SRC_PRESETS_DIR, fullPath);
-                const targetPublicOutputPath = path.join(
-                    PUBLIC_OUTPUT_DIR, 
-                    path.dirname(relativePathFromSrc), 
-                    `${path.basename(file.name, ext)}.webp`
-                );
+	for (const file of files) {
+		const fullPath = path.join(currentDir, file.name);
 
-                try {
-                    await fs.promises.mkdir(path.dirname(targetPublicOutputPath), { recursive: true });
-                    
-                    console.log(`⚡ Optimizing (Lossless): app/premade/.../${file.name} -> public/premade/.../${path.basename(file.name, ext)}.webp`);
-                    
-                    const isGif = ext === '.gif';
-                    const inputBuffer = await fs.promises.readFile(fullPath);
+		if (file.isDirectory()) {
+			await processDirectory(fullPath, baseSrc, baseDest);
+		} else {
+			const ext = path.extname(file.name).toLowerCase();
 
-                    let pipeline = sharp(inputBuffer, { 
-                        animated: isGif,
-                        pages: isGif ? -1 : 1 
-                    });
+			if (['.png', '.jpg', '.jpeg', '.gif'].includes(ext)) {
+				const relativePathFromSrc = path.relative(baseSrc, fullPath);
+				const targetPublicOutputPath = path.join(
+					baseDest,
+					path.dirname(relativePathFromSrc),
+					`${path.basename(file.name, ext)}.webp`
+				);
 
-                    pipeline = pipeline.resize({ 
-                        width: 800,              
-                        withoutEnlargement: true  
-                    });
+				try {
+					await fs.promises.mkdir(path.dirname(targetPublicOutputPath), { recursive: true });
 
-                    if (isGif) {
-                        pipeline = pipeline.webp({ 
-                            lossless: true,
-                            effort: 6,
-                            loop: 0
-                        });
-                    } else {
-                        pipeline = pipeline.webp({ 
-                            lossless: true,
-                            effort: 6 
-                        });
-                    }
+					const isGif = ext === '.gif';
 
-                    await pipeline.toFile(targetPublicOutputPath);
-                    await fs.promises.unlink(fullPath);
-                    
-                } catch (err) {
-                    console.error(`❌ Failed processing output for ${file.name}:`, err);
-                }
-            }
-        }
-    }
+					let pipeline = sharp(fullPath, {
+						animated: isGif,
+						pages: isGif ? -1 : 1,
+						limitInputPixels: 0
+					});
+
+					pipeline = pipeline.resize({
+						width: 800,
+						withoutEnlargement: true
+					});
+
+					if (isGif) {
+						pipeline = pipeline.webp({
+							lossless: true,
+							effort: 6,
+							loop: 0
+						});
+					} else {
+						pipeline = pipeline.webp({
+							lossless: true,
+							effort: 6
+						});
+					}
+
+					await pipeline.toFile(targetPublicOutputPath);
+				} catch (err) {
+					console.error(`❌ Failed processing output for ${file.name}:`, err);
+					process.exit(1);
+				}
+			}
+		}
+	}
 }
 
-if (fs.existsSync(SRC_PRESETS_DIR)) {
-    console.log('🚀 Starting batch Sharp LOSSLESS image synchronization to public folder...');
-    processDirectory(SRC_PRESETS_DIR)
-        .then(() => console.log('🎉 All assets synced and losslessly optimized into public/presets successfully!'))
-        .catch(err => console.error('Error running conversion pipeline:', err));
-} else {
-    console.error(`Directory missing: ${SRC_PRESETS_DIR}`);
+async function run() {
+	const destDir = path.join(process.cwd(), 'public', 'optimized-assets');
+	if (fs.existsSync(destDir)) {
+		await fs.promises.rm(destDir, { recursive: true, force: true });
+	}
+
+	for (const task of TASKS) {
+		if (fs.existsSync(task.src)) {
+			await processDirectory(task.src, task.src, task.dest);
+		}
+	}
 }
+
+run().catch(err => {
+	console.error('Error:', err);
+	process.exit(1);
+});

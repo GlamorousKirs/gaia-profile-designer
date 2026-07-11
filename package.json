@@ -8,10 +8,11 @@
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
+    "optimize:images": "tsx optimize-images.js",
     "generate-themeswatches": "tsx ./app/scripts/generate-themeswatches.ts",
     "generate:selectors": "tsx app/scripts/generate-selectors.ts",
     "predev": "npm run generate-themeswatches && npm run generate:selectors",
-    "prebuild": "npm run generate-themeswatches && npm run generate:selectors",
+    "prebuild": "npm run generate-themeswatches && npm run generate:selectors && npm run optimize:images",
     "prev": "npm run build && npm run start"
   },
   "dependencies": {
