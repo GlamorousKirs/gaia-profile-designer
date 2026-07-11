@@ -12,13 +12,13 @@ const FEATURES_DATA = [
 		to: "/studio",
 	},
 	{
-		name: "Logo Recolor",
+		name: "Gaia Logo Recoloring",
 		desc: "Recolor the Gaia logo for your profile header.",
 		image: `${baseUrl}optimized-assets/logo-recolor-preview.webp`,
 		to: "/logo-recolor",
 	},
 	{
-		name: "Avatar Animator",
+		name: "Avatar Decoration IMG Customizer",
 		desc: "Stylize your friend's or your avatar for your profile.",
 		image: `${baseUrl}optimized-assets/avatar-animator.webp`,
 		to: "/avatar-animation",
