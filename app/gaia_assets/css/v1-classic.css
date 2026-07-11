@@ -1886,3 +1886,21 @@ fieldset {
     background-color: #8d93af;
     border: 1px solid #898989;
 }
+
+.spoiler-wrapper {
+  padding: 1px;
+}
+.spoiler-wrapper .spoiler-control {
+  cursor: pointer;
+  display: inline;
+}
+.spoiler-hidden > .spoiler-title > .spoiler-control-hide, .spoiler-revealed > .spoiler-title > .spoiler-control-show, .spoiler-hidden > .spoiler {
+  display: none;
+}
+.spoiler-revealed {
+  border: 1px dotted #000;
+}
+.spoiler-revealed  > .spoiler {
+  display: inherit;
+}
+

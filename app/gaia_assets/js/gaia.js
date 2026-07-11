@@ -70,17 +70,25 @@
 		clearTimeout(hideTimer);
 	});
 
-	document.addEventListener("click", (e) => {
-		const isSpoilerControl = e.target.closest("button.spoiler-control");
+document.addEventListener("click", (e) => {
+		const isSpoilerControl = e.target.closest("button.spoiler-control") || e.target.closest(".spoiler-control");
 		const isAvatarMenu = e.target.closest("#avatar_menu");
 		const targetLink = e.target.closest("a");
 
 		if (isSpoilerControl) {
-			const wrapper = isSpoilerControl.closest(".spoiler-wrapper");
+			const wrapper = isSpoilerControl.closest(".spoiler-wrapper") || isSpoilerControl.parentElement;
 			if (wrapper) {
-				const isHidden = wrapper.classList.contains("spoiler-hidden");
-				wrapper.classList.toggle("spoiler-hidden", !isHidden);
-				wrapper.classList.toggle("spoiler-revealed", isHidden);
+				const isHidden = wrapper.classList.contains("spoiler-hidden") || wrapper.style.display === "none";
+				
+				if (isHidden) {
+					wrapper.classList.remove("spoiler-hidden");
+					wrapper.classList.add("spoiler-revealed");
+					wrapper.style.display = "block";
+				} else {
+					wrapper.classList.add("spoiler-hidden");
+					wrapper.classList.remove("spoiler-revealed");
+					wrapper.style.display = "none";
+				}
 				e.preventDefault();
 			}
 			return;
