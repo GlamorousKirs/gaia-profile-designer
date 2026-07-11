@@ -55,7 +55,7 @@ export function Hero() {
 				>
 					<Button size="lg" variant="outline" className="px-8">
 						<Link to="/gallery">
-							Browse Presets
+							Browse Gallery
 						</Link>
 					</Button>
 					<Button size="lg" className="px-8">
