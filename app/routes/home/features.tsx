@@ -2,23 +2,25 @@ import { motion, useMotionValue, useSpring, useTransform } from "motion/react"
 import { Link } from "react-router"
 import { useRef, type MouseEvent } from "react"
 
+const baseUrl = import.meta.env.BASE_URL;
+
 const FEATURES_DATA = [
 	{
 		name: "Snippets",
 		desc: "Save and reuse lines of code instantly.",
-		image: "optimized-assets/snippet-feature.webp",
+		image: `${baseUrl}optimized-assets/snippet-feature.webp`,
 		to: "/studio",
 	},
 	{
 		name: "Logo Recolor",
 		desc: "Recolor the Gaia logo for your profile header.",
-		image: "optimized-assets/logo-recolor-preview.webp",
+		image: `${baseUrl}optimized-assets/logo-recolor-preview.webp`,
 		to: "/logo-recolor",
 	},
 	{
 		name: "Avatar Animator",
 		desc: "Stylize your friend's or your avatar for your profile.",
-		image: "optimized-assets/avatar-animator.webp",
+		image: `${baseUrl}optimized-assets/avatar-animator.webp`,
 		to: "/avatar-animation",
 	},
 ] as const;

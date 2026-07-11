@@ -2,6 +2,8 @@ import { Link } from "react-router"
 import { Button } from "@/components/ui/button"
 import { motion, type Variants } from "motion/react"
 
+const baseUrl = import.meta.env.BASE_URL;
+
 export function Hero() {
 	const containerVariants: Variants = {
 		hidden: { opacity: 0 },
@@ -81,7 +83,7 @@ export function Hero() {
 
 					<div className="w-full aspect-1905/943 relative bg-muted">
 						<img
-							src="optimized-assets/studioshowcase.webp"
+							src=`${baseUrl}optimized-assets/studioshowcase.webp`"
 							alt="Gaia Studio Interface"
 							className="absolute inset-0 h-full w-full object-cover"
 						/>
