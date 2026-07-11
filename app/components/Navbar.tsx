@@ -24,8 +24,8 @@ const NAV_LINKS = [
 const baseUrl = import.meta.env.BASE_URL;
 
 const TOOL_LINKS = [
-	{ name: "Logo Recolor", to: "/logo-recolor", desc: "Recolor the Gaia logo for your profile header.", image: `${baseUrl}optimized-assets/logo-recolor-preview.webp` },
-	{ name: "Avatar Animator", to: "/avatar-animation", desc: "Stylize your friend's or your avatar for your profile.", image: `${baseUrl}optimized-assets/avatar-animator.webp` },
+	{ name: "Gaia Logo Recoloring", to: "/logo-recolor", desc: "Recolor the Gaia logo for your profile header.", image: `${baseUrl}optimized-assets/logo-recolor-preview.webp` },
+	{ name: "Avatar Decoration IMG Customizer", to: "/avatar-animation", desc: "Stylize your friend's or your avatar for your profile.", image: `${baseUrl}optimized-assets/avatar-animator.webp` },
 ] as const
 
 interface UserAvatarProps {
