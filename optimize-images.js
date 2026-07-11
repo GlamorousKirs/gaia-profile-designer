@@ -47,7 +47,7 @@ async function processDirectory(currentDir, baseSrc, baseDest) {
 					});
 
 					pipeline = pipeline.resize({
-						width: 800,
+						width: 1000,
 						withoutEnlargement: true
 					});
 
