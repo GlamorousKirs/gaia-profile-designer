@@ -6,19 +6,19 @@ const FEATURES_DATA = [
 	{
 		name: "Snippets",
 		desc: "Save and reuse lines of code instantly.",
-		image: "/public/optimized-assets/snippet-feature.webp",
+		image: "optimized-assets/snippet-feature.webp",
 		to: "/studio",
 	},
 	{
 		name: "Logo Recolor",
 		desc: "Recolor the Gaia logo for your profile header.",
-		image: "/public/optimized-assets/logo-recolor-preview.webp",
+		image: "optimized-assets/logo-recolor-preview.webp",
 		to: "/logo-recolor",
 	},
 	{
 		name: "Avatar Animator",
 		desc: "Stylize your friend's or your avatar for your profile.",
-		image: "/public/optimized-assets/avatar-animator.webp",
+		image: "optimized-assets/avatar-animator.webp",
 		to: "/avatar-animation",
 	},
 ] as const;
