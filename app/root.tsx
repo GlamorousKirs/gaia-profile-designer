@@ -70,7 +70,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 								</Suspense>
 								{showFooter && <Footer />}
 							</main>
-							<Toaster position="top-center"/>
+							<Toaster position="top-center" closeButton/>
 						</SmoothScroll>
 					</TooltipProvider>
 				</ThemeProvider>
