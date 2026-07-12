@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Download, Copy, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ColorPicker } from "@/components/colorpicker/ColorPicker";
+import { useProfileStore } from "@/store/useProfileStore";
 
 const PRESET_IMAGES = [
 	{
@@ -144,7 +145,33 @@ function CollapsibleFilters({ grayscale, setGrayscale, brightness, setBrightness
 }
 
 export function AvatarAnimator({ initialAvatarUrl = PRESET_IMAGES[0].url }) {
-	const [avatarUrl, setAvatarUrl] = useState<string>(initialAvatarUrl);
+	const profile = useProfileStore();
+	const [avatarUrl, setAvatarUrl] = useState<string>(profile.avatarUrl || initialAvatarUrl);
+
+	const templateImages = useMemo(() => {
+		if (profile.avatarUrl) {
+			const [path, queryString] = profile.avatarUrl.split('?');
+			const query = queryString ? `?${queryString}` : '';
+			
+			const base = path.replace(/_96x96|_48x48|_flip/g, '');
+			const extension = base.endsWith('.gif') ? '.gif' : '.png';
+			const cleanBase = base.replace(/\.png|\.gif/g, '');
+
+			return [
+				{ label: "Body", url: `${cleanBase}${extension}${query}` },
+				{ label: "Bust", url: `${cleanBase}_96x96${extension}${query}` },
+				{ label: "Head", url: `${cleanBase}_48x48.gif${query}` }
+			];
+		}
+		return PRESET_IMAGES;
+	}, [profile.avatarUrl]);
+
+	useEffect(() => {
+		if (profile.avatarUrl) {
+			setAvatarUrl(profile.avatarUrl);
+		}
+	}, [profile.avatarUrl]);
+
 	const [imgError, setImgError] = useState<boolean>(false);
 	const [hasDefaultStyles, setHasDefaultStyles] = useState<boolean>(false);
 	const [borderRadius, setBorderRadius] = useState<number>(0);
@@ -238,7 +265,7 @@ export function AvatarAnimator({ initialAvatarUrl = PRESET_IMAGES[0].url }) {
 				<div className="space-y-3 border rounded-xl p-4 bg-muted/10">
 					<Label className="text-[10px] uppercase font-bold tracking-wider">Select Preview Template</Label>
 					<div className="flex gap-2 flex-wrap">
-						{PRESET_IMAGES.map((preset) => (
+						{templateImages.map((preset) => (
 							<Button
 								key={preset.url}
 								variant={avatarUrl === preset.url ? "default" : "outline"}

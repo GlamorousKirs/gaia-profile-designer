@@ -98,7 +98,7 @@
 }
 
 #extendedProfileBody #header h1 {
-    background: url(https://graphics.gaiaonline.com/images/pageheader/profile_banner_image.jpg) top right no-repeat;
+    background: url(https://graphics.gaiaonline.com/images/pageheader/profile_banner_image.jpg) top right no-repeat !important;
 }
 
 body {
