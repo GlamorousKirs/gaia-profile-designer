@@ -61,7 +61,7 @@ export const PresetCard = memo(function PresetCard({ preset, isPriority = false,
 						/>
 					) : (
 						<div className="flex h-full w-full items-center justify-center text-muted-foreground/30">
-							<span className="text-[10px] font-bold uppercase tracking-widest">No Preview</span>
+							<span className="text-[10px] font-bold uppercase tracking-widest">No Image</span>
 						</div>
 					)}
 
