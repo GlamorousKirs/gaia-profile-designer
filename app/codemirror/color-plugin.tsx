@@ -16,8 +16,8 @@ class ColorWidget extends WidgetType {
 
   toDOM(view: EditorView) {
     const span = document.createElement("span");
-    span.className = "inline-flex items-center align-middle mx-1";
-    
+    span.className = "inline-flex items-center align-middle mr-1";
+
     this.root = createRoot(span);
     this.root.render(
       <EditorColorPicker
@@ -60,7 +60,7 @@ export const ColorPlugin = ViewPlugin.fromClass(class {
 
   buildDeco(view: EditorView) {
     const builder = new RangeSetBuilder<Decoration>();
-    
+
     const colorRegex = /#([0-9a-fA-F]{3,8})|([a-zA-Z]+)|(rgba?|hsla?)\([^)]*\)/g;
 
     for (let { from, to } of view.visibleRanges) {
@@ -68,14 +68,14 @@ export const ColorPlugin = ViewPlugin.fromClass(class {
       let match;
       while ((match = colorRegex.exec(text)) !== null) {
         const colorValue = match[0];
-        
+
         if (colord(colorValue).isValid()) {
           const start = from + match.index;
           const end = start + colorValue.length;
-          
-          builder.add(end, end, Decoration.widget({
+
+          builder.add(start, start, Decoration.widget({
             widget: new ColorWidget(colorValue, start, end),
-            side: 1
+            side: -1
           }));
         }
       }
