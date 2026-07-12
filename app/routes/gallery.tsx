@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router"
 import { PRESETS } from "@/lib/presets"
 import { GalleryHeader } from "@/routes/gallery/GalleryHeader"
 import { PresetCard } from "@/routes/gallery/GalleryCard"
+import { PreviewCanvas } from "@/components/PreviewCanvas"
 import {
 	Pagination,
 	PaginationContent,
@@ -13,43 +14,43 @@ import {
 } from "@/components/ui/pagination"
 import { ArrowUp, ArrowDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { motion, AnimatePresence } from "motion/react";
 
 interface Preset {
 	id: string
 	category: string
-	meta: { title: string; thumbnail?: string }
+	meta: { 
+		title: string
+		thumbnail?: string
+		author?: { 
+			name: string
+			gaia_id?: string
+		} 
+	}
 }
 
-const PresetList = memo(({ presets, gridClass }: { presets: Preset[], gridClass: string }) => {
+const PresetList = memo(({ presets, gridClass, onPreview }: { presets: Preset[], gridClass: string, onPreview: (p: Preset) => void }) => {
 	return (
-		<motion.section 
-			layout
+		<section 
 			className={`grid gap-6 ${gridClass}`}
+			style={{ 
+				contentVisibility: 'auto', 
+				containIntrinsicSize: 'auto 5000px' 
+			}}
 		>
-			<AnimatePresence mode="popLayout">
-				{presets.map((preset, index) => (
-					<motion.div
-						key={preset.id}
-						layout
-						transition={{ 
-							layout: {
-								type: "spring",
-								stiffness: 200,
-								damping: 25
-							},
-							opacity: { duration: 0.2 }
-						}}
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-					>
-						<PresetCard preset={preset} isPriority={index < 4} />
-					</motion.div>
-				))}
-			</AnimatePresence>
+			{presets.map((preset, index) => (
+				<div
+					key={preset.id}
+					className="transition-all duration-300 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2"
+					style={{ 
+						animationDelay: `${Math.min(index * 40, 300)}ms`,
+						animationFillMode: 'both'
+					}}
+				>
+					<PresetCard preset={preset} isPriority={index < 4} onPreview={onPreview} />
+				</div>
+			))}
 			<div id="gallery-bottom" />
-		</motion.section>
+		</section>
 	)
 })
 PresetList.displayName = "PresetList"
@@ -60,6 +61,9 @@ export default function GalleryPage() {
 	const [isAtTop, setIsAtTop] = useState(true)
 	const [isAtBottom, setIsAtBottom] = useState(false)
 	
+	const [activePreview, setActivePreview] = useState<Preset | null>(null)
+	const [cssCode, setCssCode] = useState<string>("")
+	
 	const activeCategory = searchParams.get("category") || "all"
 	const searchQuery = searchParams.get("q") || ""
 	const currentPage = Number(searchParams.get("page")) || 1
@@ -67,6 +71,28 @@ export default function GalleryPage() {
 	
 	const itemsPerPage = 16
 	const deferredQuery = useDeferredValue(searchQuery)
+
+	const handleOpenPreview = useCallback(async (preset: Preset) => {
+		const module = await import(`../premade/${preset.category}/${preset.id}/preset.css?raw`)
+		setCssCode(module.default)
+		setActivePreview(preset)
+	}, [])
+
+	const filteredPresets = useMemo(() => PRESETS.filter((p: Preset) => {
+		const matchesCategory = activeCategory === "all" || p.category === activeCategory
+		const matchesSearch = p.meta.title.toLowerCase().includes(deferredQuery.toLowerCase()) ||
+			p.id.toLowerCase().includes(deferredQuery.toLowerCase())
+		return matchesCategory && matchesSearch
+	}), [activeCategory, deferredQuery])
+
+	const handleNavigate = useCallback((direction: 'next' | 'prev') => {
+		const currentIndex = filteredPresets.findIndex(p => p.id === activePreview?.id)
+		const newIndex = direction === 'next' 
+			? (currentIndex + 1) % filteredPresets.length 
+			: (currentIndex - 1 + filteredPresets.length) % filteredPresets.length
+		
+		handleOpenPreview(filteredPresets[newIndex])
+	}, [activePreview, filteredPresets, handleOpenPreview])
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -89,13 +115,6 @@ export default function GalleryPage() {
 		})
 		setSearchParams(params, { preventScrollReset: true })
 	}, [searchParams, setSearchParams])
-
-	const filteredPresets = useMemo(() => PRESETS.filter((p: Preset) => {
-		const matchesCategory = activeCategory === "all" || p.category === activeCategory
-		const matchesSearch = p.meta.title.toLowerCase().includes(deferredQuery.toLowerCase()) ||
-			p.id.toLowerCase().includes(deferredQuery.toLowerCase())
-		return matchesCategory && matchesSearch
-	}), [activeCategory, deferredQuery])
 
 	const totalPages = Math.ceil(filteredPresets.length / itemsPerPage)
 	const paginatedPresets = useMemo(() => {
@@ -123,42 +142,19 @@ export default function GalleryPage() {
 			
 			{totalPages > 1 && (
 				<div className="h-16 mt-8">
-					<nav 
-						aria-label="Pagination"
-						className={`w-fit mx-auto transition-all duration-300 ${
-							isFloating 
-								? "fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-background/80 backdrop-blur-md p-2 rounded-xl border shadow-lg" 
-								: "border p-2 rounded-xl"
-						}`}
-					>
+					<nav aria-label="Pagination" className={`w-fit mx-auto transition-all duration-300 ${isFloating ? "fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-background/80 backdrop-blur-md p-2 rounded-xl border shadow-lg" : "border p-2 rounded-xl"}`}>
 						<Pagination>
 							<PaginationContent>
 								<PaginationItem>
-									<PaginationPrevious 
-										href="#"
-										aria-disabled={currentPage === 1}
-										onClick={(e) => { e.preventDefault(); if (currentPage > 1) updateParams({ page: currentPage - 1 }); }}
-									/>
+									<PaginationPrevious href="#" aria-disabled={currentPage === 1} onClick={(e) => { e.preventDefault(); if (currentPage > 1) updateParams({ page: currentPage - 1 }); }} />
 								</PaginationItem>
-								
 								{Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
 									<PaginationItem key={page}>
-										<PaginationLink 
-											href="#" 
-											isActive={page === currentPage}
-											onClick={(e) => { e.preventDefault(); updateParams({ page }); }}
-										>
-											{page}
-										</PaginationLink>
+										<PaginationLink href="#" isActive={page === currentPage} onClick={(e) => { e.preventDefault(); updateParams({ page }); }}>{page}</PaginationLink>
 									</PaginationItem>
 								))}
-
 								<PaginationItem>
-									<PaginationNext 
-										href="#"
-										aria-disabled={currentPage === totalPages}
-										onClick={(e) => { e.preventDefault(); if (currentPage < totalPages) updateParams({ page: currentPage + 1 }); }}
-									/>
+									<PaginationNext href="#" aria-disabled={currentPage === totalPages} onClick={(e) => { e.preventDefault(); if (currentPage < totalPages) updateParams({ page: currentPage + 1 }); }} />
 								</PaginationItem>
 							</PaginationContent>
 						</Pagination>
@@ -167,25 +163,27 @@ export default function GalleryPage() {
 			)}
 			
 			<div className="mt-8">
-				<PresetList presets={paginatedPresets} gridClass={gridClass} />
+				<PresetList presets={paginatedPresets} gridClass={gridClass} onPreview={handleOpenPreview} />
 			</div>
+
+			{activePreview && (
+				<PreviewCanvas 
+					preset={activePreview} 
+					cssCode={cssCode} 
+					onClose={() => setActivePreview(null)} 
+					onNext={() => handleNavigate('next')}
+					onPrev={() => handleNavigate('prev')}
+				/>
+			)}
 
 			<div className="fixed bottom-8 right-8 flex flex-col gap-2 z-50">
 				{!isAtTop && (
-					<Button
-						variant="outline"
-						size="icon"
-						onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-					>
+					<Button variant="outline" size="icon" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
 						<ArrowUp className="h-4 w-4" />
 					</Button>
 				)}
 				{!isAtBottom && (
-					<Button
-						variant="outline"
-						size="icon"
-						onClick={() => document.getElementById("gallery-bottom")?.scrollIntoView({ behavior: "smooth" })}
-					>
+					<Button variant="outline" size="icon" onClick={() => document.getElementById("gallery-bottom")?.scrollIntoView({ behavior: "smooth" })}>
 						<ArrowDown className="h-4 w-4" />
 					</Button>
 				)}

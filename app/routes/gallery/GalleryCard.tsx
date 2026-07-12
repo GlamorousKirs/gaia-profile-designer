@@ -7,9 +7,10 @@ import { useColor } from "color-thief-react"
 interface PresetCardProps {
 	preset: any
 	isPriority?: boolean
+	onPreview: (preset: any) => void
 }
 
-export const PresetCard = memo(function PresetCard({ preset, isPriority = false }: PresetCardProps) {
+export const PresetCard = memo(function PresetCard({ preset, isPriority = false, onPreview }: PresetCardProps) {
 	const [imageError, setImageError] = useState(false)
 
 	const rawThumbnail = preset.meta.thumbnail
@@ -71,7 +72,7 @@ export const PresetCard = memo(function PresetCard({ preset, isPriority = false 
 					</div>
 				</div>
 
-				<div className="flex items-end justify-between p-3 gap-2">
+				<div className="flex items-center justify-between p-3 gap-2">
 					<div className="space-y-0.5 overflow-hidden">
 						<h3 className="text-sm font-semibold text-foreground truncate">
 							{preset.meta.title}
@@ -81,15 +82,25 @@ export const PresetCard = memo(function PresetCard({ preset, isPriority = false 
 						</p>
 					</div>
 
-					<div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-xl bg-secondary text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 20 20"
-							fill="currentColor"
-							className="w-4 h-4"
+					<div className="flex items-center gap-2 shrink-0">
+						<div 
+							role="button"
+							onClick={(e) => { e.preventDefault(); onPreview(preset); }}
+							className="flex items-center justify-center h-8 px-4 rounded-xl bg-secondary text-[11px] font-medium text-foreground hover:bg-secondary/80 transition-colors cursor-pointer select-none"
 						>
-							<path fillRule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clipRule="evenodd" />
-						</svg>
+							Preview
+						</div>
+
+						<div className="flex items-center justify-center w-8 h-8 rounded-xl bg-secondary text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 20 20"
+								fill="currentColor"
+								className="w-4 h-4"
+							>
+								<path fillRule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clipRule="evenodd" />
+							</svg>
+						</div>
 					</div>
 				</div>
 			</Card>

@@ -50,7 +50,7 @@ export function StudioHeader({ onOpenProfile, version, onVersionChange }: Studio
 					className="flex items-center justify-center size-8 rounded-lg bg-foreground text-background font-bold text-sm"
 					aria-hidden="true"
 				>
-					Δ
+					G
 				</div>
 				<div className="flex items-center gap-3">
 					<span className="font-medium text-sm tracking-tight">Gaia Studio</span>

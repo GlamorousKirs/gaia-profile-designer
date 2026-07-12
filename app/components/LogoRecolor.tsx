@@ -115,7 +115,7 @@ export function LogoRecolor({ rawSvgContent, isSvgLoading, onSave }: LogoRecolor
 		await addLogo(exportName, memoizedSvg);
 
 		toast.success(
-			<div className="flex items-center justify-between w-[300px]">
+			<div className="flex items-center justify-between w-75">
 				<span>Saved to gallery</span>
 				<div 
 					className="size-8 flex items-center justify-center" 
