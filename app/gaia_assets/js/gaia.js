@@ -70,38 +70,20 @@
 		clearTimeout(hideTimer);
 	});
 
-document.addEventListener("click", (e) => {
-		const isSpoilerControl = e.target.closest("button.spoiler-control") || e.target.closest(".spoiler-control");
-		const isAvatarMenu = e.target.closest("#avatar_menu");
-		const targetLink = e.target.closest("a");
+	document.addEventListener("click", (e) => {
+		const isSpoilerControl = e.target.closest("button.spoiler-control");
 
 		if (isSpoilerControl) {
-			const wrapper = isSpoilerControl.closest(".spoiler-wrapper") || isSpoilerControl.parentElement;
-			if (wrapper) {
-				const isHidden = wrapper.classList.contains("spoiler-hidden") || wrapper.style.display === "none";
-				
-				if (isHidden) {
-					wrapper.classList.remove("spoiler-hidden");
-					wrapper.classList.add("spoiler-revealed");
-					wrapper.style.display = "block";
-				} else {
-					wrapper.classList.add("spoiler-hidden");
-					wrapper.classList.remove("spoiler-revealed");
-					wrapper.style.display = "none";
-				}
-				e.preventDefault();
+			const wrapper = isSpoilerControl.closest(".spoiler-wrapper");
+
+			if (wrapper.classList.contains("spoiler-hidden")) {
+				wrapper.classList.remove("spoiler-hidden");
+				wrapper.classList.add("spoiler-revealed");
+			} else {
+				wrapper.classList.remove("spoiler-revealed");
+				wrapper.classList.add("spoiler-hidden");
 			}
-			return;
-		}
-
-		if (isAvatarMenu) {
-			return;
-		}
-
-		if (targetLink && window.isSelectionModeActive) {
 			e.preventDefault();
-			e.stopPropagation();
-			e.stopImmediatePropagation();
 		}
 	}, true);
 })();
