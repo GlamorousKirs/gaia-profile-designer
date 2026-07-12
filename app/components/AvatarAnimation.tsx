@@ -13,15 +13,15 @@ import { useProfileStore } from "@/store/useProfileStore";
 const PRESET_IMAGES = [
 	{
 		label: "Body",
-		url: "https://a1cdn.gaiaonline.com/dress-up/avatar/ava/f3/77/5e4a907513377f3.png?t=1782982171_6_00"
+		url: "https://a1cdn.gaiaonline.com/dress-up/avatar/ava/f3/77/5e4a907513377f3.png"
 	},
 	{
 		label: "Bust",
-		url: "https://a1cdn.gaiaonline.com/dress-up/avatar/ava/f3/77/5e4a907513377f3_96x96.png?t=1782982171_6_00"
+		url: "https://a1cdn.gaiaonline.com/dress-up/avatar/ava/f3/77/5e4a907513377f3_96x96.png"
 	},
 	{
 		label: "Head",
-		url: "https://a1cdn.gaiaonline.com/dress-up/avatar/ava/f3/77/5e4a907513377f3_48x48.gif?t=1782982171_6_00"
+		url: "https://a1cdn.gaiaonline.com/dress-up/avatar/ava/f3/77/5e4a907513377f3_48x48.gif"
 	}
 ];
 

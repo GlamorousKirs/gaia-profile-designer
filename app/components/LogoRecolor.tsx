@@ -84,6 +84,11 @@ export function LogoRecolor({ rawSvgContent, isSvgLoading, onSave }: LogoRecolor
 		return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgContent)))}`;
 	}, []);
 
+	const copyToClipboard = (text: string) => {
+		navigator.clipboard.writeText(text);
+		toast.success("Copied to clipboard");
+	};
+
 	const handleDownloadPng = useCallback(() => {
 		const img = new Image();
 		const svgBlob = new Blob([memoizedSvg], { type: "image/svg+xml;charset=utf-8" });
@@ -106,7 +111,7 @@ export function LogoRecolor({ rawSvgContent, isSvgLoading, onSave }: LogoRecolor
 		img.src = url;
 	}, [memoizedSvg, exportName, dimensions]);
 
-const handleSaveToGallery = useCallback(async () => {
+	const handleSaveToGallery = useCallback(async () => {
 		await addLogo(exportName, memoizedSvg);
 
 		toast.success(
@@ -141,7 +146,7 @@ const handleSaveToGallery = useCallback(async () => {
 						<Input value={exportName} onChange={(e) => setExportName(e.target.value)} className="h-9 text-xs" />
 					</div>
 					<div className="space-y-1.5">
-						<Label className="text-[10px] uppercase font-bold tracking-wider">Export Dimensions</Label>
+						<Label className="text-[10px] uppercase font-bold tracking-wider">Image Size</Label>
 						<Select value={scale} onValueChange={(val) => val && setScale(val)}>
 							<SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
 							<SelectContent>
@@ -152,12 +157,33 @@ const handleSaveToGallery = useCallback(async () => {
 							</SelectContent>
 						</Select>
 					</div>
-					<Button className="w-full gap-2" onClick={handleDownloadPng}><Download className="size-3.5" /> Export PNG</Button>
+					<Button className="w-full gap-2" onClick={handleDownloadPng}><Download className="size-3.5" /> Export as PNG</Button>
 				</div>
-				<div className="space-y-1.5">
-					<Label className="text-[10px] uppercase font-bold tracking-wider">Data URI</Label>
-					<div className="relative border rounded-md p-3 bg-secondary/30 h-40 overflow-auto">
-						<code className="text-[9px] text-muted-foreground font-mono break-all">{convertSvgToDataUrl(memoizedSvg)}</code>
+				<div className="space-y-6">
+					<div className="space-y-1.5">
+						<div className="flex justify-between items-center">
+							<Label className="text-[10px] uppercase font-bold tracking-wider">Data URI</Label>
+							<Button variant="ghost" size="icon" className="size-6" onClick={() => copyToClipboard(convertSvgToDataUrl(memoizedSvg))}><Copy className="size-3" /></Button>
+						</div>
+						<div className="relative border rounded-md p-3 bg-secondary/30 h-32 overflow-auto">
+							<code className="text-[9px] text-muted-foreground font-mono break-all">{convertSvgToDataUrl(memoizedSvg)}</code>
+						</div>
+					</div>
+					<div className="space-y-1.5">
+						<div className="flex justify-between items-center">
+							<Label className="text-[10px] uppercase font-bold tracking-wider">CSS</Label>
+							<Button variant="ghost" size="icon" className="size-6" onClick={() => copyToClipboard(`#gaia_header #header_left img {\n\tpadding: 0 47px 0 0;\n\theight: 16px;\n\twidth: 0;\n\tbackground: url('${convertSvgToDataUrl(memoizedSvg)}') no-repeat center / contain;\n}`)}><Copy className="size-3" /></Button>
+						</div>
+						<div className="relative border rounded-md p-3 bg-secondary/30 h-32 overflow-auto">
+							<code className="text-[9px] text-muted-foreground font-mono break-all">
+								#gaia_header #header_left img {'{'}
+								{"\n\t"}padding: 0 47px 0 0;
+								{"\n\t"}height: 16px;
+								{"\n\t"}width: 0;
+								{"\n\t"}background: url('{convertSvgToDataUrl(memoizedSvg)}') no-repeat center / contain;
+								{"\n}"}
+							</code>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -175,7 +201,7 @@ const handleSaveToGallery = useCallback(async () => {
 				)}
 				{!isStudioPage && (
 					<Button variant="outline" onClick={handleSaveToGallery}>
-						<Save className="size-3.5 mr-2" /> Save to Gallery
+						<Save className="size-3.5 mr-2" /> Save Logo
 					</Button>
 				)}
 			</div>
