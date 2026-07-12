@@ -22,7 +22,7 @@ const Canvas = lazy(() => import("~/components/Canvas").then((m) => ({ default: 
 const SettingsPanel = lazy(() => import("@/components/SettingsPanel"))
 const InspectorPanel = lazy(() => import("@/components/InspectorPanel"))
 const GaiaLogoPanel = lazy(() => import("@/components/GaiaLogoPanel").then((m) => ({ default: m.GaiaLogoPanel })))
-
+import { updateCssValue, injectBlock } from "@/lib/CodePanel/cssProcessor";
 const panelFiles = import.meta.glob("/app/gaia_assets/panels/*.html")
 const EXCLUDED_PANELS = ["header", "columns"]
 
@@ -214,33 +214,14 @@ export default function Studio() {
 		(property: string, value: string | number, suffix = "") => {
 			if (!selectedSelector) return
 
-			isUpdatingRef.current = true
-			setCssCode((prevCode) => {
-				const escapedSelector = selectedSelector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-				const blockRegex = new RegExp(`(${escapedSelector}\\s*{)([^}]*)(})`, "i")
-				const propRegex = new RegExp(`(${property}\\s*:\\s*)([^;]+)(;?)`, "i")
-				const fullValue = `${value}${suffix}`
+			const fullValue = typeof value === "string" && value.includes("gradient")
+				? value
+				: `${value}${suffix}`;
 
-				if (blockRegex.test(prevCode)) {
-					return prevCode.replace(blockRegex, (_, openTag, body, closeTag) => {
-						if (propRegex.test(body)) {
-							return `${openTag}${body.replace(propRegex, `$1${fullValue}$3`)}${closeTag}`
-						} else {
-							return `${openTag}\n\t${property}: ${fullValue};${body}${closeTag}`
-						}
-					})
-				} else {
-					return `${prevCode}\n${selectedSelector} {\n\t${property}: ${fullValue};\n}\n`
-				}
-			})
-
-			setTimeout(() => {
-				isUpdatingRef.current = false
-			}, 0)
+			setCssCode((prevCode) => updateCssValue(prevCode, selectedSelector, property, fullValue));
 		},
 		[selectedSelector]
-	)
-
+	);
 	useEffect(() => {
 		const activeItems: string[] = []
 		const keys: (keyof typeof columns)[] = ["column1", "column2", "column3"]
@@ -279,16 +260,9 @@ export default function Studio() {
 	}, [cssCode])
 
 	const handleLeftSelectorAppend = (selector: string) => {
-		const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-		const blockRegex = new RegExp(`(?:^|\\s)${escapedSelector}\\s*{`, "i")
-
-		if (!blockRegex.test(cssCode)) {
-			const codeSnippet = `\n${selector} {\n\t\n}\n`
-			setCssCode((prev) => prev + codeSnippet)
-		}
-		setIsCodeOpen(true)
-	}
-
+		setCssCode((prev) => updateCssValue(prev, selector, 'display', 'block'));
+		setIsCodeOpen(true);
+	};
 	const handleCanvasElementSelected = useCallback((selector: string) => {
 		setSelectedSelector(selector)
 		startTransition(() => {
@@ -426,21 +400,14 @@ export default function Studio() {
 									/>
 								) : activeRightTab === "logos" && isLogoSelected ? (
 									<GaiaLogoPanel
-										tagName="gaia-logo"
 										onSelectLogo={(cssUrl) => {
-											if (!selectedSelector) return
-
-											setCssCode((prevCode) => {
-												const escapedSelector = selectedSelector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-												const blockRegex = new RegExp(`(${escapedSelector}\\s*{)([^}]*)(})`, "i")
-												const exactInnerBlock = `\n\tpadding: 0 47px 0 0;\n\theight: 16px;\n\twidth: 0;\n\tbackground: ${cssUrl} no-repeat center / contain;\n`
-
-												if (blockRegex.test(prevCode)) {
-													return prevCode.replace(blockRegex, `$1${exactInnerBlock}$3`)
-												} else {
-													return `${prevCode}\n${selectedSelector} {${exactInnerBlock}}\n`
-												}
-											})
+											if (!selectedSelector) return;
+											setCssCode((prevCode) => injectBlock(prevCode, selectedSelector, {
+												'padding': '0 47px 0 0',
+												'height': '16px',
+												'width': '0',
+												'background': `${cssUrl} no-repeat center / contain`
+											}));
 										}}
 									/>
 								) : activeRightTab === "settings" ? (

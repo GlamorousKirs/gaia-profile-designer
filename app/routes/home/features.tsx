@@ -89,11 +89,11 @@ export function Features() {
 							whileInView={{ opacity: 1, scale: 1 }}
 							viewport={{ once: true }}
 						>
-							<div className="flex-shrink-0">
+							<div className="shrink-0">
 								<TiltImage src={feature.image} alt={feature.name} />
 							</div>
 							
-							<div className="mt-6 space-y-2 flex-grow">
+							<div className="mt-6 space-y-2 grow">
 								<h3 className="text-xl font-bold">{feature.name}</h3>
 								<p className="text-sm text-muted-foreground leading-relaxed">
 									{feature.desc}

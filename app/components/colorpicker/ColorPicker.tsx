@@ -186,7 +186,7 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 					/>
 				</PopoverTrigger>
 				<PopoverContent className="w-auto p-0 border-none bg-transparent shadow-none" align="start">
-					<div className="custom-layout p-0 rounded-(--radius) backdrop-blur-md bg-background border flex flex-col w-64 overflow-hidden">
+					<div className="custom-layout p-0 rounded-lg backdrop-blur-md bg-background border flex flex-col w-64 overflow-hidden">
 						<div className="flex p-1 gap-1 border-b">
 							<button 
 								onClick={() => {
@@ -234,13 +234,13 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 						<div className="p-2.5 flex items-center justify-between border-t">
 							<Popover open={isSelectOpen} onOpenChange={setIsSelectOpen}>
 								<PopoverTrigger>
-									<button className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-muted/50 px-2 py-1 rounded-(--radius) cursor-pointer hover:text-foreground hover:bg-muted">
+									<button className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-muted/50 px-2 py-1 rounded-lg cursor-pointer hover:text-foreground hover:bg-muted">
 										<Library className="size-3" />
 										<span className="truncate max-w-20">{activeLib}</span>
 										<ChevronDown className="size-3" />
 									</button>
 								</PopoverTrigger>
-								<PopoverContent className="w-56 p-0 bg-background border shadow-xl rounded-(--radius) overflow-hidden" align="start">
+								<PopoverContent className="w-56 p-0 bg-background border shadow-xl rounded-lg overflow-hidden" align="start">
 									<div className="p-2.5 pb-1">
 										<div className="flex items-center justify-between mb-2">
 											<h4 className="text-[10px] font-bold uppercase">Manage Libraries</h4>
@@ -260,11 +260,11 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 									<ScrollArea className="px-2.5 h-60">
 										{filteredLibraries.map((lib, i, arr) => (
 											<div key={lib} className="py-1">
-												<div className={`flex items-center justify-between text-xs p-1.5 rounded-(--radius) ${activeLib === lib ? "bg-primary/10 text-primary" : ""}`}>
+												<div className={`flex items-center justify-between text-xs p-1.5 rounded-lg ${activeLib === lib ? "bg-primary/10 text-primary" : ""}`}>
 													{editingLib === lib ? (
 														<div className="flex w-full items-center">
-															<input autoFocus className="w-full text-xs border rounded-(--radius) px-1" value={editName} maxLength={MAX_NAME_LENGTH} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && renameLibrary(lib)} />
-															<button className="p-1 hover:bg-muted rounded-(--radius)" onClick={() => renameLibrary(lib)}><Check className="size-3 ml-1" /></button>
+															<input autoFocus className="w-full text-xs border rounded-lg px-1" value={editName} maxLength={MAX_NAME_LENGTH} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && renameLibrary(lib)} />
+															<button className="p-1 hover:bg-muted rounded-lg" onClick={() => renameLibrary(lib)}><Check className="size-3 ml-1" /></button>
 														</div>
 													) : (
 														<>
@@ -275,8 +275,8 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 															<div className="flex items-center shrink-0 ml-2">
 																{lib !== DEFAULT_LIB && (
 																	<>
-																		<button className="p-1 hover:bg-muted rounded-(--radius)" onClick={(e) => { e.stopPropagation(); setEditingLib(lib); setEditName(lib); }}><Edit2 className="size-3" /></button>
-																		<button className="p-1 hover:bg-muted rounded-(--radius)" onClick={(e) => { e.stopPropagation(); deleteLibrary(lib); }}><Trash2 className="size-3 text-destructive" /></button>
+																		<button className="p-1 hover:bg-muted rounded-lg" onClick={(e) => { e.stopPropagation(); setEditingLib(lib); setEditName(lib); }}><Edit2 className="size-3" /></button>
+																		<button className="p-1 hover:bg-muted rounded-lg" onClick={(e) => { e.stopPropagation(); deleteLibrary(lib); }}><Trash2 className="size-3 text-destructive" /></button>
 																	</>
 																)}
 															</div>
@@ -290,7 +290,7 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 								</PopoverContent>
 							</Popover>
 
-							<button type="button" onClick={() => setIsDeleteMode(!isDeleteMode)} className={`p-0.5 rounded-(--radius) transition-colors cursor-pointer shrink-0 ${isDeleteMode ? "text-destructive bg-destructive/10" : "text-muted-foreground hover:text-foreground"}`}>
+							<button type="button" onClick={() => setIsDeleteMode(!isDeleteMode)} className={`p-0.5 rounded-lg transition-colors cursor-pointer shrink-0 ${isDeleteMode ? "text-destructive bg-destructive/10" : "text-muted-foreground hover:text-foreground"}`}>
 								<Trash2 className="size-3" />
 							</button>
 						</div>
