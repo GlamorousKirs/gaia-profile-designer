@@ -1,12 +1,18 @@
 import { Link } from "react-router"
 
-const FOOTER_LINKS = [
+type FooterLink = {
+	name: string
+	path: string
+	label?: string
+}
+
+const FOOTER_LINKS: FooterLink[] = [
 	{ name: "Premade", path: "/premade" },
 	{ name: "Themes", path: "/themes" },
 	{ name: "Studio", path: "/studio", label: "Logo Recolor" },
 	{ name: "Guide", path: "/guide" },
 	{ name: "Forum", path: "/forum" }
-] as const
+]
 
 export default function Footer() {
 	return (
@@ -31,11 +37,14 @@ export default function Footer() {
 					</div>
 				</div>
 				<div className="flex shrink-0 items-center justify-center">
-
-					<a href="http://s05.flagcounter.com/more/Mto"><img src="https://s05.flagcounter.com/map/Mto/size_s/txt_000000/border_CCCCCC/pageviews_1/viewers_0/flags_0/" alt="Flag Counter" border="0" /></a>
+					<a href="http://s05.flagcounter.com/more/Mto">
+						<img 
+							src="https://s05.flagcounter.com/map/Mto/size_s/txt_000000/border_CCCCCC/pageviews_1/viewers_0/flags_0/" 
+							alt="Flag Counter" 
+							className="border border-[#CCCCCC]"
+						/>
+					</a>
 				</div>
-
-
 			</div>
 		</footer>
 	)
