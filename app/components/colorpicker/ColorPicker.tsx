@@ -28,15 +28,19 @@ const MAX_LIBRARIES = 100;
 const MIN_NAME_LENGTH = 1;
 const MAX_NAME_LENGTH = 15;
 
+const DEFAULT_GRADIENT_STOPS: GradientStop[] = [
+	{ id: "1", color: "#99c5ff", position: 0 },
+	{ id: "3", color: "#ff99d3", position: 100 }
+];
+const DEFAULT_GRADIENT_ANGLE = 90;
+const DEFAULT_SOLID_COLOR = "#605270";
+
 export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 	const [activeMode, setActiveMode] = useState<"solid" | "gradient">("solid");
-	const [stops, setStops] = useState<GradientStop[]>([
-		{ id: "1", color: "#99c5ff", position: 0 },
-		{ id: "3", color: "#ff99d3", position: 100 }
-	]);
-	const [angle, setAngle] = useState(90);
+	const [stops, setStops] = useState<GradientStop[]>(DEFAULT_GRADIENT_STOPS);
+	const [angle, setAngle] = useState(DEFAULT_GRADIENT_ANGLE);
 
-	const validColor = color || "#000000";
+	const validColor = color || DEFAULT_SOLID_COLOR;
 	const [isDeleteMode, setIsDeleteMode] = useState(false);
 	const [isSelectOpen, setIsSelectOpen] = useState(false);
 	const [newLibName, setNewLibName] = useState("");
@@ -50,7 +54,7 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 	const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
 	const [libraries, setLibraries] = useState<Record<string, string[]>>({
-		[DEFAULT_LIB]: ["#000000", "#ffffff"]
+		[DEFAULT_LIB]: [DEFAULT_SOLID_COLOR, "#ffffff"]
 	});
 
 	const generateGradientString = useCallback((s: GradientStop[], deg: number) => {
@@ -184,10 +188,24 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 				<PopoverContent className="w-auto p-0 border-none bg-transparent shadow-none" align="start">
 					<div className="custom-layout p-0 rounded-(--radius) backdrop-blur-md bg-background border flex flex-col w-64 overflow-hidden">
 						<div className="flex p-1 gap-1 border-b">
-							<button onClick={() => setActiveMode("solid")} className={`flex items-center justify-center gap-1 flex-1 py-1 text-[10px] font-bold rounded-[calc(var(--radius)-2px)] ${activeMode === "solid" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}>
+							<button 
+								onClick={() => {
+									setActiveMode("solid");
+									onChange(DEFAULT_SOLID_COLOR);
+								}} 
+								className={`flex items-center justify-center gap-1 flex-1 py-1 text-[10px] font-bold rounded-[calc(var(--radius)-2px)] ${activeMode === "solid" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+							>
 								SOLID
 							</button>
-							<button onClick={() => setActiveMode("gradient")} className={`flex items-center justify-center gap-1 flex-1 py-1 text-[10px] font-bold rounded-[calc(var(--radius)-2px)] ${activeMode === "gradient" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}>
+							<button 
+								onClick={() => {
+									setActiveMode("gradient");
+									setStops(DEFAULT_GRADIENT_STOPS);
+									setAngle(DEFAULT_GRADIENT_ANGLE);
+									onChange(generateGradientString(DEFAULT_GRADIENT_STOPS, DEFAULT_GRADIENT_ANGLE));
+								}} 
+								className={`flex items-center justify-center gap-1 flex-1 py-1 text-[10px] font-bold rounded-[calc(var(--radius)-2px)] ${activeMode === "gradient" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+							>
 								GRADIENT
 							</button>
 						</div>
