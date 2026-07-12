@@ -83,13 +83,16 @@ export const PresetCard = memo(function PresetCard({ preset, isPriority = false,
 					</div>
 
 					<div className="flex items-center gap-2 shrink-0">
-						<div 
-							role="button"
-							onClick={(e) => { e.preventDefault(); onPreview(preset); }}
+						<button
+							type="button"
+							onClick={(e) => {
+								e.preventDefault()
+								onPreview(preset)
+							}}
 							className="flex items-center justify-center h-8 px-4 rounded-xl bg-secondary text-[11px] font-medium text-foreground hover:bg-secondary/80 transition-colors cursor-pointer select-none"
 						>
 							Preview
-						</div>
+						</button>
 
 						<div className="flex items-center justify-center w-8 h-8 rounded-xl bg-secondary text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
 							<svg
