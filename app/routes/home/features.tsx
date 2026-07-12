@@ -10,18 +10,28 @@ const FEATURES_DATA = [
 		desc: "Save and reuse lines of code instantly.",
 		image: `${baseUrl}optimized-assets/snippet-feature.webp`,
 		to: "/studio",
+		showLink: false,
+	},
+{
+		name: "Color Libraries",
+		desc: "Create and manage up to 100 folders to curate your own color schemes.",
+		image: `${baseUrl}optimized-assets/color-libraries.webp`,
+		to: "#",
+		showLink: false,
 	},
 	{
 		name: "Gaia Logo Recoloring",
 		desc: "Recolor the Gaia logo for your profile header.",
 		image: `${baseUrl}optimized-assets/logo-recolor-preview.webp`,
 		to: "/logo-recolor",
+		showLink: true,
 	},
 	{
 		name: "Avatar Decoration IMG Customizer",
 		desc: "Stylize your friend's or your avatar for your profile.",
 		image: `${baseUrl}optimized-assets/avatar-animator.webp`,
 		to: "/avatar-animation",
+		showLink: true,
 	},
 ] as const;
 
@@ -78,7 +88,7 @@ function TiltImage({ src, alt }: { src: string; alt: string }) {
 				className="relative w-full h-full rounded-2xl overflow-hidden"
 			>
 				<div className="absolute inset-0 bg-linear-to-t from-background/40 to-transparent z-10" />
-				
+
 				<motion.div
 					className="absolute inset-0 opacity-0 group-hover:opacity-100 z-20 transition-opacity duration-500 mix-blend-screen"
 					style={{
@@ -109,7 +119,7 @@ export function Features() {
 
 			<div className="container mx-auto px-4 relative z-10">
 				<div className="flex flex-col items-center mb-28">
-					<motion.h2 
+					<motion.h2
 						className="text-center text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl"
 						initial={{ opacity: 0, letterSpacing: "-0.05em" }}
 						whileInView={{ opacity: 1, letterSpacing: "-0.02em" }}
@@ -146,17 +156,19 @@ export function Features() {
 											{feature.desc}
 										</p>
 									</div>
-									
-									<div className="pt-2">
-										<Link 
-											to={feature.to} 
-											className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-primary group relative"
-										>
-											<span>Explore Tool</span>
-											<span className="transition-transform duration-300 group-hover:translate-x-1.5">&rarr;</span>
-											<span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
-										</Link>
-									</div>
+
+									{feature.showLink && (
+										<div className="pt-2">
+											<Link
+												to={feature.to}
+												className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-primary group relative"
+											>
+												<span>Explore Tool</span>
+												<span className="transition-transform duration-300 group-hover:translate-x-1.5">&rarr;</span>
+												<span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+											</Link>
+										</div>
+									)}
 								</div>
 							</motion.div>
 						)
