@@ -57,9 +57,9 @@ export function StudioHeader({ onOpenProfile, version, onVersionChange }: Studio
 
 	const navLinks = [
 		{ name: "Home", icon: Home, href: `${baseUrl}` },
-		{ name: "Gallery", icon: LibraryBig, href: `${baseUrl}/gallery` },
-		{ name: "Logo Recolor", icon: Palette, href: `${baseUrl}/logo-recolor` },
-		{ name: "Avatar Stylizer", icon: Wand2, href: `${baseUrl}/avatar-stylizer` },
+		{ name: "Gallery", icon: LibraryBig, href: `${baseUrl}gallery` },
+		{ name: "Logo Recolor", icon: Palette, href: `${baseUrl}logo-recolor` },
+		{ name: "Avatar Stylizer", icon: Wand2, href: `${baseUrl}avatar-stylizer` },
 	]
 
 	return (
