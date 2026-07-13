@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { Link } from "react-router"
 import { Fullscreen, Info, LayoutGrid, Home, LibraryBig, Palette, Wand2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -53,13 +54,11 @@ export function StudioHeader({ onOpenProfile, version, onVersionChange }: Studio
 		}
 	}
 
-	const baseUrl = import.meta.env.BASE_URL;
-
 	const navLinks = [
-		{ name: "Home", icon: Home, href: `${baseUrl}` },
-		{ name: "Gallery", icon: LibraryBig, href: `${baseUrl}gallery` },
-		{ name: "Logo Recolor", icon: Palette, href: `${baseUrl}logo-recolor` },
-		{ name: "Avatar Stylizer", icon: Wand2, href: `${baseUrl}avatar-stylizer` },
+		{ name: "Home", icon: Home, to: "/" },
+		{ name: "Gallery", icon: LibraryBig, to: "/gallery" },
+		{ name: "Logo Recolor", icon: Palette, to: "/logo-recolor" },
+		{ name: "Avatar Stylizer", icon: Wand2, to: "/avatar-stylizer" },
 	]
 
 	return (
@@ -74,14 +73,14 @@ export function StudioHeader({ onOpenProfile, version, onVersionChange }: Studio
 					<HoverCardContent side="bottom" align="start" className="w-48 p-2">
 						<nav className="flex flex-col gap-1">
 							{navLinks.map((link) => (
-								<a
+								<Link
 									key={link.name}
-									href={link.href}
+									to={link.to}
 									className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted text-sm font-medium transition-colors"
 								>
 									<link.icon className="size-4" />
 									{link.name}
-								</a>
+								</Link>
 							))}
 						</nav>
 					</HoverCardContent>
