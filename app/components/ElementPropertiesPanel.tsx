@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { ColorPicker } from "@/components/colorpicker/ColorPicker"
 import { SliderProperty } from "@/components/PropertyControls"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, ChevronRight, RotateCcw } from "lucide-react"
+import { Minus, Plus, RotateCcw } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { PROPERTY_SECTIONS } from "../types/property-panel"
 
@@ -31,7 +31,7 @@ export function ElementPropertiesPanel({
 
 		let domElement: HTMLElement | null = null
 		let computed: CSSStyleDeclaration | null = null
-		
+
 		try {
 			const iframe = document.querySelector("iframe[title='Gaia Preview']") as HTMLIFrameElement | null
 			if (iframe && iframe.contentDocument) {
@@ -52,7 +52,6 @@ export function ElementPropertiesPanel({
 		const getNum = (p: string, fallback = 0): number => {
 			const m = cssBlock.match(new RegExp(`(?<!-)${p}\\s*:\\s*(-?\\d+)(?:px|%)?`, "i"))
 			if (m) return parseInt(m[1], 10)
-
 			if (computed) {
 				const val = computed.getPropertyValue(p)
 				const parsed = parseInt(val, 10)
@@ -74,7 +73,6 @@ export function ElementPropertiesPanel({
 		}
 
 		isUpdatingRef.current = true
-
 		const nextValues: Record<string, any> = {}
 
 		PROPERTY_SECTIONS.forEach((section) => {
@@ -95,78 +93,49 @@ export function ElementPropertiesPanel({
 					nextValues[prop.property] = getStr(prop.property, prop.fallback ?? "#ffffff")
 				}
 			})
-
 			section.groups?.forEach((group) => {
 				if (group.type === "axis") {
-					group.propertiesX.forEach((p) => {
-						nextValues[p] = getNum(p, 0)
-					})
-					group.propertiesY.forEach((p) => {
-						nextValues[p] = getNum(p, 0)
-					})
+					group.propertiesX.forEach((p) => { nextValues[p] = getNum(p, 0) })
+					group.propertiesY.forEach((p) => { nextValues[p] = getNum(p, 0) })
 				}
 			})
-
 			section.gridProperties?.forEach((prop) => {
 				nextValues[prop.property] = getNum(prop.property, prop.fallback ?? 0)
 			})
 		})
 
 		setValues(nextValues)
-
-		setTimeout(() => {
-			isUpdatingRef.current = false
-		}, 0)
-
+		setTimeout(() => { isUpdatingRef.current = false }, 0)
 	}, [selectedSelector, cssCode])
 
 	const handleResetStyles = () => {
 		if (!selectedSelector) return
-
 		isUpdatingRef.current = true
 		setValues({})
-
 		const GlenSelector = selectedSelector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
 		const regex = new RegExp(`${GlenSelector}\\s*{[^}]*}\\s*\\n?`, "gi")
-
-		const clearedCss = cssCode.replace(regex, "")
-		setCssCode(clearedCss)
-
-		setTimeout(() => {
-			isUpdatingRef.current = false
-		}, 50)
+		setCssCode(cssCode.replace(regex, ""))
+		setTimeout(() => { isUpdatingRef.current = false }, 50)
 	}
 
 	const handleValueChange = (property: string, val: string | number, suffix?: string) => {
 		isUpdatingRef.current = true
 		setValues(prev => ({ ...prev, [property]: val }))
-
 		if (property === "background-color" && typeof val === "string" && val.includes("gradient")) {
 			updateCssProperty("background", val)
 		} else if (property === "opacity" && typeof val === "number") {
 			updateCssProperty("opacity", val / 100)
 		} else {
-			if (property === "border-width" && typeof val === "number" && val > 0) {
-				updateCssProperty("border-style", "solid")
-			}
+			if (property === "border-width" && typeof val === "number" && val > 0) updateCssProperty("border-style", "solid")
 			updateCssProperty(property, val, suffix)
 		}
-
-		setTimeout(() => {
-			isUpdatingRef.current = false
-		}, 50)
+		setTimeout(() => { isUpdatingRef.current = false }, 50)
 	}
 
 	const handleAxisChange = (properties: string[], val: number) => {
 		isUpdatingRef.current = true
-		setValues(prev => {
-			const updated = { ...prev }
-			properties.forEach(p => { updated[p] = val })
-			return updated
-		})
-		properties.forEach(p => {
-			updateCssProperty(p, val, "px")
-		})
+		setValues(prev => ({ ...prev, ...properties.reduce((acc, p) => ({ ...acc, [p]: val }), {}) }))
+		properties.forEach(p => updateCssProperty(p, val, "px"))
 		setTimeout(() => { isUpdatingRef.current = false }, 50)
 	}
 
@@ -175,25 +144,11 @@ export function ElementPropertiesPanel({
 			<Card>
 				<CardContent className="flex flex-col gap-1.5 p-0">
 					<div className="flex items-center justify-between px-1">
-						<h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
-							Selected Element
-						</h3>
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={handleResetStyles}
-							className="h-4 px-1 text-[9px] text-muted-foreground hover:text-destructive gap-0.5 transition-colors"
-							title="Reset active selector styles to default"
-						>
-							<RotateCcw className="size-2.5" />
-							Reset
-						</Button>
+						<h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">Selected Element</h3>
+						<Button variant="ghost" size="sm" onClick={handleResetStyles} className="h-4 px-1 text-[9px] text-muted-foreground hover:text-destructive gap-0.5"><RotateCcw className="size-2.5" />Reset</Button>
 					</div>
-
 					<Card className="p-2 w-full font-mono text-[11px] break-all text-primary select-text">
-						<CardContent className="p-0">
-							{selectedSelector || "None selected"}
-						</CardContent>
+						<CardContent className="p-0">{selectedSelector || "None selected"}</CardContent>
 					</Card>
 				</CardContent>
 			</Card>
@@ -203,92 +158,51 @@ export function ElementPropertiesPanel({
 					{PROPERTY_SECTIONS.map((section) => (
 						<div key={section.title} className="flex flex-col gap-1.5">
 							<div className="flex items-center justify-between px-1">
-								<h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">
-									{section.title}
-								</h3>
+								<h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">{section.title}</h3>
 								{section.hasCollapsibleSide && section.collapsibleKey && (
-									<Button
-										variant="ghost"
-										size="sm"
-										className="h-4 px-1 text-[9px] text-muted-foreground hover:text-foreground gap-0.5"
-										onClick={() => setCollapsibles(prev => ({
-											...prev,
-											[section.collapsibleKey!]: !prev[section.collapsibleKey!]
-										}))}
-									>
-										{collapsibles[section.collapsibleKey] ? <ChevronDown className="size-2.5" /> : <ChevronRight className="size-2.5" />}
-										Per Side
+									<Button variant="ghost" size="sm" className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground" onClick={() => setCollapsibles(prev => ({ ...prev, [section.collapsibleKey!]: !prev[section.collapsibleKey as keyof typeof collapsibles] }))}>
+										{collapsibles[section.collapsibleKey as keyof typeof collapsibles] ? <Minus className="size-3" /> : <Plus className="size-3" />}
 									</Button>
 								)}
 							</div>
-
 							<div className="space-y-2.5">
-								{section.groups?.map((group, idx) => {
-									if (group.type === "axis") {
-										const valX = values[group.propertiesX[0]] === values[group.propertiesX[1]] ? values[group.propertiesX[0]] : 0
-										const valY = values[group.propertiesY[0]] === values[group.propertiesY[1]] ? values[group.propertiesY[1]] : 0
-										return (
-											<div key={idx} className="flex gap-3">
-												<div className="flex-1">
-													<SliderProperty
-														label={group.labelX}
-														value={valX || 0}
-														suffix="px"
-														onChange={(v) => handleAxisChange(group.propertiesX, v)}
-													/>
-												</div>
-												<div className="flex-1">
-													<SliderProperty
-														label={group.labelY}
-														value={valY || 0}
-														suffix="px"
-														onChange={(v) => handleAxisChange(group.propertiesY, v)}
-													/>
-												</div>
-											</div>
-										)
-									}
-									return null
-								})}
-
+								{section.groups?.map((group, idx) => (
+									<div key={idx} className="flex gap-3">
+										<div className="flex-1">
+											<SliderProperty label={group.labelX} value={values[group.propertiesX[0]] ?? 0} suffix="px" onChange={(v) => handleAxisChange(group.propertiesX, v)} />
+										</div>
+										<div className="flex-1">
+											<SliderProperty label={group.labelY} value={values[group.propertiesY[0]] ?? 0} suffix="px" onChange={(v) => handleAxisChange(group.propertiesY, v)} />
+										</div>
+									</div>
+								))}
 								{section.properties && section.properties.filter(p => p.type === "slider").length > 0 && (
 									<div className="flex gap-3">
-										{section.properties.filter(p => p.type === "slider").map((prop) => (
-											<div key={prop.id} className="flex-1">
-												<SliderProperty
-													label={prop.label}
-													value={values[prop.property] ?? prop.fallback ?? 0}
-													suffix={prop.suffix}
-													onChange={(v) => handleValueChange(prop.property, v, prop.suffix)}
-												/>
+										{section.properties.filter(p => p.type === "slider").map((p) => (
+											<div key={p.id} className="flex-1">
+												<SliderProperty label={p.label} value={values[p.property] ?? p.fallback ?? 0} suffix={p.suffix} min={p.min} max={p.max} onChange={(v) => handleValueChange(p.property, v, p.suffix)} />
 											</div>
 										))}
 									</div>
 								)}
-
-								{section.properties?.filter(p => p.type === "color").map((prop) => (
-									<div key={prop.id} className="flex items-center gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors w-full font-mono text-[11px]">
-										<span className="text-[9px] font-bold text-muted-foreground uppercase pl-1 shrink-0 w-12">{prop.label}</span>
-										<ColorPicker
-											color={values[prop.property] || prop.fallback || "#ffffff"}
-											onChange={(v) => handleValueChange(prop.property, v)}
-										/>
-										<span className="truncate text-foreground pl-1 uppercase font-mono tracking-wide">
-											{values[prop.property] || prop.fallback || "#ffffff"}
+								{section.properties?.filter(p => p.type === "color").map((p) => (
+									<div
+										key={p.id}
+										className="flex items-center justify-between gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors w-full font-mono text-[11px]"
+									>
+										<span className="text-[9px] font-bold text-muted-foreground uppercase pl-1 truncate">
+											{p.label}
 										</span>
+										<ColorPicker
+											color={values[p.property] ?? p.fallback ?? "#ffffff"}
+											onChange={(v) => handleValueChange(p.property, v)}
+										/>
 									</div>
 								))}
-
-								{section.hasCollapsibleSide && section.collapsibleKey && collapsibles[section.collapsibleKey] && section.gridProperties && (
+								{section.collapsibleKey && collapsibles[section.collapsibleKey as keyof typeof collapsibles] && section.gridProperties && (
 									<div className="grid grid-cols-2 gap-x-3 gap-y-2.5 pt-2 border-t border-dashed border-border/40">
-										{section.gridProperties.map((prop) => (
-											<SliderProperty
-												key={prop.id}
-												label={prop.label}
-												value={values[prop.property] || 0}
-												suffix={prop.suffix}
-												onChange={(v) => handleValueChange(prop.property, v, prop.suffix)}
-											/>
+										{section.gridProperties.map((p) => (
+											<SliderProperty key={p.id} label={p.label} value={values[p.property] ?? 0} suffix={p.suffix} min={p.min} max={p.max} onChange={(v) => handleValueChange(p.property, v, p.suffix)} />
 										))}
 									</div>
 								)}

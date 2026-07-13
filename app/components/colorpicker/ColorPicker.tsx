@@ -59,7 +59,7 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 
 	const generateGradientString = useCallback((s: GradientStop[], deg: number) => {
 		const sorted = [...s].sort((a, b) => a.position - b.position);
-		return `linear-gradient(${deg}deg, ${sorted.map(stop => `${stop.color} ${stop.position}%`).join(", ")})`;
+		return `linear-gradient(${deg}deg, ${sorted.map(stop => `${stop.color}${stop.position}%`).join(", ")})`;
 	}, []);
 
 	const handleGradientChange = (newStops: GradientStop[], newAngle: number) => {
@@ -223,7 +223,12 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 								type="text"
 								className="w-full pl-3 pr-8 py-1.5 bg-transparent text-foreground text-xs font-mono focus:outline-none"
 								value={validColor}
-								onChange={(e) => onChange(e.target.value)}
+								onChange={(e) => {
+									const val = e.target.value;
+									if (val === "" || val.startsWith("#") || val.startsWith("linear-gradient")) {
+										onChange(val);
+									}
+								}}
 								placeholder="hex or gradient"
 							/>
 							<button type="button" onClick={handleSaveColor} className="absolute right-2 text-muted-foreground hover:text-foreground cursor-pointer transition-colors" title="Save color">

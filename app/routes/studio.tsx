@@ -71,32 +71,6 @@ export default function Studio() {
 
 	const [selectedSelector, setSelectedSelector] = useState<string>("")
 
-	const [borderRadius, setBorderRadius] = useState<number>(0)
-	const [bgColor, setBgColor] = useState<string>(`#ffffff`)
-	const [textColor, setTextColor] = useState<string>(`#ffffff`)
-
-	const [widthVal, setWidthVal] = useState<number>(0)
-	const [heightVal, setHeightVal] = useState<number>(0)
-
-	const [paddingTop, setPaddingTop] = useState<number>(0)
-	const [paddingBottom, setPaddingBottom] = useState<number>(0)
-	const [paddingLeft, setPaddingLeft] = useState<number>(0)
-	const [paddingRight, setPaddingRight] = useState<number>(0)
-
-	const [marginTop, setMarginTop] = useState<number>(0)
-	const [marginBottom, setMarginBottom] = useState<number>(0)
-	const [marginLeft, setMarginLeft] = useState<number>(0)
-	const [marginRight, setMarginRight] = useState<number>(0)
-
-	const [fontSize, setFontSize] = useState<number>(14)
-	const [letterSpacing, setLetterSpacing] = useState<number>(0)
-	const [opacityVal, setOpacityVal] = useState<number>(100)
-
-	const [borderWidth, setBorderWidth] = useState<number>(0)
-	const [borderColor, setBorderColor] = useState<string>(`#ffffff`)
-
-	const isUpdatingRef = useRef(false)
-
 	useEffect(() => {
 		if (typeof window === "undefined") return
 
@@ -360,42 +334,6 @@ export default function Studio() {
 										selectedSelector={selectedSelector}
 										cssCode={cssCode}
 										setCssCode={setCssCode}
-										borderRadius={borderRadius}
-										setBorderRadius={setBorderRadius}
-										bgColor={bgColor}
-										setBgColor={setBgColor}
-										textColor={textColor}
-										setTextColor={setTextColor}
-										widthVal={widthVal}
-										setWidthVal={setWidthVal}
-										heightVal={heightVal}
-										setHeightVal={setHeightVal}
-										paddingTop={paddingTop}
-										setPaddingTop={setPaddingTop}
-										paddingBottom={paddingBottom}
-										setPaddingBottom={setPaddingBottom}
-										paddingLeft={paddingLeft}
-										setPaddingLeft={setPaddingLeft}
-										paddingRight={paddingRight}
-										setPaddingRight={setPaddingRight}
-										marginTop={marginTop}
-										setMarginTop={setMarginTop}
-										marginBottom={marginBottom}
-										setMarginBottom={setMarginBottom}
-										marginLeft={marginLeft}
-										setMarginLeft={setMarginLeft}
-										marginRight={marginRight}
-										setMarginRight={setMarginRight}
-										fontSize={fontSize}
-										setFontSize={setFontSize}
-										letterSpacing={letterSpacing}
-										setLetterSpacing={setLetterSpacing}
-										opacityVal={opacityVal}
-										setOpacityVal={setOpacityVal}
-										borderWidth={borderWidth}
-										setBorderWidth={setBorderWidth}
-										borderColor={borderColor}
-										setBorderColor={(val) => setBorderColor(val)}
 										updateCssProperty={updateCssProperty}
 									/>
 								) : activeRightTab === "logos" && isLogoSelected ? (
