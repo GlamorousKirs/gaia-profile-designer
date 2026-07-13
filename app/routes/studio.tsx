@@ -1,4 +1,4 @@
-import { useState, useTransition, lazy, Suspense, useEffect, useCallback, useRef, useMemo } from "react"
+import { useState, useTransition, lazy, Suspense, useEffect, useCallback, useMemo } from "react"
 import { useSearchParams } from "react-router"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { SidebarPanel } from "@/components/sidebar-panel"
@@ -23,24 +23,16 @@ const SettingsPanel = lazy(() => import("@/components/SettingsPanel"))
 const InspectorPanel = lazy(() => import("@/components/InspectorPanel"))
 const GaiaLogoPanel = lazy(() => import("@/components/GaiaLogoPanel").then((m) => ({ default: m.GaiaLogoPanel })))
 import { updateCssValue, injectBlock } from "@/lib/CodePanel/cssProcessor";
-const panelFiles = import.meta.glob("/app/gaia_assets/panels/*.html")
-const EXCLUDED_PANELS = ["header", "columns"]
 
 const presetCssFiles = import.meta.glob("/app/premade/**/preset.css", {
 	query: "?raw",
 	import: "default",
 })
 
-const INITIAL_PANELS = Object.keys(panelFiles)
-	.map((path) => path.split("/").pop()?.replace(".html", ""))
-	.filter((name): name is string => !!name && !EXCLUDED_PANELS.includes(name))
-
 const leftTabs: SidebarTab<"selectors" | "columns">[] = [
 	{ id: "columns", icon: Move, label: "Toggle Column Manager" },
 	{ id: "selectors", icon: Hash, label: "Toggle Gaia CSS Selectors Panel" },
 ]
-
-export const STORAGE_KEY = "gstudio-panel-column-assignments"
 
 export default function Studio() {
 	const [leftOpen, setLeftOpen] = useState(true)
@@ -48,87 +40,23 @@ export default function Studio() {
 	const [version, setVersion] = useState<"v1" | "v2">("v2")
 	const [activeLeftTab, setActiveLeftTab] = useState<"selectors" | "columns">("columns")
 	const [activeRightTab, setActiveRightTab] = useState<"settings" | "inspector" | "elements" | "logos">("elements")
-
 	const [activeTool, setActiveTool] = useState<"select" | null>(null)
-
 	const [isCodeOpen, setIsCodeOpen] = useState(false)
 	const [isMaximized, setIsMaximized] = useState(false)
 	const [, startTransition] = useTransition()
-
 	const [isProfileOpen, setIsProfileOpen] = useState(false)
 
-	const columns = useColumnStore((state) => state.columns)
-	const setColumns = useColumnStore((state) => state.setColumns)
+	// Fetch columns from the persistent store[cite: 5]
+	const columns = useColumnStore((state) => state.columns);
 
 	const [searchParams] = useSearchParams()
 	const presetId = searchParams.get("id")
 	const category = searchParams.get("category")
 
 	const [rootCss] = useState("")
-
 	const [cssCode, setCssCode] = useState<string>("")
 	const [activePanels, setActivePanels] = useState<string[]>([])
-
 	const [selectedSelector, setSelectedSelector] = useState<string>("")
-
-	useEffect(() => {
-		if (typeof window === "undefined") return
-
-		const cleanPanels = INITIAL_PANELS.filter((p) => !EXCLUDED_PANELS.includes(p))
-
-		let col1: string[] = []
-		let col2: string[] = []
-		let col3: string[] = []
-		let loadedFromStorage = false
-
-		try {
-			const saved = localStorage.getItem(STORAGE_KEY)
-			if (saved) {
-				const parsed = JSON.parse(saved)
-
-				if (parsed && typeof parsed === "object" && ("column1" in parsed || "column2" in parsed || "column3" in parsed)) {
-					col1 = Array.isArray(parsed.column1) ? parsed.column1.filter((p: string) => cleanPanels.includes(p)) : []
-					col2 = Array.isArray(parsed.column2) ? parsed.column2.filter((p: string) => cleanPanels.includes(p)) : []
-					col3 = Array.isArray(parsed.column3) ? parsed.column3.filter((p: string) => cleanPanels.includes(p)) : []
-					loadedFromStorage = true
-				} else {
-					Object.entries(parsed as Record<string, string>).forEach(([panelId, colId]) => {
-						if (cleanPanels.includes(panelId)) {
-							if (colId === "column1") col1.push(panelId)
-							if (colId === "column2") col2.push(panelId)
-							if (colId === "column3") col3.push(panelId)
-						}
-					})
-					loadedFromStorage = true
-				}
-			}
-		} catch (e) {
-			console.error("Failed parsing storage assignments", e)
-		}
-
-		if (!loadedFromStorage) {
-			if (category === "profile") {
-				cleanPanels.forEach((panel, i) => {
-					const col = (i % 3) + 1
-					if (col === 1) col1.push(panel)
-					if (col === 2) col2.push(panel)
-					if (col === 3) col3.push(panel)
-				})
-			} else if (category && !EXCLUDED_PANELS.includes(category)) {
-				col1 = [category]
-			}
-		}
-
-		const assignedSet = new Set([...col1, ...col2, ...col3])
-		const remainingPanels = cleanPanels.filter((p) => !assignedSet.has(p))
-
-		setColumns({
-			panels: remainingPanels,
-			column1: col1,
-			column2: col2,
-			column3: col3
-		})
-	}, [category, setColumns])
 
 	useEffect(() => {
 		if (!searchParams.get("id")) {
@@ -141,7 +69,6 @@ export default function Studio() {
 
 	useEffect(() => {
 		const hasVisited = localStorage.getItem("gstudio-has-visited-studio")
-
 		if (!hasVisited) {
 			setIsProfileOpen(true)
 		}
@@ -170,11 +97,9 @@ export default function Studio() {
 			{ id: "settings", icon: Settings, label: "Toggle Engine Settings Panel" },
 			{ id: "inspector", icon: Move, label: "Toggle Properties Inspector Panel" },
 		]
-
 		if (isLogoSelected) {
 			baseTabs.splice(1, 0, { id: "logos", icon: Image, label: "Toggle Gaia Logo Assets" })
 		}
-
 		return baseTabs
 	}, [isLogoSelected])
 
@@ -187,15 +112,14 @@ export default function Studio() {
 	const updateCssProperty = useCallback(
 		(property: string, value: string | number, suffix = "") => {
 			if (!selectedSelector) return
-
 			const fullValue = typeof value === "string" && value.includes("gradient")
 				? value
 				: `${value}${suffix}`;
-
 			setCssCode((prevCode) => updateCssValue(prevCode, selectedSelector, property, fullValue));
 		},
 		[selectedSelector]
 	);
+
 	useEffect(() => {
 		const activeItems: string[] = []
 		const keys: (keyof typeof columns)[] = ["column1", "column2", "column3"]
@@ -210,10 +134,8 @@ export default function Studio() {
 
 	useEffect(() => {
 		if (!presetId || !category) return
-
 		const targetPath = `/app/premade/${category}/${presetId}/preset.css`
 		const fetchPresetString = presetCssFiles[targetPath]
-
 		if (fetchPresetString) {
 			fetchPresetString()
 				.then((rawCss) => {
@@ -263,7 +185,6 @@ export default function Studio() {
 						onVersionChange={setVersion}
 					/>
 				)}
-
 				<div className="flex flex-1 w-full overflow-hidden relative">
 					{!isMaximized && (
 						<div className="flex h-full shrink-0">
@@ -279,13 +200,12 @@ export default function Studio() {
 									{activeLeftTab === "selectors" ? (
 										<SelectorPanel onSelectSelector={handleLeftSelectorAppend} />
 									) : (
-										<ColumnManager columns={columns} setColumns={setColumns} />
+										<ColumnManager />
 									)}
 								</Suspense>
 							</SidebarPanel>
 						</div>
 					)}
-
 					<div className="flex-1 flex flex-col h-full relative overflow-hidden">
 						<div className="relative flex-1 w-full h-full">
 							<Suspense fallback={<div className="w-full h-full flex items-center justify-center text-sm">Initializing Studio Canvas...</div>}>
@@ -304,11 +224,9 @@ export default function Studio() {
 								/>
 							</Suspense>
 						</div>
-
 						<div className="absolute inset-0 z-50 pointer-events-none flex items-end justify-center pb-14">
 							<CodePanel isOpen={isCodeOpen} code={cssCode} setCode={setCssCode} />
 						</div>
-
 						<StudioToolbar
 							activeTool={activeTool}
 							setActiveTool={handleSetActiveTool}
@@ -318,7 +236,6 @@ export default function Studio() {
 							setIsMaximized={setIsMaximized}
 						/>
 					</div>
-
 					{!isMaximized && (
 						<SidebarPanel<"settings" | "inspector" | "elements" | "logos">
 							side="right"
@@ -357,7 +274,6 @@ export default function Studio() {
 						</SidebarPanel>
 					)}
 				</div>
-
 				<LocalProfile isOpen={isProfileOpen} onClose={handleCloseProfile} />
 			</div>
 		</TooltipProvider>

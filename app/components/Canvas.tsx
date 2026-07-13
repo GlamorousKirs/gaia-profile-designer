@@ -3,6 +3,7 @@ import GaiaScript from '@/gaia_assets/js/gaia.js?raw'
 import canvasIframeController from "@/components/canvas-iframe-controller.js?raw"
 import { type ColumnLayoutState as ColumnState } from "@/store/useColumnStore"
 import { useProfileStore } from "~/store/useProfileStore"
+import { useCustomPanelStore } from "~/store/useCustomPanelStore"
 
 const TARGET_WIDTH = 1920
 const TARGET_HEIGHT = 1080
@@ -47,6 +48,7 @@ export const Canvas = memo(function Canvas({
 	const wrapperRef = useRef<HTMLDivElement>(null)
 	const iframeRef = useRef<HTMLIFrameElement>(null)
 	const isSelectionMode = activeTool === "select"
+	const customPanels = useCustomPanelStore((state) => state.panels);
 
 	const avatarUrl = useProfileStore((state) => state.avatarUrl)
 	const username = useProfileStore((state) => state.username)
@@ -100,37 +102,35 @@ export const Canvas = memo(function Canvas({
 
 	const shouldCenterPanel = useMemo(() => category === "wishlist", [category])
 
-	const integratedHtml = useMemo(() => {
-		if (!versionData) return ""
-		if (shouldCenterPanel) return category ? panelHtmlModules[`/app/gaia_assets/panels/${category}.html`] || "" : ""
+// Inside Canvas.tsx
 
-		let currentHtml = versionData.html
-		const layoutToUse = columnLayout || parsedTomlLayout
 
-		const hasPanels = layoutToUse &&
-			((layoutToUse.column1?.length ?? 0) > 0 ||
-				(layoutToUse.column2?.length ?? 0) > 0 ||
-				(layoutToUse.column3?.length ?? 0) > 0)
+const integratedHtml = useMemo(() => {
+	if (!versionData) return "";
+	if (shouldCenterPanel) return category ? panelHtmlModules[`/app/gaia_assets/panels/${category}.html`] || "" : "";
 
-		if (hasPanels) {
-			(["column1", "column2", "column3"] as const).forEach((colKey, index) => {
-				const targetColumnString = `id="column_${index + 1}" class="column focus_column">`
-				const compiled = (layoutToUse[colKey] || [])
-					.filter((id: string) => id !== "columns")
-					.map((id: string) => panelHtmlModules[`/app/gaia_assets/panels/${id}.html`] || "")
-					.join("\n")
+	let currentHtml = versionData.html;
+	const layoutToUse = columnLayout || parsedTomlLayout;
 
-				currentHtml = currentHtml.replace(targetColumnString, `${targetColumnString}\n${compiled}`)
+	(["column1", "column2", "column3"] as const).forEach((colKey, index) => {
+		const targetColumnString = `id="column_${index + 1}" class="column focus_column">`;
+		
+		// Use optional chaining and nullish coalescing to safely access the columns
+		const compiled = (layoutToUse?.[colKey] ?? [])
+			.filter((id: string) => id !== "columns")
+			.map((id: string) => {
+				if (customPanels[id]) {
+					return `<div id="${id}" class="panel custom_panel">${customPanels[id].content}</div>`;
+				}
+				return panelHtmlModules[`/app/gaia_assets/panels/${id}.html`] || "";
 			})
-		} else {
-			(["column1", "column2", "column3"] as const).forEach((_, index) => {
-				const targetColumnString = `id="column_${index + 1}" class="column focus_column">`
-				currentHtml = currentHtml.replace(targetColumnString, `${targetColumnString}\n`)
-			})
-		}
+			.join("\n");
 
-		return currentHtml
-	}, [category, shouldCenterPanel, parsedTomlLayout, columnLayout, versionData])
+		currentHtml = currentHtml.replace(targetColumnString, `${targetColumnString}\n${compiled}`);
+	});
+
+	return currentHtml;
+}, [category, shouldCenterPanel, parsedTomlLayout, columnLayout, versionData, customPanels]);
 
 	const finalAvatarUrl = avatarUrl || DEFAULT_AVATAR
 	const finalUsername = username || DEFAULT_USERNAME
