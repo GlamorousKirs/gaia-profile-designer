@@ -53,11 +53,13 @@ export function StudioHeader({ onOpenProfile, version, onVersionChange }: Studio
 		}
 	}
 
+	const baseUrl = import.meta.env.BASE_URL;
+
 	const navLinks = [
-		{ name: "Home", icon: Home, href: "/gaia-profile-designer" },
-		{ name: "Gallery", icon: LibraryBig, href: "/gallery" },
-		{ name: "Logo Recolor", icon: Palette, href: "/logo-recolor" },
-		{ name: "Avatar Stylizer", icon: Wand2, href: "/avatar-stylizer" },
+		{ name: "Home", icon: Home, href: `${baseUrl}` },
+		{ name: "Gallery", icon: LibraryBig, href: `${baseUrl}/gallery` },
+		{ name: "Logo Recolor", icon: Palette, href: `${baseUrl}/logo-recolor` },
+		{ name: "Avatar Stylizer", icon: Wand2, href: `${baseUrl}/avatar-stylizer` },
 	]
 
 	return (
