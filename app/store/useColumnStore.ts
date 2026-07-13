@@ -9,19 +9,19 @@ export interface ColumnLayoutState {
 
 interface ColumnLayoutStore {
 	columns: ColumnLayoutState;
-	setColumns: (columns: ColumnLayoutState | ((prev: ColumnLayoutState) => ColumnLayoutState)) => void;
+	setColumns: (updater: (prev: ColumnLayoutState) => ColumnLayoutState) => void;
 }
 
 export const useColumnStore = create<ColumnLayoutStore>()(
 	persist(
 		(set) => ({
-			columns: { 
-				column1: [], 
-				column2: [], 
-				column3: [] 
+			columns: {
+				column1: [],
+				column2: [],
+				column3: []
 			},
 			setColumns: (updater) => set((state) => ({
-				columns: typeof updater === 'function' ? updater(state.columns) : updater
+				columns: updater(state.columns)
 			})),
 		}),
 		{

@@ -1,9 +1,12 @@
 import { memo, useRef, useEffect, useMemo, useState } from "react"
+import bbobHTML from '@bbob/html'
+import presetHTML5 from '@bbob/preset-html5'
 import GaiaScript from '@/gaia_assets/js/gaia.js?raw'
 import canvasIframeController from "@/components/canvas-iframe-controller.js?raw"
 import { type ColumnLayoutState as ColumnState } from "@/store/useColumnStore"
 import { useProfileStore } from "~/store/useProfileStore"
 import { useCustomPanelStore } from "~/store/useCustomPanelStore"
+import { customPreset } from '@/lib/bbob-presets';
 
 const TARGET_WIDTH = 1920
 const TARGET_HEIGHT = 1080
@@ -13,6 +16,17 @@ const DEFAULT_USERNAME = "Your Username"
 const presetCssModules = import.meta.glob("/app/premade/**/preset.css", { query: "?raw", import: "default", eager: true }) as Record<string, string>
 const presetTomlModules = import.meta.glob("/app/premade/**/preset.toml", { query: "?raw", import: "default", eager: true }) as Record<string, string>
 const panelHtmlModules = import.meta.glob("/app/gaia_assets/panels/*.html", { query: "?raw", import: "default", eager: true }) as Record<string, string>
+
+const myPreset = presetHTML5.extend((tags: any) => ({
+	...tags,
+	spoiler: (node: any) => ({
+		tag: 'details',
+		content: [
+			{ tag: 'summary', content: 'Spoiler' },
+			...node.content
+		]
+	})
+}));
 
 interface CanvasProps {
 	isMaximized: boolean
@@ -102,35 +116,37 @@ export const Canvas = memo(function Canvas({
 
 	const shouldCenterPanel = useMemo(() => category === "wishlist", [category])
 
-// Inside Canvas.tsx
+	const integratedHtml = useMemo(() => {
+		if (!versionData) return "";
+		if (shouldCenterPanel) return category ? panelHtmlModules[`/app/gaia_assets/panels/${category}.html`] || "" : "";
 
+		let currentHtml = versionData.html;
+		const layoutToUse = columnLayout || parsedTomlLayout;
 
-const integratedHtml = useMemo(() => {
-	if (!versionData) return "";
-	if (shouldCenterPanel) return category ? panelHtmlModules[`/app/gaia_assets/panels/${category}.html`] || "" : "";
+		(["column1", "column2", "column3"] as const).forEach((colKey, index) => {
+			const targetColumnString = `id="column_${index + 1}" class="column focus_column">`;
 
-	let currentHtml = versionData.html;
-	const layoutToUse = columnLayout || parsedTomlLayout;
+			const compiled = (layoutToUse?.[colKey] ?? [])
+				.filter((id: string) => id !== "columns")
+				.map((id: string) => {
+					if (customPanels[id]) {
+						const htmlContent = bbobHTML(customPanels[id].content, customPreset());
+						return `
+							<div id="#id_${id}" class="panel custom_panel postcontent">
+								<h2 id="${id}_title">${customPanels[id].name}</h2>
+								<div id="${id}_content">${htmlContent}</div>
+								<div class="clear"></div>
+							</div>`.trim();
+					}
+					return panelHtmlModules[`/app/gaia_assets/panels/${id}.html`] || "";
+				})
+				.join("\n");
 
-	(["column1", "column2", "column3"] as const).forEach((colKey, index) => {
-		const targetColumnString = `id="column_${index + 1}" class="column focus_column">`;
-		
-		// Use optional chaining and nullish coalescing to safely access the columns
-		const compiled = (layoutToUse?.[colKey] ?? [])
-			.filter((id: string) => id !== "columns")
-			.map((id: string) => {
-				if (customPanels[id]) {
-					return `<div id="${id}" class="panel custom_panel">${customPanels[id].content}</div>`;
-				}
-				return panelHtmlModules[`/app/gaia_assets/panels/${id}.html`] || "";
-			})
-			.join("\n");
+			currentHtml = currentHtml.replace(targetColumnString, `${targetColumnString}\n${compiled}`);
+		});
 
-		currentHtml = currentHtml.replace(targetColumnString, `${targetColumnString}\n${compiled}`);
-	});
-
-	return currentHtml;
-}, [category, shouldCenterPanel, parsedTomlLayout, columnLayout, versionData, customPanels]);
+		return currentHtml;
+	}, [category, shouldCenterPanel, parsedTomlLayout, columnLayout, versionData, customPanels]);
 
 	const finalAvatarUrl = avatarUrl || DEFAULT_AVATAR
 	const finalUsername = username || DEFAULT_USERNAME
@@ -159,6 +175,8 @@ const integratedHtml = useMemo(() => {
 						z-index: 999999;
 						cursor: crosshair;
 					}
+					details { background: #f0f0f0; padding: 10px; border: 1px solid #ccc; }
+					summary { cursor: pointer; font-weight: bold; }
 				</style>
 			</head>
 			<body id="viewer">
@@ -184,7 +202,7 @@ const integratedHtml = useMemo(() => {
 			win.postMessage({ type: 'update-identity', avatarUrl: finalAvatarUrl, username: finalUsername }, '*')
 			win.postMessage({ type: 'toggle-selection-mode', active: isSelectionMode }, '*')
 			win.postMessage({ type: 'sync-selected-element', selector: selectedSelector }, '*')
-			
+
 			try {
 				const doc = win.document
 				const styleTag = doc.getElementById('user-overrides') as HTMLStyleElement | null
@@ -202,8 +220,6 @@ const integratedHtml = useMemo(() => {
 		iframe?.addEventListener('load', pushStateToIframe)
 		return () => iframe?.removeEventListener('load', pushStateToIframe)
 	}, [integratedHtml, loading, finalAvatarUrl, finalUsername])
-
-	
 
 	useEffect(() => {
 		if (loading) return

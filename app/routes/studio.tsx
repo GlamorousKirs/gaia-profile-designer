@@ -46,7 +46,6 @@ export default function Studio() {
 	const [, startTransition] = useTransition()
 	const [isProfileOpen, setIsProfileOpen] = useState(false)
 
-	// Fetch columns from the persistent store[cite: 5]
 	const columns = useColumnStore((state) => state.columns);
 
 	const [searchParams] = useSearchParams()
