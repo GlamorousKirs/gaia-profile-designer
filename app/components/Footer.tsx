@@ -7,10 +7,7 @@ type FooterLink = {
 }
 
 const FOOTER_LINKS: FooterLink[] = [
-	{ name: "Premade", path: "/premade" },
-	{ name: "Themes", path: "/themes" },
-	{ name: "Studio", path: "/studio", label: "Logo Recolor" },
-	{ name: "Guide", path: "/guide" },
+	{ name: "Guide", path: "https://www.gaiaonline.com/journal/?mode=viewarchive&post_id=48354249&u=20150259" },
 	{ name: "Forum", path: "/forum" }
 ]
 
@@ -19,7 +16,7 @@ export default function Footer() {
 		<footer className="w-full border-t border-border bg-background py-10" role="contentinfo">
 			<div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-8 px-4">
 				<div className="flex flex-col items-center md:items-start gap-4 text-center md:text-left">
-					<h2 className="text-xl font-heading font-bold tracking-tighter text-foreground">Gaia Profile Design</h2>
+					<h2 className="text-xl font-heading font-bold tracking-tighter text-foreground">Gaia Profile Designer</h2>
 					<nav className="flex flex-wrap justify-center md:justify-start gap-6 text-xs uppercase tracking-widest text-muted-foreground">
 						{FOOTER_LINKS.map((item) => (
 							<Link key={item.name} to={item.path} className="transition-colors hover:text-foreground">
@@ -28,7 +25,7 @@ export default function Footer() {
 						))}
 					</nav>
 					<div className="flex flex-col md:flex-row items-center gap-4 border-t border-border pt-6 text-[10px] text-muted-foreground w-full">
-						<p className="max-w-xs">A collection of tools and premade themes built for the Gaia Online community.</p>
+						<p className="max-w-xs">A collection of tools and premade themes built for Gaia Online community.</p>
 						<div className="flex gap-4">
 							<Link to="/privacy" className="hover:text-foreground">Privacy</Link>
 							<Link to="/terms" className="hover:text-foreground">Terms</Link>
