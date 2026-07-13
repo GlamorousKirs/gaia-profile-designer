@@ -57,7 +57,7 @@ export function StudioHeader({ onOpenProfile, version, onVersionChange }: Studio
 		{ name: "Home", icon: Home, href: "/" },
 		{ name: "Gallery", icon: LibraryBig, href: "/gallery" },
 		{ name: "Logo Recolor", icon: Palette, href: "/logo-recolor" },
-		{ name: "Avatar Stylizer", icon: Wand2, href: "/avatar-styler" },
+		{ name: "Avatar Stylizer", icon: Wand2, href: "/avatar-stylizer" },
 	]
 
 	return (
