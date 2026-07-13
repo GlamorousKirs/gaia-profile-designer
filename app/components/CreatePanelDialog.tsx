@@ -87,6 +87,7 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="Enter text.."
                             className="flex-1 resize-none"
+                            data-lenis-prevent
                         />
                     </div>
                 </div>
