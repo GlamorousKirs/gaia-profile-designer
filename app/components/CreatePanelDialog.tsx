@@ -27,7 +27,7 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
     useEffect(() => {
         if (defaultValues) {
             setName(defaultValues.name)
-            setId(defaultValues.id)
+            setId(defaultValues.id.replace('#id_custom_', ''))
             setContent(defaultValues.content)
         } else {
             setName("")
@@ -36,14 +36,12 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
         }
     }, [defaultValues, open])
 
-    const insertTag = (tag: string) => {
-        setContent((prev) => `${prev}[${tag}][/${tag}]`);
-    };
-
     const handleSubmit = () => {
-        const randomId = Math.floor(10000 + Math.random() * 90000).toString();
-        const finalId = defaultValues ? id : `custom_${randomId}`;
-        onConfirm({ id: finalId, name, content });
+        const numericId = id.trim() === "" ? Math.floor(10000 + Math.random() * 90000).toString() : id;
+        const finalId = `#id_custom_${numericId}`;
+        const finalName = name.trim() === "" ? "Custom" : name;
+
+        onConfirm({ id: finalId, name: finalName, content });
         onOpenChange(false);
     };
 
@@ -51,7 +49,9 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="flex h-[70vh] max-h-[70vh] flex-col sm:max-w-106.25" data-lenis-prevent>
                 <DialogHeader className="flex-none">
-                    <DialogTitle>{defaultValues ? "Edit Panel" : "Create Custom Panel"}</DialogTitle>
+                    <DialogTitle>
+                        {defaultValues ? `Edit ${defaultValues.id}` : "Create Custom Panel"}
+                    </DialogTitle>
                 </DialogHeader>
 
                 <div className="flex flex-col flex-1 overflow-hidden py-4 pr-2">
@@ -63,7 +63,7 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="id">ID</Label>
-                                <Input id="id" value={id} onChange={(e) => setId(e.target.value)} placeholder="custom_12345" disabled={!!defaultValues} />
+                                <Input id="id" value={id} onChange={(e) => setId(e.target.value)} placeholder="12345" disabled={!!defaultValues} />
                             </div>
                         </div>
 

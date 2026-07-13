@@ -93,8 +93,8 @@ const SortableItem = memo(function SortableItem({ id, onRemove, onEdit }: { id: 
 	const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 	const style = { transform: CSS.Transform.toString(transform), transition };
 
-	const displayId = id.startsWith("#id_") ? id : `#id_${id}`;
-	const isCustom = id.startsWith("custom_") || id.startsWith("#id_custom_");
+	const customPanels = useCustomPanelStore((state) => state.panels);
+	const isCustom = Object.keys(customPanels).includes(id);
 
 	return (
 		<ContextMenu>
@@ -108,7 +108,7 @@ const SortableItem = memo(function SortableItem({ id, onRemove, onEdit }: { id: 
 				>
 					<div className="flex items-center gap-2 truncate">
 						<GripVertical className="size-3 opacity-40 shrink-0" />
-						<span className="truncate">{displayId}</span>
+						<span className="truncate">{id}</span>
 					</div>
 				</div>
 			</ContextMenuTrigger>
