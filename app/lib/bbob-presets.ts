@@ -2,6 +2,7 @@ import presetHTML5 from '@bbob/preset-html5'
 
 export const customPreset = presetHTML5.extend((tags: any) => ({
     ...tags,
+    br: () => ({ tag: 'br' }),
     spoiler: (node: any) => ({
         tag: 'div',
         attrs: { class: 'spoiler-wrapper spoiler-hidden' },

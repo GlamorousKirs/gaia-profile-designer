@@ -130,13 +130,15 @@ export const Canvas = memo(function Canvas({
 				.filter((id: string) => id !== "columns")
 				.map((id: string) => {
 					if (customPanels[id]) {
-						const htmlContent = bbobHTML(customPanels[id].content, customPreset());
+						const processedContent = customPanels[id].content.replace(/\n/g, '<br>');
+						const htmlContent = bbobHTML(processedContent, customPreset());
+
 						return `
-							<div id="#id_${id}" class="panel custom_panel postcontent">
-								<h2 id="${id}_title">${customPanels[id].name}</h2>
-								<div id="${id}_content">${htmlContent}</div>
-								<div class="clear"></div>
-							</div>`.trim();
+						<div id="#id_${id}" class="panel custom_panel postcontent">
+							<h2 id="${id}_title">${customPanels[id].name}</h2>
+							<div id="${id}_content">${htmlContent}</div>
+							<div class="clear"></div>
+						</div>`.trim();
 					}
 					return panelHtmlModules[`/app/gaia_assets/panels/${id}.html`] || "";
 				})
