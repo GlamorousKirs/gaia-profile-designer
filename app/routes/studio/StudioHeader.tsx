@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Fullscreen } from "lucide-react"
+import { Fullscreen, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
 	Select,
@@ -8,6 +8,11 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select"
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover"
 import { ThemePicker } from "~/components/ThemePicker"
 import { UserAvatar } from "@/components/UserAvatar"
 
@@ -54,6 +59,18 @@ export function StudioHeader({ onOpenProfile, version, onVersionChange }: Studio
 				</div>
 				<div className="flex items-center gap-3">
 					<span className="font-medium text-sm tracking-tight">Gaia Studio</span>
+					<Popover>
+						<PopoverTrigger>
+							<Button variant="ghost" size="icon" className="size-5 rounded-full">
+								<Info className="size-3.5 text-muted-foreground" />
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent side="bottom" className="w-64 text-[11px] bg-popover text-popover-foreground border-border">
+							<ul className="list-disc pl-3 space-y-1">
+								<li>If something worked before, now gets buggy, I probably updated it. Please clear your browser storage or remove specific data from your storage.</li>
+							</ul>
+						</PopoverContent>
+					</Popover>
 					<div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-medium uppercase tracking-wider">
 						<span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
 						WIP
@@ -92,7 +109,7 @@ export function StudioHeader({ onOpenProfile, version, onVersionChange }: Studio
 				>
 					<Fullscreen className="size-4" aria-hidden="true" />
 				</Button>
-				
+
 				<div className="h-4 w-px bg-border mx-1" />
 
 				<ThemePicker />

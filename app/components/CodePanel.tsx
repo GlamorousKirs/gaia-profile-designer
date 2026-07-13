@@ -1,4 +1,4 @@
-import { useState, useRef, useTransition, useEffect, lazy, Suspense, useMemo } from "react"
+import { useState, useRef, useTransition, useEffect, lazy, Suspense, useMemo, useCallback } from "react"
 import { motion, useDragControls, AnimatePresence } from "motion/react"
 import { Copy, Check, Library, ChevronUp, ChevronDown, Sparkles, MoveDiagonal, BookOpen } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -47,6 +47,36 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
 	const panelRef = useRef<HTMLDivElement>(null)
 	const editorViewRef = useRef<EditorView | null>(null)
 	const [dimensions, setDimensions] = useState({ windowWidth: 1200, windowHeight: 800 })
+
+	const [hasImportant, setHasImportant] = useState(false)
+
+	const toggleImportant = useCallback(() => {
+		if (!editorViewRef.current) return
+		const view = editorViewRef.current
+		const selection = view.state.selection.main
+		const doc = view.state.doc
+		const text = selection.empty ? doc.toString() : doc.sliceString(selection.from, selection.to)
+		
+		let newText = ""
+		if (text.includes("!important")) {
+			newText = text.replace(/\s*!important/g, "")
+		} else {
+			newText = text.replace(/([^;{}]+)(;|$)/g, "$1 !important$2")
+		}
+
+		view.dispatch({
+			changes: {
+				from: selection.empty ? 0 : selection.from,
+				to: selection.empty ? doc.length : selection.to,
+				insert: newText
+			}
+		})
+		setCode(view.state.doc.toString())
+	}, [setCode])
+
+	useEffect(() => {
+		setHasImportant(code.includes("!important"))
+	}, [code])
 
 	const codeRef = useRef(code)
 	useEffect(() => {
@@ -238,7 +268,7 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
 								</ScrollArea>
 
 								<div className="h-9 border-t border-border flex items-center justify-between px-3 bg-muted/20 select-none">
-									<div onPointerDown={(e) => e.stopPropagation()}>
+									<div className="flex items-center gap-1.5" onPointerDown={(e) => e.stopPropagation()}>
 										<Button
 											onClick={() => handleCopy(codeRef, setCopied)}
 											variant="ghost"
@@ -247,14 +277,24 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
 											{copied ? (
 												<>
 													<Check className="size-3 text-emerald-500" />
-													<span className="text-[10px] text-emerald-500">Copied Code</span>
+													<span className="text-[10px] text-emerald-500">Copied</span>
 												</>
 											) : (
 												<>
 													<Copy className="size-3" />
-													<span className="text-[10px]">Copy Code</span>
+													<span className="text-[10px]">Copy</span>
 												</>
 											)}
+										</Button>
+										
+										<Button
+											onClick={toggleImportant}
+											variant="ghost"
+											className="h-6 px-2 font-medium border border-border bg-muted/30 text-muted-foreground hover:text-amber-500 transition-colors"
+										>
+											<span className="text-[10px]">
+												{hasImportant ? "Remove !important" : "Add !important"}
+											</span>
 										</Button>
 									</div>
 

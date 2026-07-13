@@ -36,6 +36,12 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
         }
     }, [defaultValues, open])
 
+    const insertTag = (tag: string) => {
+        const openTag = `[${tag}]`;
+        const closeTag = `[/${tag}]`;
+        setContent(prev => `${prev}${openTag}${closeTag}`);
+    };
+
     const handleSubmit = () => {
         const numericId = id.trim() === "" ? Math.floor(10000 + Math.random() * 90000).toString() : id;
         const finalId = `#id_custom_${numericId}`;
