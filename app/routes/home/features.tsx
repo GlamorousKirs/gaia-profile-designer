@@ -30,10 +30,10 @@ const FEATURES_DATA = [
 		className: "md:col-span-1",
 	},
 	{
-		name: "Avatar Decoration",
-		desc: "Stylize your avatar for your profile.",
+		name: "Avatar Stylizer",
+		desc: "Stylize your avatar image for your profile.",
 		image: `${baseUrl}optimized-assets/avatar-animator.webp`,
-		to: "/avatar-animation",
+		to: "/avatar-stylizer",
 		showLink: true,
 		className: "md:col-span-2",
 	},

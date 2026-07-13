@@ -6,5 +6,5 @@ export default [
     route('studio', 'routes/studio.tsx'),
     route('settings', 'routes/settings.tsx'),
     route('logo-recolor', 'routes/logo-recolor.tsx'),
-    route('avatar-animation', 'routes/avatar-animation.tsx')
+    route('avatar-stylizer', 'routes/avatar-stylizer.tsx')
 ] satisfies RouteConfig;

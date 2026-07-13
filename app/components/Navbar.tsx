@@ -1,5 +1,3 @@
-'use client'
-
 import { useState, useEffect, useRef, memo, useTransition } from "react"
 import { Link, useLocation, useNavigate } from "react-router"
 import { Sparkles, Menu, X, ChevronDown } from "lucide-react"
@@ -15,17 +13,25 @@ import {
 import { useProfileStore } from "@/store/useProfileStore"
 import { LocalProfile } from "./LocalProfile"
 
-const NAV_LINKS = [
-	{ name: "Home", to: "/" },
-	{ name: "Gallery", to: "/gallery" },
-] as const
+const NavLink = memo(({ to, name }: { to: string; name: string }) => (
+	<Link to={to} className="relative group px-5 py-2 text-xs font-bold tracking-widest text-muted-foreground transition-colors hover:text-primary">
+		<span className="relative z-10">{name}</span>
+		<div className="absolute inset-0 rounded-xl bg-primary/5 opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300" />
+		<div className="absolute -bottom-px left-1/2 -translate-x-1/2 w-0 h-px bg-linear-to-r from-transparent via-primary to-transparent opacity-0 group-hover:w-full group-hover:opacity-100 transition-all duration-500 ease-out" />
+	</Link>
+))
+NavLink.displayName = "NavLink"
 
+const NAV_LINKS = [
+	{ name: "HOME", to: "/" },
+	{ name: "GALLERY", to: "/gallery" },
+] as const
 
 const baseUrl = import.meta.env.BASE_URL;
 
 const TOOL_LINKS = [
 	{ name: "Gaia Logo Recoloring", to: "/logo-recolor", desc: "Recolor the Gaia logo for your profile header.", image: `${baseUrl}optimized-assets/logo-recolor-preview.webp` },
-	{ name: "Avatar Decoration IMG Customizer", to: "/avatar-animation", desc: "Stylize your friend's or your avatar for your profile.", image: `${baseUrl}optimized-assets/avatar-animator.webp` },
+	{ name: "Avatar Stylizer", to: "/avatar-stylizer", desc: "Stylize avatar image for your profile.", image: `${baseUrl}optimized-assets/avatar-animator.webp` },
 ] as const
 
 interface UserAvatarProps {
@@ -103,12 +109,12 @@ const MobileDropdown = memo(({ isOpen, onClose }: { isOpen: boolean; onClose: ()
 	>
 		<div className="container mx-auto flex flex-col items-center gap-4 px-6 py-8">
 			{NAV_LINKS.map((link) => (
-				<Link key={link.to} to={link.to} onClick={onClose} className="text-on-surface py-2 text-sm font-bold uppercase tracking-widest hover:text-primary">
+				<Link key={link.to} to={link.to} onClick={onClose} className="text-on-surface py-2 text-sm tracking-widest hover:text-primary">
 					{link.name}
 				</Link>
 			))}
 			{TOOL_LINKS.map((link) => (
-				<Link key={link.to} to={link.to} onClick={onClose} className="text-on-surface py-2 text-sm font-bold uppercase tracking-widest hover:text-primary">
+				<Link key={link.to} to={link.to} onClick={onClose} className="text-on-surface py-2 text-sm hover:text-primary">
 					{link.name}
 				</Link>
 			))}
@@ -185,23 +191,25 @@ export default function Navbar() {
 				<div className="container mx-auto px-4 md:px-6 relative z-10">
 					<div className="flex h-20 items-center justify-between">
 						<Link to="/" className="group flex items-center gap-2.5">
-							<div className="bg-surface p-2 rounded-xl border border-border"><Sparkles size={20} className="text-primary" /></div>
-							<div className="flex flex-col"><span className="text-sm uppercase">Gaia</span><span className="text-[10px]  text-primary uppercase">Profile Designer</span></div>
+							<div className="bg-surface p-2"><Sparkles size={20} className="text-primary" /></div>
+							<div className="flex flex-col"><span className="text-sm uppercase">Gaia</span><span className="text-[10px] text-primary uppercase">Profile Designer</span></div>
 						</Link>
 
-						<div className="bg-surface/40 hidden lg:flex items-center rounded-2xl border border-border p-1.5 backdrop-blur-md">
+						<div className="bg-surface/40 hidden lg:flex items-center p-1.5 ">
 							{NAV_LINKS.map((link) => (
-								<Link key={link.to} to={link.to} className="px-5 py-2 text-xs font-bold uppercase tracking-widest hover:text-primary transition-colors">{link.name}</Link>
+								<NavLink key={link.to} {...link} />
 							))}
-							
-							<div 
-								className="relative"
+
+							<div
+								className="relative group px-5 py-2 text-xs text-muted-foreground transition-colors hover:text-primary"
 								onMouseEnter={handleMouseEnter}
 								onMouseLeave={handleMouseLeave}
 							>
-								<button className="px-5 py-2 text-xs font-bold uppercase tracking-widest flex items-center gap-1 hover:text-primary outline-hidden">
-									Tools <ChevronDown size={12} className={`transition-transform ${isToolsOpen ? 'rotate-180' : ''}`} />
+								<button className="flex items-center gap-1 outline-hidden font-bold tracking-widest">
+									TOOLS <ChevronDown size={12} className={`transition-transform ${isToolsOpen ? 'rotate-180' : ''}`} />
 								</button>
+								<div className="absolute inset-0 rounded-xl bg-primary/5 opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300" />
+								<div className="absolute -bottom-px left-1/2 -translate-x-1/2 w-0 h-px bg-linear-to-r from-transparent via-primary to-transparent opacity-0 group-hover:w-full group-hover:opacity-100 transition-all duration-500 ease-out" />
 
 								<AnimatePresence>
 									{isToolsOpen && (
@@ -210,23 +218,27 @@ export default function Navbar() {
 											animate={{ opacity: 1, y: 0, scale: 1 }}
 											exit={{ opacity: 0, y: 10, scale: 0.95 }}
 											transition={{ duration: 0.2, ease: "easeOut" }}
-											className="absolute top-full left-1/2 -translate-x-1/2 pt-4 w-screen max-w-3xl px-4"
+											className="absolute top-full left-1/2 -translate-x-1/2 pt-4 w-screen max-w-xl px-4"
 										>
-											<div className="bg-background backdrop-blur-xl border border-border rounded-3xl p-6 shadow-2xl">
-												<div className="grid grid-cols-2 gap-6">
+											<div className="bg-background backdrop-blur-xl border border-border rounded-3xl p-4 shadow-2xl">
+												<div className="grid grid-cols-2 gap-3">
 													{TOOL_LINKS.map((tool) => (
 														<motion.div
 															key={tool.to}
 															whileHover={{ y: -4 }}
 															transition={{ duration: 0.2, ease: "easeInOut" }}
+															className="flex"
 														>
-															<Link to={tool.to} className="block overflow-hidden rounded-2xl border border-border hover:border-border transition-colors">
-																<div className="aspect-video w-full overflow-hidden rounded-2xl">
+															<Link
+																to={tool.to}
+																className="flex flex-col w-full overflow-hidden rounded-2xl border border-border hover:border-border transition-colors"
+															>
+																<div className="aspect-video w-full overflow-hidden rounded-xl shrink-0">
 																	<img src={tool.image} alt={tool.name} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" />
 																</div>
-																<div className="p-4">
-																	<div className="font-bold text-sm">{tool.name}</div>
-																	<div className="text-xs text-muted-foreground mt-1">{tool.desc}</div>
+																<div className="flex flex-col flex-1 p-3">
+																	<div className="text-xs font-semibold">{tool.name}</div>
+																	<div className="text-[10px] text-muted-foreground mt-0.5">{tool.desc}</div>
 																</div>
 															</Link>
 														</motion.div>

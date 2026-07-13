@@ -1,8 +1,7 @@
 import postcss from 'postcss';
 
 export const updateCssValue = (css: string, selector: string, property: string, value: string) => {
-	const safeCss = css && css.trim().length > 0 ? css : '/* Initialized */';
-	const root = postcss.parse(safeCss);
+	const root = postcss.parse(css || '');
 	let targetRule: any = null;
 
 	root.walkRules(selector, (rule) => {
@@ -32,8 +31,7 @@ export const updateCssValue = (css: string, selector: string, property: string, 
 };
 
 export const injectBlock = (css: string, selector: string, declarations: Record<string, string>) => {
-	const safeCss = css && css.trim().length > 0 ? css : '/* Initialized */';
-	const root = postcss.parse(safeCss);
+	const root = postcss.parse(css || '');
 	let targetRule: any = null;
 
 	root.walkRules(selector, (rule) => { targetRule = rule; });

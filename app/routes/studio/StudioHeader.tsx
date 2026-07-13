@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Fullscreen, Info } from "lucide-react"
+import { Fullscreen, Info, LayoutGrid, Home, LibraryBig, Palette, Wand2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
 	Select,
@@ -13,6 +13,11 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover"
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card"
 import { ThemePicker } from "~/components/ThemePicker"
 import { UserAvatar } from "@/components/UserAvatar"
 
@@ -48,15 +53,37 @@ export function StudioHeader({ onOpenProfile, version, onVersionChange }: Studio
 		}
 	}
 
+	const navLinks = [
+		{ name: "Home", icon: Home, href: "/" },
+		{ name: "Gallery", icon: LibraryBig, href: "/gallery" },
+		{ name: "Logo Recolor", icon: Palette, href: "/logo-recolor" },
+		{ name: "Avatar Stylizer", icon: Wand2, href: "/avatar-styler" },
+	]
+
 	return (
 		<header className="sticky top-0 h-14 w-full bg-background/80 backdrop-blur-md border-b border-border/40 px-6 flex items-center justify-between z-50 shrink-0">
 			<div className="flex items-center gap-4">
-				<div
-					className="flex items-center justify-center size-8 rounded-lg bg-foreground text-background font-bold text-sm"
-					aria-hidden="true"
-				>
-					G
-				</div>
+				<HoverCard>
+					<HoverCardTrigger delay={10} closeDelay={100}>
+						<Button variant="ghost" size="icon" className="size-9 rounded-full">
+							<LayoutGrid className="size-4" />
+						</Button>
+					</HoverCardTrigger>
+					<HoverCardContent side="bottom" align="start" className="w-48 p-2">
+						<nav className="flex flex-col gap-1">
+							{navLinks.map((link) => (
+								<a
+									key={link.name}
+									href={link.href}
+									className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted text-sm font-medium transition-colors"
+								>
+									<link.icon className="size-4" />
+									{link.name}
+								</a>
+							))}
+						</nav>
+					</HoverCardContent>
+				</HoverCard>
 				<div className="flex items-center gap-3">
 					<span className="font-medium text-sm tracking-tight">Gaia Studio</span>
 					<Popover>
@@ -71,10 +98,6 @@ export function StudioHeader({ onOpenProfile, version, onVersionChange }: Studio
 							</ul>
 						</PopoverContent>
 					</Popover>
-					<div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-medium uppercase tracking-wider">
-						<span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
-						WIP
-					</div>
 				</div>
 			</div>
 
