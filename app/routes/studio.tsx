@@ -155,9 +155,10 @@ export default function Studio() {
 	}, [cssCode])
 
 	const handleLeftSelectorAppend = (selector: string) => {
-		setCssCode((prev) => updateCssValue(prev, selector, 'display', 'block'));
+		setCssCode((prev) => updateCssValue(prev, selector, '', ''));
 		setIsCodeOpen(true);
 	};
+	
 	const handleCanvasElementSelected = useCallback((selector: string) => {
 		setSelectedSelector(selector)
 		startTransition(() => {

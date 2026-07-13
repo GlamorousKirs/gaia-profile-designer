@@ -11,6 +11,7 @@ const SnippetSchema = z.object({
 });
 
 export type Snippet = z.infer<typeof SnippetSchema>;
+export type SnippetActionType = "prepend" | "append" | "replace" | "append-cursor";
 
 interface SnippetStore {
 	snippets: Record<string, Snippet>;
