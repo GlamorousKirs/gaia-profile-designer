@@ -186,7 +186,7 @@ export default function Navbar() {
 					<div className="flex h-20 items-center justify-between">
 						<Link to="/" className="group flex items-center gap-2.5">
 							<div className="bg-surface p-2 rounded-xl border border-border"><Sparkles size={20} className="text-primary" /></div>
-							<div className="flex flex-col"><span className="text-sm font-bold uppercase">Gaia</span><span className="text-[10px] font-black text-primary uppercase">Profile Design</span></div>
+							<div className="flex flex-col"><span className="text-sm uppercase">Gaia</span><span className="text-[10px]  text-primary uppercase">Profile Designer</span></div>
 						</Link>
 
 						<div className="bg-surface/40 hidden lg:flex items-center rounded-2xl border border-border p-1.5 backdrop-blur-md">
