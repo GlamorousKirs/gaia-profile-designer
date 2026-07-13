@@ -2,7 +2,36 @@ import presetHTML5 from '@bbob/preset-html5'
 
 export const customPreset = presetHTML5.extend((tags: any) => ({
     ...tags,
+    b: (node: any) => ({
+        tag: 'strong',
+        content: node.content
+    }),
+    i: (node: any) => ({
+        tag: 'em',
+        content: node.content
+    }),
     br: () => ({ tag: 'br' }),
+    quote: (node: any) => {
+        const author = (node.attrs && Object.values(node.attrs)[0]) || "Quote:";
+
+        return {
+            tag: 'div',
+            attrs: { class: 'quote' },
+            content: [
+                { tag: 'div', attrs: { class: 'cite' }, content: author },
+                { tag: 'div', attrs: { class: 'quoted' }, content: [...node.content, { tag: 'div', attrs: { class: 'clear' } }] }
+            ]
+        };
+    },
+    code: (node: any) => ({
+        tag: 'div',
+        attrs: { class: 'code', style: 'word-break:break-all' },
+        content: [
+            '/* Click me to highlight then Ctrl + C to copy */',
+            { tag: 'br' },
+            ...node.content
+        ]
+    }),
     spoiler: (node: any) => ({
         tag: 'div',
         attrs: { class: 'spoiler-wrapper spoiler-hidden' },
