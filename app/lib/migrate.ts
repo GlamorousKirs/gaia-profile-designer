@@ -3,7 +3,6 @@ import Dexie from "dexie";
 
 export async function migrateGStudioToGaia() {
 	try {
-		// 1. Check if legacy gstudio database exists
 		const dbs = await indexedDB.databases();
 		if (dbs.some(db => db.name === 'gstudio')) {
 			const oldDb = new Dexie('gstudio');
@@ -24,7 +23,6 @@ export async function migrateGStudioToGaia() {
 			console.log("Migration complete: gstudio transferred to gaia-profile-designer.");
 		}
 
-		// 2. Migrate local storage libraries to Dexie
 		const libraryData = localStorage.getItem("libraries");
 		if (libraryData) {
 			const libraries = JSON.parse(libraryData);
@@ -38,7 +36,6 @@ export async function migrateGStudioToGaia() {
 			console.log("Migration complete: color libraries transferred to Dexie.");
 		}
 
-		// 3. Automatically delete legacy keyval-store database
 		if (dbs.some(db => db.name === 'keyval-store')) {
 			await indexedDB.deleteDatabase('keyval-store');
 			console.log("Legacy database deleted: keyval-store.");

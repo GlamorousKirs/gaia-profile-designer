@@ -2,21 +2,17 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import type { ChangeEvent } from 'react'
 import {
 	Database,
-	Fingerprint,
 	Download,
-	Upload,
 	AlertTriangle,
-	Trash2,
-	CheckCircle2,
-	Loader2,
 	FileText,
 	SlidersHorizontal
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useProfileStore } from '../store/useProfileStore'
 import { migrationService } from '../store/migrationService'
-import { entries, createStore, clear } from 'idb-keyval'
-import { z } from 'zod'
+import { entries, createStore } from 'idb-keyval'
+import { db } from "../lib/db";
+import { toast } from "sonner"
 
 import { Button } from '@/components/ui/button'
 import {
@@ -27,11 +23,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog'
-
-interface StatusState {
-	type: 'loading' | 'success' | 'error'
-	message: string
-}
+import { Checkbox } from '@/components/ui/checkbox'
 
 interface NavItem {
 	id: string
@@ -47,26 +39,35 @@ interface DataItem {
 	icon: LucideIcon
 }
 
-const dataPayloadSchema = z.object({
-	timestamp: z.string(),
-	gstudioLocalStorage: z.record(z.string(), z.string()),
-	snippetsState: z.record(z.string(), z.any())
-}).strict()
-
-const DB_STORE = createStore('gaia-profile-designer', 'snippets')
+const DB_NAME = 'gaia-profile-designer'
+const STORES = ['snippets', 'colorLibraries', 'logos', 'panels']
 
 const Settings: React.FC = () => {
 	const username = useProfileStore((state) => state.username)
 	const userId = useProfileStore((state) => state.userId)
 	const avatarUrl = useProfileStore((state) => state.avatarUrl)
 
-	const [activeTab, setActiveTab] = useState<string>('account')
-	const [status, setStatus] = useState<StatusState | null>(null)
+	const [activeTab, setActiveTab] = useState<string>('export')
 	const [showConfirmReset, setShowConfirmReset] = useState<boolean>(false)
-	const [hasLocalData, setHasLocalData] = useState<boolean>(true)
 	const [allItems, setAllItems] = useState<DataItem[]>([])
+	const [selectedExportIds, setSelectedExportIds] = useState<Set<string>>(new Set())
+	const fileInputRef = useRef<HTMLInputElement>(null);
 
-	const statusTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+	const selectAll = (source: 'indexeddb' | 'localstorage') => {
+		const itemsToSelect = allItems.filter(i => i.source === source);
+		const newSelection = new Set(selectedExportIds);
+
+		itemsToSelect.forEach(item => newSelection.add(item.id));
+		setSelectedExportIds(newSelection);
+	};
+
+	const unselectAll = (source: 'indexeddb' | 'localstorage') => {
+		const itemsToUnselect = allItems.filter(i => i.source === source);
+		const newSelection = new Set(selectedExportIds);
+
+		itemsToUnselect.forEach(item => newSelection.delete(item.id));
+		setSelectedExportIds(newSelection);
+	};
 
 	const verifyStoragePayload = useCallback(async () => {
 		try {
@@ -76,152 +77,194 @@ const Settings: React.FC = () => {
 				const key = localStorage.key(i)
 				if (key) {
 					const cleanValue = (localStorage.getItem(key) || '').replace(/[<>]/g, '')
-
 					discoveredItems.push({
 						id: `ls-${key}`,
 						source: 'localstorage',
-						label: `Studio Config (${key.toUpperCase()})`,
-						displayKey: `${key}: "${cleanValue.substring(0, 60)}${cleanValue.length > 60 ? '...' : ''}"`,
+						label: `${key}`,
+						displayKey: `${cleanValue.substring(0, 60)}${cleanValue.length > 60 ? '...' : ''}`,
 						icon: SlidersHorizontal
 					})
 				}
 			}
 
-			const dbRecords = await entries(DB_STORE)
-			if (dbRecords.length > 0) {
-				discoveredItems.push({
-					id: 'idb-all-snippets',
-					source: 'indexeddb',
-					label: 'Layout Snippets Database',
-					displayKey: `${dbRecords.length} item${dbRecords.length === 1 ? '' : 's'} stored locally`,
-					icon: FileText
-				})
+			for (const storeName of STORES) {
+				const table = (db as any)[storeName]
+				if (table) {
+					const count = await table.count()
+					if (count > 0) {
+						discoveredItems.push({
+							id: `idb-${storeName}`,
+							source: 'indexeddb',
+							label: `${storeName.charAt(0).toUpperCase() + storeName.slice(1)}`,
+							displayKey: `${count} item${count === 1 ? '' : 's'}`,
+							icon: FileText
+						})
+					}
+				}
 			}
 
 			setAllItems(discoveredItems)
-			setHasLocalData(discoveredItems.length > 0)
 		} catch (e) {
-			setHasLocalData(false)
+			console.error("Failed to verify storage", e)
 		}
 	}, [])
 
 	useEffect(() => {
 		verifyStoragePayload()
-		return () => {
-			if (statusTimeoutRef.current) clearTimeout(statusTimeoutRef.current)
-		}
 	}, [verifyStoragePayload, username, userId, avatarUrl])
 
-	const triggerStatus = (type: StatusState['type'], message: string): void => {
-		if (statusTimeoutRef.current) clearTimeout(statusTimeoutRef.current)
-		setStatus({ type, message })
-		if (type !== 'loading') {
-			statusTimeoutRef.current = setTimeout(() => setStatus(null), 3000)
+	const triggerImport = () => {
+		fileInputRef.current?.click();
+	};
+
+	const toggleSelection = (id: string) => {
+		const newSelection = new Set(selectedExportIds)
+		if (newSelection.has(id)) {
+			newSelection.delete(id)
+		} else {
+			newSelection.add(id)
 		}
-	}
-
-	const handleDeleteItem = async (targetItem: DataItem) => {
-		try {
-			triggerStatus('loading', 'Deleting selected record...')
-
-			if (targetItem.source === 'indexeddb') {
-				await clear(DB_STORE)
-			} else {
-				const targetKey = targetItem.id.replace('ls-', '')
-				localStorage.removeItem(targetKey)
-
-				if (targetKey === 'user') {
-					useProfileStore.setState({ username: '', userId: '', avatarUrl: '' })
-				}
-			}
-
-			triggerStatus('success', 'Selected resource dropped')
-			await verifyStoragePayload()
-		} catch (err) {
-			triggerStatus('error', 'Failed to clear resource parameter')
-		}
+		setSelectedExportIds(newSelection)
 	}
 
 	const handleExport = async (): Promise<void> => {
+		if (selectedExportIds.size === 0) {
+			toast.error("Selection Required", {
+				description: "Please select at least one item to export.",
+			})
+			return
+		}
+
 		try {
-			triggerStatus('loading', 'Preparing your data file...')
-			const exportData = await migrationService.exportSystemData()
+			toast.loading("Preparing your data...", { id: "export-toast" })
 
-			const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
-			const url = URL.createObjectURL(blob)
-			const link = document.createElement('a')
-			link.href = url
+			for (const storeName of STORES) {
+				if (selectedExportIds.has(`idb-${storeName}`)) {
+					const store = createStore(DB_NAME, storeName)
+					const records = await entries(store)
+					const data = Object.fromEntries(records)
 
-			const cleanUser = (username || 'USER').replace(/[^a-zA-Z0-9]/g, '_').toUpperCase()
-			link.download = `GAIA_STUDIO_data_${cleanUser}.json`
+					const exportPayload = {
+						indexedDB: {
+							[storeName]: data
+						}
+					}
 
-			document.body.appendChild(link)
-			link.click()
-			document.body.removeChild(link)
-			URL.revokeObjectURL(url)
+					const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: 'application/json' })
+					const url = URL.createObjectURL(blob)
+					const link = document.createElement('a')
+					link.href = url
+					link.download = `gstudio_${storeName}_${new Date().toISOString().slice(0, 10)}.json`
+					document.body.appendChild(link)
+					link.click()
+					document.body.removeChild(link)
+					URL.revokeObjectURL(url)
+				}
+			}
 
-			triggerStatus('success', 'Data file downloaded successfully')
+			const lsSelected = Array.from(selectedExportIds).filter(id => id.startsWith('ls-'))
+			if (lsSelected.length > 0) {
+				const lsExport: Record<string, string> = {}
+				lsSelected.forEach(id => {
+					const key = id.replace('ls-', '')
+					lsExport[key] = localStorage.getItem(key) || ''
+				})
+
+				const blob = new Blob([JSON.stringify({ gstudioLocalStorage: lsExport }, null, 2)], { type: 'application/json' })
+				const url = URL.createObjectURL(blob)
+				const link = document.createElement('a')
+				link.href = url
+				link.download = `gstudio_local-storage_${new Date().toISOString().slice(0, 10)}.json`
+				document.body.appendChild(link)
+				link.click()
+				document.body.removeChild(link)
+				URL.revokeObjectURL(url)
+			}
+
+			toast.success("Export Successful", {
+				id: "export-toast",
+				description: "Your selected data has been downloaded.",
+			})
 		} catch (err) {
-			triggerStatus('error', 'Failed to generate data')
+			toast.error("Export Failed", {
+				id: "export-toast",
+				description: (err as Error).message,
+			})
 		}
 	}
 
 	const handleImport = (e: ChangeEvent<HTMLInputElement>): void => {
-		const file = e.target.files?.[0]
-		if (!file) return
+		const files = e.target.files;
+		if (!files || files.length === 0) return;
 
-		triggerStatus('loading', 'Restoring your settings...')
+		toast.loading(`Restoring ${files.length} file(s)...`, { id: "import-toast" })
 
-		const reader = new FileReader()
-		reader.onload = async (event) => {
+		const readFile = (file: File): Promise<any> => {
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				reader.onload = (event) => resolve(JSON.parse(event.target?.result as string));
+				reader.onerror = (err) => reject(err);
+				reader.readAsText(file);
+			});
+		};
+
+		const processFiles = async () => {
 			try {
-				const resultText = event.target?.result as string
-				const rawData = JSON.parse(resultText)
+				const fileDataArray = await Promise.all(Array.from(files).map(readFile));
 
-				const validatedData = dataPayloadSchema.parse(rawData)
+				for (const data of fileDataArray) {
+					const isRawLocalStorage = !data.gstudioLocalStorage && !data.indexedDB;
 
-				await migrationService.importSystemData(validatedData)
-				triggerStatus('success', 'Workspace successfully restored')
-				await verifyStoragePayload()
+					if (isRawLocalStorage) {
+						Object.entries(data).forEach(([key, value]) => {
+							localStorage.setItem(key, value as string);
+						});
+					} else {
+						await migrationService.importSystemData(data);
+					}
+				}
+
+				toast.success("Import Successful", {
+					id: "import-toast",
+					description: "Workspaces have been successfully restored.",
+				})
+				await verifyStoragePayload();
+				setTimeout(() => window.location.reload(), 1000);
 			} catch (err) {
-				triggerStatus('error', 'Invalid or corrupted data file structure')
+				toast.error("Import Failed", {
+					id: "import-toast",
+					description: (err as Error).message,
+				})
 			}
-		}
-		reader.readAsText(file)
-		e.target.value = ''
-	}
+		};
+
+		processFiles();
+		e.target.value = '';
+	};
 
 	const executePurge = async (): Promise<void> => {
 		setShowConfirmReset(false)
-		triggerStatus('loading', 'Clearing application data...')
 		try {
 			await migrationService.purgeSystemData()
+			toast.success("Data Reset", {
+				description: "All local data has been purged. Refreshing...",
+			})
 			setTimeout(() => {
 				window.location.reload()
 			}, 1000)
 		} catch (err) {
-			triggerStatus('error', 'Failed to clear local data')
+			toast.error("Purge Failed", {
+				description: "Could not clear local data.",
+			})
 		}
 	}
 
 	const navItems: NavItem[] = [
-		{ id: 'account', label: 'Account Profile', icon: Fingerprint },
 		{ id: 'export', label: 'Backup Data', icon: Database },
 	]
 
 	return (
 		<div className="min-h-screen w-full bg-background text-foreground font-sans relative block">
-			{status && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-300">
-					<div className="bg-card border border-border p-8 rounded-lg shadow-lg flex flex-col items-center gap-4 max-w-sm text-center">
-						{status.type === 'loading' && <Loader2 className="text-primary animate-spin" size={32} />}
-						{status.type === 'success' && <CheckCircle2 className="text-primary" size={32} />}
-						{status.type === 'error' && <AlertTriangle className="text-destructive" size={32} />}
-						<p className="text-sm font-medium text-muted-foreground">{status.message}</p>
-					</div>
-				</div>
-			)}
-
 			<Dialog open={showConfirmReset} onOpenChange={setShowConfirmReset}>
 				<DialogContent>
 					<DialogHeader>
@@ -274,139 +317,84 @@ const Settings: React.FC = () => {
 
 				<main className="flex-1 max-w-2xl">
 					<div className="bg-card border border-border rounded-lg p-8 min-h-125 shadow-sm">
-						{activeTab === 'account' && (
-							<div className="space-y-8 animate-in fade-in duration-500">
-								<header>
-									<h2 className="text-xl font-semibold tracking-wide">User Profile</h2>
-									<p className="text-sm text-muted-foreground">Your details for the current session.</p>
-								</header>
-
-								<div className="flex items-center gap-8 p-6 bg-muted/30 border border-border rounded-lg">
-									<div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary overflow-hidden shrink-0">
-										{avatarUrl ? (
-											<img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-										) : (
-											<Fingerprint size={32} />
-										)}
-									</div>
-									<div className="space-y-1 min-w-0">
-										<p className="text-xs uppercase font-bold text-primary">Logged In As</p>
-										<h3 className="text-lg font-bold text-foreground truncate">{username || 'Guest User'}</h3>
-										<p className="text-xs text-muted-foreground font-mono truncate">ID: {userId || 'Not Available'}</p>
-									</div>
-								</div>
-
-								<div className="pt-6 border-t border-border space-y-4">
-									<div>
-										<h3 className="text-sm font-semibold tracking-wide">Stored Data</h3>
-										<p className="text-xs text-muted-foreground">All local data stored in your current browser.</p>
-									</div>
-
-									{allItems.length > 0 ? (
-										<div className="border border-border rounded-md divide-y divide-border bg-muted/10 max-h-80 overflow-y-auto">
-											{allItems.map((item) => {
-												const ItemIcon = item.icon
-												return (
-													<div key={item.id} className="flex items-center justify-between p-3 text-sm gap-4">
-														<div className="flex items-center gap-3 min-w-0 flex-1">
-															<ItemIcon size={16} className="text-muted-foreground shrink-0" />
-															<div className="min-w-0 flex-1">
-																<p className="text-xs font-semibold text-foreground leading-none">{item.label}</p>
-																<p className="font-mono text-[10px] text-muted-foreground truncate mt-1">{item.displayKey}</p>
-															</div>
-														</div>
-														<Button
-															variant="ghost"
-															size="icon"
-															onClick={() => handleDeleteItem(item)}
-															className="h-8 w-8 text-muted-foreground hover:text-destructive shrink-0"
-														>
-															<Trash2 size={14} />
-														</Button>
-													</div>
-												)
-											})}
-										</div>
-									) : (
-										<div className="p-6 border border-dashed border-border rounded-md text-center bg-muted/5">
-											<p className="text-xs text-muted-foreground">No data found in this browser.</p>
-										</div>
-									)}
-								</div>
-
-								<div className="pt-6 border-t border-border">
-									<div className="p-6 border border-destructive/20 bg-destructive/10 rounded-md flex flex-col gap-4">
-										<div className="flex gap-4 items-start">
-											<AlertTriangle size={18} className="text-destructive shrink-0 mt-1" />
-											<div>
-												<p className="text-sm font-bold text-destructive">Delete Everything</p>
-												<p className="text-xs text-muted-foreground leading-relaxed mt-1">
-													This will permanently wipe out all browser-stored data generated by the Gaia Profile Designer.
-												</p>
-											</div>
-										</div>
-
-										<Button
-											variant="destructive"
-											disabled={!hasLocalData}
-											onClick={() => setShowConfirmReset(true)}
-											className="w-full"
-										>
-											<Trash2 size={14} className="mr-2" />
-											{hasLocalData ? 'Clear Local Data' : 'No Local Data Found'}
-										</Button>
-									</div>
-								</div>
-							</div>
-						)}
-
 						{activeTab === 'export' && (
 							<div className="space-y-8 animate-in fade-in duration-500">
 								<header>
 									<h2 className="text-xl font-semibold tracking-wide">Backup Data</h2>
-									<p className="text-sm text-muted-foreground">Backup your all your data into a JSON file.</p>
+									<p className="text-sm text-muted-foreground">Select data to include in your backup.</p>
 								</header>
 
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-									<div className="p-6 border border-border bg-muted/20 rounded-lg space-y-4 flex flex-col justify-between">
-										<div className="flex items-center gap-4">
-											<Download className="text-primary shrink-0" size={18} />
-											<div>
-												<p className="text-sm font-bold">Export Data</p>
-												<p className="text-xs text-muted-foreground">Download your settings</p>
-											</div>
+								<div className="space-y-4">
+									<div className="flex justify-between items-center">
+										<h3 className="text-sm font-bold text-primary">IndexedDB</h3>
+										<div className="flex gap-2">
+											<Button variant="link" size="sm" className="text-xs h-auto p-0" onClick={() => selectAll('indexeddb')}>Select All</Button>
+											<Button variant="link" size="sm" className="text-xs h-auto p-0" onClick={() => unselectAll('indexeddb')}>Unselect All</Button>
 										</div>
-										<Button
-											variant="default"
-											onClick={handleExport}
-											className="w-full"
-										>
-											Download JSON File
-										</Button>
 									</div>
-
-									<div className="p-6 border border-border bg-muted/20 rounded-lg space-y-4 flex flex-col justify-between">
-										<div className="flex items-center gap-4">
-											<Upload className="text-card-foreground shrink-0" size={18} />
-											<div>
-												<p className="text-sm font-bold">Import Data</p>
-												<p className="text-xs text-muted-foreground">Restore saved settings</p>
+									<div className="border border-border rounded-md p-4 space-y-4">
+										{allItems.filter(i => i.source === 'indexeddb').map((item) => (
+											<div key={item.id} className="flex items-center gap-3">
+												<Checkbox
+													checked={selectedExportIds.has(item.id)}
+													onCheckedChange={() => toggleSelection(item.id)}
+												/>
+												<div className="flex-1 text-sm">
+													<p className="font-medium">{item.label}</p>
+													<p className="text-xs text-muted-foreground font-mono">{item.displayKey}</p>
+												</div>
 											</div>
+										))}
+									</div>
+								</div>
+
+								<div className="space-y-4">
+									<div className="flex justify-between items-center">
+										<h3 className="text-sm font-bold text-primary">LocalStorage</h3>
+										<div className="flex gap-2">
+											<Button variant="link" size="sm" className="text-xs h-auto p-0" onClick={() => selectAll('localstorage')}>Select All</Button>
+											<Button variant="link" size="sm" className="text-xs h-auto p-0" onClick={() => unselectAll('localstorage')}>Unselect All</Button>
 										</div>
-										<div className="w-full">
-											<input 
-												type="file" 
-												id="data-file-upload" 
-												accept=".json" 
-												onChange={handleImport} 
-												className="hidden" 
-											/>
-											<Button variant="outline" className="w-full cursor-pointer">
-												<label htmlFor="data-file-upload">
-													Choose JSON File
-												</label>
-											</Button>
-										</div>
+									</div>
+									<div className="border border-border rounded-md p-4 space-y-4">
+										{allItems.filter(i => i.source === 'localstorage').map((item) => (
+											<div key={item.id} className="flex items-center gap-3">
+												<Checkbox
+													checked={selectedExportIds.has(item.id)}
+													onCheckedChange={() => toggleSelection(item.id)}
+												/>
+												<div className="flex-1 text-sm">
+													<p className="font-medium">{item.label}</p>
+													<p className="text-xs text-muted-foreground font-mono">{item.displayKey}</p>
+												</div>
+											</div>
+										))}
+									</div>
+								</div>
+
+								<div className="flex gap-4">
+									<Button onClick={handleExport} className="flex-1">
+										<Download size={16} className="mr-2" />
+										Export Selected
+									</Button>
+
+									<div className="w-full">
+										<input
+											type="file"
+											ref={fileInputRef}
+											id="data-file-upload"
+											accept=".json"
+											multiple
+											onChange={handleImport}
+											className="hidden"
+										/>
+										<Button
+											variant="outline"
+											className="w-full cursor-pointer"
+											onClick={triggerImport}
+										>
+											Import Backup
+										</Button>
 									</div>
 								</div>
 							</div>

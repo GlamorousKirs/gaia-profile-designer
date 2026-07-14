@@ -18,8 +18,13 @@ export interface ColorLibrary {
 	colors: string[];
 }
 
+export interface CustomPanel {
+	id: string;
+	content: string;
+}
+
 const db = new Dexie('gaia-profile-designer') as Dexie & {
-	panels: EntityTable<{ id: string; content: string }, 'id'>;
+	panels: EntityTable<CustomPanel, 'id'>;
 	logos: EntityTable<Logo, 'id'>;
 	snippets: EntityTable<Snippet, 'id'>;
 	colorLibraries: EntityTable<ColorLibrary, 'id'>; 
