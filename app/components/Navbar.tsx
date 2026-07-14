@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ThemePicker } from "@/components/ThemePicker"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Announcement } from "@/components/Announcement";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -252,6 +253,7 @@ export default function Navbar() {
 						</div>
 
 						<div className="flex items-center gap-3">
+							<Announcement />
 							<ThemePicker />
 							{hasUserData && <UserAvatar onOpenProfile={() => setIsProfileOpen(true)} username={username} userId={userId} avatarUrl={avatarUrl} />}
 							<button className="relative p-[1.5px] bg-transparent rounded-full overflow-hidden group shrink-0">

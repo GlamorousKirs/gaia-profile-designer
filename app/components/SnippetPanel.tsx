@@ -1,7 +1,7 @@
 import { useState, memo, useMemo, useRef, useEffect } from "react"
 import { motion } from "motion/react"
 import { useVirtualizer } from "@tanstack/react-virtual"
-import { useSnippetStore, useFilteredSnippets } from "@/store/useSnippetStore";
+import { useSnippetStore, useFilteredSnippets } from "@/store/useSnippetStore"
 import type { Snippet, SnippetActionType } from "@/store/useSnippetStore"
 import {
 	Plus, Trash2, Edit2, FileCode, X, Save,
@@ -63,28 +63,77 @@ const SnippetRow = memo(({
 			onClick={handleRowClick}
 			className="group relative flex flex-col justify-center items-stretch rounded-lg border p-2.5 text-xs font-mono cursor-pointer w-full h-full hover:border-accent hover:bg-accent/20"
 		>
-			<div className="flex items-center gap-2 overflow-hidden flex-1 min-w-0">
-				{snippet.isReadOnly ? (
-					<Database className="size-3.5 shrink-0 text-primary" />
-				) : (
-					<FileCode className="size-3.5 shrink-0 text-foreground" />
-				)}
-				{isEditing ? (
-					<input
-						type="text"
-						value={editTitle}
-						onChange={(e) => setEditTitle(e.target.value)}
-						onKeyDown={(e) => e.key === "Enter" && saveRename(snippet.id)}
-						onMouseDown={(e) => e.stopPropagation()}
-						onClick={(e) => e.stopPropagation()}
-						className="bg-muted font-sans border border-border rounded px-1.5 py-0.5 text-foreground text-xs focus:outline-none focus:ring-1 focus:ring-ring w-full"
-						autoFocus
-					/>
-				) : (
-					<span className="truncate font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-						{snippet.title}
-					</span>
-				)}
+			<div className="flex items-center justify-between gap-2 w-full">
+				<div className="flex items-center gap-2 overflow-hidden flex-1 min-w-0">
+					{snippet.isReadOnly ? (
+						<Database className="size-3.5 shrink-0 text-primary" />
+					) : (
+						<FileCode className="size-3.5 shrink-0 text-foreground" />
+					)}
+					{isEditing ? (
+						<input
+							type="text"
+							value={editTitle}
+							onChange={(e) => setEditTitle(e.target.value)}
+							onKeyDown={(e) => e.key === "Enter" && saveRename(snippet.id)}
+							onMouseDown={(e) => e.stopPropagation()}
+							onClick={(e) => e.stopPropagation()}
+							className="bg-muted font-sans border border-border rounded px-1.5 py-0.5 text-foreground text-xs focus:outline-none focus:ring-1 focus:ring-ring w-full"
+							autoFocus
+						/>
+					) : (
+						<span className="truncate font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+							{snippet.title}
+						</span>
+					)}
+				</div>
+
+				<div
+					className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity gap-0.5 shrink-0"
+					onMouseDown={(e) => e.stopPropagation()}
+					onClick={(e) => e.stopPropagation()}
+				>
+					<DropdownMenu modal={false}>
+						<DropdownMenuTrigger>
+							<Button variant="ghost" size="icon" className="size-5 rounded bg-muted/60 border border-border text-muted-foreground hover:text-foreground">
+								<MoreHorizontal className="size-3" />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end" className="w-44 bg-popover border-border text-popover-foreground">
+							<DropdownMenuItem onClick={() => onSelectSnippet(snippet.code, 'append-cursor')}>
+								<FileStack className="size-3.5" /> Insert at cursor
+							</DropdownMenuItem>
+							<DropdownMenuItem onClick={() => onSelectSnippet(snippet.code, 'prepend')}>
+								<ArrowUp className="size-3.5" /> Prepend
+							</DropdownMenuItem>
+							<DropdownMenuItem onClick={() => onSelectSnippet(snippet.code, 'append')}>
+								<ArrowDown className="size-3.5" /> Append
+							</DropdownMenuItem>
+							<DropdownMenuItem onClick={() => onSelectSnippet(snippet.code, 'replace')}>
+								<ArrowRightLeft className="size-3.5" /> Replace whole
+							</DropdownMenuItem>
+
+							<DropdownMenuSeparator className="bg-border/60" />
+
+							<DropdownMenuItem onClick={(e) => openEditorModal(snippet, e)}>
+								<FileCode className="size-3.5" /> {snippet.isReadOnly ? "View Snippet" : "Edit Snippet"}
+							</DropdownMenuItem>
+
+							{!snippet.isReadOnly && (
+								<>
+									<DropdownMenuSeparator className="bg-border/60" />
+									<DropdownMenuItem onClick={(e) => startRename(snippet, e)}>
+										<Edit2 className="size-3.5" /> Rename Title
+									</DropdownMenuItem>
+									<DropdownMenuSeparator className="bg-border/60" />
+									<DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" onClick={() => deleteSnippet(snippet.id)}>
+										<Trash2 className="size-3.5" /> Delete Permanently
+									</DropdownMenuItem>
+								</>
+							)}
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div>
 			</div>
 
 			<div className="text-[10px] text-muted-foreground/60 truncate mt-1 pointer-events-none pl-5">

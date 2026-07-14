@@ -25,7 +25,7 @@ const db = new Dexie('gaia-profile-designer') as Dexie & {
 	colorLibraries: EntityTable<ColorLibrary, 'id'>; 
 };
 
-db.version(4).stores({
+db.version(1).stores({
 	panels: 'id',
 	logos: 'id',
 	snippets: 'id',

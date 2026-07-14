@@ -1,7 +1,12 @@
 import postcss from 'postcss';
 
 export const updateCssValue = (css: string, selector: string, property: string, value: string) => {
-	const root = postcss.parse(css || '');
+	let root;
+	try {
+		root = postcss.parse(css || '');
+	} catch (e) {
+		root = postcss.root();
+	}
 	let targetRule: any = null;
 
 	root.walkRules(selector, (rule) => {
@@ -31,7 +36,12 @@ export const updateCssValue = (css: string, selector: string, property: string, 
 };
 
 export const injectBlock = (css: string, selector: string, declarations: Record<string, string>) => {
-	const root = postcss.parse(css || '');
+	let root;
+	try {
+		root = postcss.parse(css || '');
+	} catch (e) {
+		root = postcss.root();
+	}
 	let targetRule: any = null;
 
 	root.walkRules(selector, (rule) => { targetRule = rule; });
