@@ -72,7 +72,7 @@ export function Announcement() {
                             >
                                 clear your browser storage
                             </button>
-                            <span className="pl-1">(Clicking this link will immediately clear your site storage. Don't forget to backup.)
+                            <span className="pl-1">(Clicking this link will immediately clear your site storage)
                                 Sorry for the inconvenience!</span>
                         </p>
                         <p className="text-[11px]">
