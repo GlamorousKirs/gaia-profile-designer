@@ -1,4 +1,4 @@
-import { Suspense, useState, useEffect } from "react"
+import { Suspense, useEffect } from "react"
 import {
 	Links,
 	Meta,
@@ -16,6 +16,7 @@ import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { SmoothScroll } from "@/components/SmoothScroll"
+import { migrateGStudioToGaia } from "@/lib/migrate"
 
 import "./app.css"
 import "@/themes/import-themes"
@@ -82,6 +83,30 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+	useEffect(() => {
+		const runMigrations = async () => {
+			const migrations = [
+				{ oldKey: 'autosave_draft_code', newKey: 'gstudio-autosave-draft-code' },
+				{ oldKey: 'myapp_v1_autosave_code', newKey: 'gstudio-autosave-code' }
+			];
+
+			migrations.forEach(({ oldKey, newKey }) => {
+				const data = localStorage.getItem(oldKey);
+				if (data && !localStorage.getItem(newKey)) {
+					localStorage.setItem(newKey, data);
+				}
+				if (localStorage.getItem(oldKey) !== null) {
+					localStorage.removeItem(oldKey);
+				}
+			});
+
+			// Run database migration from gstudio to gaia-profile-designer
+			await migrateGStudioToGaia();
+		};
+
+		runMigrations(); 
+	}, []);
+
 	return <Outlet />
 }
 

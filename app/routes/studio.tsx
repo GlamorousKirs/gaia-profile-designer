@@ -59,7 +59,7 @@ export default function Studio() {
 
 	useEffect(() => {
 		if (!searchParams.get("id")) {
-			const savedDraft = localStorage.getItem("autosave_draft_code")
+			const savedDraft = localStorage.getItem("gstudio-autosave-draft-code")
 			if (savedDraft) {
 				setCssCode(savedDraft)
 			}
@@ -140,7 +140,7 @@ export default function Studio() {
 				.then((rawCss) => {
 					const cleanCss = typeof rawCss === "string" ? rawCss : ""
 					setCssCode(cleanCss)
-					localStorage.setItem("myapp_v1_autosave_code", cleanCss)
+					localStorage.setItem("gstudio-autosave-code", cleanCss)
 				})
 				.catch((err) => {
 					console.error(`Failed to dynamically evaluate configuration at ${targetPath}:`, err)
@@ -150,7 +150,7 @@ export default function Studio() {
 
 	useEffect(() => {
 		if (cssCode) {
-			localStorage.setItem("autosave_draft_code", cssCode)
+			localStorage.setItem("gstudio-autosave-draft-code", cssCode)
 		}
 	}, [cssCode])
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { extend } from "colord";
 import namesPlugin from "colord/plugins/names";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2, X, Edit2, Check, Search, ChevronDown, Library } from "lucide-react";
 import { ColorPickerUI } from "./colorpicker-colorpicker";
 import { GradientColorPicker } from "./GradientColorPicker";
+import { useColorStore } from "@/store/useColorStore";
 
 extend([namesPlugin]);
 
@@ -21,10 +22,8 @@ interface GradientStop {
 	position: number;
 }
 
-const STORAGE_KEY = "gstudio-libraries";
 const DEFAULT_LIB = "Default";
 const MAX_COLORS_PER_LIB = 24;
-const MAX_LIBRARIES = 100;
 const MIN_NAME_LENGTH = 1;
 const MAX_NAME_LENGTH = 15;
 
@@ -36,9 +35,12 @@ const DEFAULT_GRADIENT_ANGLE = 90;
 const DEFAULT_SOLID_COLOR = "#605270";
 
 export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
+	const { libraries, loadLibraries, saveLibrary, deleteLibrary } = useColorStore();
+	
 	const [activeMode, setActiveMode] = useState<"solid" | "gradient">("solid");
 	const [stops, setStops] = useState<GradientStop[]>(DEFAULT_GRADIENT_STOPS);
 	const [angle, setAngle] = useState(DEFAULT_GRADIENT_ANGLE);
+	const [activeLib, setActiveLib] = useState(DEFAULT_LIB);
 
 	const validColor = color || DEFAULT_SOLID_COLOR;
 	const [isDeleteMode, setIsDeleteMode] = useState(false);
@@ -46,16 +48,12 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 	const [newLibName, setNewLibName] = useState("");
 	const [editingLib, setEditingLib] = useState<string | null>(null);
 	const [editName, setEditName] = useState("");
-	const [activeLib, setActiveLib] = useState(DEFAULT_LIB);
 	const [notify, setNotify] = useState<string | null>(null);
-	const [isMounted, setIsMounted] = useState(false);
 	const [libSearch, setLibSearch] = useState("");
 
-	const debounceTimer = useRef<NodeJS.Timeout | null>(null);
-
-	const [libraries, setLibraries] = useState<Record<string, string[]>>({
-		[DEFAULT_LIB]: [DEFAULT_SOLID_COLOR, "#ffffff"]
-	});
+	useEffect(() => {
+		loadLibraries();
+	}, [loadLibraries]);
 
 	const generateGradientString = useCallback((s: GradientStop[], deg: number) => {
 		const sorted = [...s].sort((a, b) => a.position - b.position);
@@ -74,98 +72,54 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 		);
 	}, [libraries, libSearch]);
 
-	useEffect(() => {
-		setIsMounted(true);
-		const stored = localStorage.getItem(STORAGE_KEY);
-		if (stored) {
-			try {
-				setLibraries(JSON.parse(stored));
-			} catch {
-				console.error("Failed to parse libraries");
-			}
-		}
-	}, []);
-
-	useEffect(() => {
-		if (!isMounted) return;
-		if (debounceTimer.current) clearTimeout(debounceTimer.current);
-		debounceTimer.current = setTimeout(() => {
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(libraries));
-		}, 500);
-		return () => {
-			if (debounceTimer.current) clearTimeout(debounceTimer.current);
-		};
-	}, [libraries, isMounted]);
-
 	const triggerNotify = (msg: string) => {
 		setNotify(msg);
 		setTimeout(() => setNotify(null), 3000);
 	};
 
-	const handleSaveColor = () => {
+	const handleSaveColor = async () => {
 		const valToSave = activeMode === "solid" ? validColor : generateGradientString(stops, angle);
-		setLibraries(prev => {
-			const current = prev[activeLib] || [];
-			if (current.includes(valToSave)) return prev;
-			if (current.length >= MAX_COLORS_PER_LIB) {
-				triggerNotify(`Max ${MAX_COLORS_PER_LIB} colors`);
-				return prev;
-			}
-			return { ...prev, [activeLib]: [...current, valToSave] };
-		});
+		const current = libraries[activeLib] || [];
+		if (current.includes(valToSave)) return;
+		if (current.length >= MAX_COLORS_PER_LIB) {
+			triggerNotify(`Max ${MAX_COLORS_PER_LIB} colors`);
+			return;
+		}
+		await saveLibrary(activeLib, [...current, valToSave]);
 	};
 
-	const createLibrary = () => {
+	const createLibrary = async () => {
 		const name = newLibName.trim();
-		if (Object.keys(libraries).length >= MAX_LIBRARIES) {
-			triggerNotify(`Limit reached.`);
-			return;
-		}
-		if (name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) {
-			triggerNotify(`Invalid name length.`);
-			return;
-		}
-		if (libraries[name]) {
-			triggerNotify("Library exists.");
-			return;
-		}
-		setLibraries(prev => ({ ...prev, [name]: [] }));
+		if (name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) return;
+		if (libraries[name]) return;
+		await saveLibrary(name, []);
 		setActiveLib(name);
 		setNewLibName("");
 	};
 
-	const renameLibrary = (oldName: string) => {
+	const renameLibrary = async (oldName: string) => {
 		const name = editName.trim();
 		if (name === oldName || !name || libraries[name]) {
 			setEditingLib(null);
 			return;
 		}
-		setLibraries(prev => {
-			const { [oldName]: colors, ...rest } = prev;
-			return { ...rest, [name]: colors };
-		});
+		const colors = libraries[oldName];
+		await saveLibrary(name, colors);
+		await deleteLibrary(oldName);
 		setActiveLib(name);
 		setEditingLib(null);
 	};
 
-	const deleteLibrary = (libName: string) => {
+	const handleDeleteLibrary = async (libName: string) => {
 		if (libName === DEFAULT_LIB) return;
-		setLibraries(prev => {
-			const next = { ...prev };
-			delete next[libName];
-			return next;
-		});
+		await deleteLibrary(libName);
 		if (activeLib === libName) setActiveLib(DEFAULT_LIB);
 	};
 
-	const deleteColor = (colorToDelete: string) => {
-		setLibraries(prev => ({
-			...prev,
-			[activeLib]: prev[activeLib].filter(c => c !== colorToDelete)
-		}));
+	const deleteColor = async (colorToDelete: string) => {
+		const updatedColors = libraries[activeLib].filter(c => c !== colorToDelete);
+		await saveLibrary(activeLib, updatedColors);
 	};
-
-	if (!isMounted) return null;
 
 	return (
 		<>
@@ -189,21 +143,13 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 					<div className="custom-layout p-0 rounded-lg backdrop-blur-md bg-background border flex flex-col w-64 overflow-hidden">
 						<div className="flex p-1 gap-1 border-b">
 							<button 
-								onClick={() => {
-									setActiveMode("solid");
-									onChange(DEFAULT_SOLID_COLOR);
-								}} 
+								onClick={() => { setActiveMode("solid"); onChange(DEFAULT_SOLID_COLOR); }} 
 								className={`flex items-center justify-center gap-1 flex-1 py-1 text-[10px] font-bold rounded-[calc(var(--radius)-2px)] ${activeMode === "solid" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
 							>
 								SOLID
 							</button>
 							<button 
-								onClick={() => {
-									setActiveMode("gradient");
-									setStops(DEFAULT_GRADIENT_STOPS);
-									setAngle(DEFAULT_GRADIENT_ANGLE);
-									onChange(generateGradientString(DEFAULT_GRADIENT_STOPS, DEFAULT_GRADIENT_ANGLE));
-								}} 
+								onClick={() => { setActiveMode("gradient"); setStops(DEFAULT_GRADIENT_STOPS); setAngle(DEFAULT_GRADIENT_ANGLE); onChange(generateGradientString(DEFAULT_GRADIENT_STOPS, DEFAULT_GRADIENT_ANGLE)); }} 
 								className={`flex items-center justify-center gap-1 flex-1 py-1 text-[10px] font-bold rounded-[calc(var(--radius)-2px)] ${activeMode === "gradient" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
 							>
 								GRADIENT
@@ -270,13 +216,13 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 														<>
 															<div className="flex flex-col truncate cursor-pointer grow" onClick={() => { setActiveLib(lib); setIsSelectOpen(false); }}>
 																<span className="font-bold">{lib}</span>
-																<span className="text-[9px] opacity-70">{libraries[lib].length} colors</span>
+																<span className="text-[9px] opacity-70">{libraries[lib]?.length || 0} colors</span>
 															</div>
 															<div className="flex items-center shrink-0 ml-2">
 																{lib !== DEFAULT_LIB && (
 																	<>
 																		<button className="p-1 hover:bg-muted rounded-lg" onClick={(e) => { e.stopPropagation(); setEditingLib(lib); setEditName(lib); }}><Edit2 className="size-3" /></button>
-																		<button className="p-1 hover:bg-muted rounded-lg" onClick={(e) => { e.stopPropagation(); deleteLibrary(lib); }}><Trash2 className="size-3 text-destructive" /></button>
+																		<button className="p-1 hover:bg-muted rounded-lg" onClick={(e) => { e.stopPropagation(); handleDeleteLibrary(lib); }}><Trash2 className="size-3 text-destructive" /></button>
 																	</>
 																)}
 															</div>

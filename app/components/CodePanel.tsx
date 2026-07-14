@@ -25,7 +25,7 @@ import {
 const BASE_EDITOR_WIDTH = 460
 const BASE_SNIPPETS_WIDTH = 300
 const BASE_HEIGHT = 340
-const STORAGE_KEY = "myapp_v1_autosave_code"
+const STORAGE_KEY = "gstudio-autosave-code"
 
 const structuralSpring = { type: "spring", stiffness: 380, damping: 38 } as const
 
