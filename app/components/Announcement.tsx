@@ -21,8 +21,25 @@ export function Announcement() {
 		}
 	};
 
-	const clearStorage = () => {
+	const clearStorage = async () => {
 		localStorage.clear();
+		sessionStorage.clear();
+
+		const databases = await indexedDB.databases();
+		databases.forEach((db) => {
+			if (db.name) {
+				indexedDB.deleteDatabase(db.name);
+			}
+		});
+
+		const cookies = document.cookie.split(";");
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i];
+			const eqPos = cookie.indexOf("=");
+			const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+			document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+		}
+
 		window.location.reload();
 	};
 
