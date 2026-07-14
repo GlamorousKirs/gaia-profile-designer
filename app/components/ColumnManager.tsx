@@ -26,7 +26,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useColumnStore, type ColumnLayoutState } from "@/store/useColumnStore";
 import { useCustomPanelStore } from "@/store/useCustomPanelStore";
-import { CreatePanelDialog } from "@/components/CreatePanelDialog";
+import { CreatePanelDialog } from "~/components/CreatePanelDialog"; // Updated import[cite: 3]
 import {
 	ContextMenu,
 	ContextMenuContent,
@@ -138,7 +138,7 @@ export default function ColumnManager() {
 	const updatePanel = useCustomPanelStore((state) => state.updatePanel);
 
 	const [activeId, setActiveId] = useState<string | null>(null);
-	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 	const [editingId, setEditingId] = useState<string | null>(null);
 
 	const handleRemovePanel = useCallback((id: string) => {
@@ -150,12 +150,19 @@ export default function ColumnManager() {
 		}));
 	}, [removePanel, setColumns]);
 
-	const handleEditPanel = (id: string) => {
+	const handleEditPanel = useCallback((id: string) => {
 		setEditingId(id);
-		setIsDialogOpen(true);
-	};
+		setIsDrawerOpen(true);
+	}, []);
 
-	useEffect(() => { loadPanels(); }, [loadPanels]);
+	const handleCreateClick = useCallback(() => {
+		setEditingId(null);
+		setIsDrawerOpen(true);
+	}, []);
+
+	useEffect(() => {
+		loadPanels();
+	}, [loadPanels]);
 
 	const sensors = useSensors(
 		useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -173,9 +180,11 @@ export default function ColumnManager() {
 		return Object.keys(viewColumns).find((key) => viewColumns[key as keyof typeof viewColumns].includes(id));
 	}, [viewColumns]);
 
-	const handleDragStart = (event: DragStartEvent) => setActiveId(event.active.id as string);
+	const handleDragStart = useCallback((event: DragStartEvent) => {
+		setActiveId(event.active.id as string);
+	}, []);
 
-	const handleDragOver = (event: DragOverEvent) => {
+	const handleDragOver = useCallback((event: DragOverEvent) => {
 		const { active, over } = event;
 		const activeId = active.id as string;
 		const overId = over?.id as string;
@@ -197,11 +206,14 @@ export default function ColumnManager() {
 			}
 			return prev;
 		});
-	};
+	}, [findContainer, setColumns]);
 
-	const handleDragEnd = (event: DragEndEvent) => {
+	const handleDragEnd = useCallback((event: DragEndEvent) => {
 		const { active, over } = event;
-		if (!over) { setActiveId(null); return; }
+		if (!over) {
+			setActiveId(null);
+			return;
+		}
 		const activeId = active.id as string;
 		const activeContainer = findContainer(activeId);
 		const overContainer = findContainer(over.id as string);
@@ -214,25 +226,44 @@ export default function ColumnManager() {
 			}
 		}
 		setActiveId(null);
-	};
+	}, [columns, findContainer, setColumns]);
+
+	const handleDrawerChange = useCallback((open: boolean) => {
+		setIsDrawerOpen(open);
+		if (!open) setEditingId(null);
+	}, []);
+
+	const handlePanelConfirm = useCallback((d: any) => {
+		if (editingId) updatePanel(editingId, d);
+		else if (d.id) addPanel(d.id, d);
+		setEditingId(null);
+	}, [editingId, updatePanel, addPanel]);
 
 	return (
-		<DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
+		<DndContext
+			sensors={sensors}
+			collisionDetection={closestCenter}
+			onDragStart={handleDragStart}
+			onDragOver={handleDragOver}
+			onDragEnd={handleDragEnd}
+		>
 			<div className="flex flex-col gap-4 p-3">
-				<Button onClick={() => { setEditingId(null); setIsDialogOpen(true); }} variant="outline">Create Custom Panel</Button>
+				<Button onClick={handleCreateClick} variant="outline">Create Custom Panel</Button>
 				{(Object.entries(viewColumns) as [string, string[]][]).map(([id, items]) => (
-					<DroppableColumn key={id} id={id} items={items} onRemove={handleRemovePanel} onEdit={handleEditPanel} />
+					<DroppableColumn
+						key={id}
+						id={id}
+						items={items}
+						onRemove={handleRemovePanel}
+						onEdit={handleEditPanel}
+					/>
 				))}
 			</div>
 			<CreatePanelDialog
-				open={isDialogOpen}
-				onOpenChange={(open) => { setIsDialogOpen(open); if (!open) setEditingId(null); }}
+				open={isDrawerOpen}
+				onOpenChange={handleDrawerChange}
 				defaultValues={editingId ? customPanels[editingId] : undefined}
-				onConfirm={(d) => {
-					if (editingId) updatePanel(editingId, d);
-					else if (d.id) addPanel(d.id, d);
-					setEditingId(null);
-				}}
+				onConfirm={handlePanelConfirm}
 			/>
 			<DragOverlay>
 				{activeId ? (
@@ -244,4 +275,4 @@ export default function ColumnManager() {
 			</DragOverlay>
 		</DndContext>
 	);
-}
+};

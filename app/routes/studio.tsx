@@ -20,7 +20,6 @@ import { Settings, Move, Hash, Component, Image } from "lucide-react"
 const SelectorPanel = lazy(() => import("@/components/SelectorPanel"))
 const Canvas = lazy(() => import("~/components/Canvas").then((m) => ({ default: m.Canvas })))
 const SettingsPanel = lazy(() => import("@/components/SettingsPanel"))
-const InspectorPanel = lazy(() => import("@/components/InspectorPanel"))
 const GaiaLogoPanel = lazy(() => import("@/components/GaiaLogoPanel").then((m) => ({ default: m.GaiaLogoPanel })))
 import { updateCssValue, injectBlock } from "@/lib/CodePanel/cssProcessor";
 
@@ -39,7 +38,7 @@ export default function Studio() {
 	const [rightOpen, setRightOpen] = useState(true)
 	const [version, setVersion] = useState<"v1" | "v2">("v2")
 	const [activeLeftTab, setActiveLeftTab] = useState<"selectors" | "columns">("columns")
-	const [activeRightTab, setActiveRightTab] = useState<"settings" | "inspector" | "elements" | "logos">("elements")
+	const [activeRightTab, setActiveRightTab] = useState<"settings" | "elements" | "logos">("elements")
 	const [activeTool, setActiveTool] = useState<"select" | null>(null)
 	const [isCodeOpen, setIsCodeOpen] = useState(false)
 	const [isMaximized, setIsMaximized] = useState(false)
@@ -90,11 +89,10 @@ export default function Studio() {
 		return /gaia-logo/i.test(selectedSelector) || /#header_left.*img/i.test(selectedSelector)
 	}, [selectedSelector])
 
-	const dynamicRightTabs = useMemo<SidebarTab<"settings" | "inspector" | "elements" | "logos">[]>(() => {
-		const baseTabs: SidebarTab<"settings" | "inspector" | "elements" | "logos">[] = [
+	const dynamicRightTabs = useMemo<SidebarTab<"settings" | "elements" | "logos">[]>(() => {
+		const baseTabs: SidebarTab<"settings" | "elements" | "logos">[] = [
 			{ id: "elements", icon: Component, label: "Toggle Elements Menu" },
 			{ id: "settings", icon: Settings, label: "Toggle Engine Settings Panel" },
-			{ id: "inspector", icon: Move, label: "Toggle Properties Inspector Panel" },
 		]
 		if (isLogoSelected) {
 			baseTabs.splice(1, 0, { id: "logos", icon: Image, label: "Toggle Gaia Logo Assets" })
@@ -237,7 +235,7 @@ export default function Studio() {
 						/>
 					</div>
 					{!isMaximized && (
-						<SidebarPanel<"settings" | "inspector" | "elements" | "logos">
+						<SidebarPanel<"settings" | "elements" | "logos">
 							side="right"
 							isOpen={rightOpen}
 							onToggleOpen={(val) => startTransition(() => setRightOpen(val))}
@@ -267,9 +265,7 @@ export default function Studio() {
 									/>
 								) : activeRightTab === "settings" ? (
 									<SettingsPanel />
-								) : (
-									<InspectorPanel />
-								)}
+								) : null}
 							</Suspense>
 						</SidebarPanel>
 					)}

@@ -56,7 +56,7 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
 		const selection = view.state.selection.main
 		const doc = view.state.doc
 		const text = selection.empty ? doc.toString() : doc.sliceString(selection.from, selection.to)
-		
+
 		let newText = ""
 		if (text.includes("!important")) {
 			newText = text.replace(/\s*!important/g, "")
@@ -152,9 +152,9 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
 		<AnimatePresence>
 			{isOpen && (
 				<>
-				{isDragging && <div className="fixed inset-0 z-25 cursor-grabbing pointer-events-auto" />}
+					{isDragging && <div className="fixed inset-0 z-25 cursor-grabbing pointer-events-auto" />}
 
-			<div className="fixed bottom-14 left-0 right-0 flex justify-center pointer-events-none px-4">
+					<div className="fixed bottom-14 left-0 right-0 flex justify-center pointer-events-none px-4">
 						<motion.div
 							ref={panelRef}
 							drag
@@ -198,8 +198,11 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
 													<BookOpen className="size-3.5" />
 												</Button>
 											</PopoverTrigger>
-											<PopoverContent side="top" className="w-64 text-[11px] bg-popover text-popover-foreground border-border">
-												The use of double quotes is disabled. You are encouraged to use single quotes.
+											<PopoverContent side='top' className='w-64 text-[11px] bg-popover text-popover-foreground border-border'>
+												<span>The use of double quotes is disabled. You are encouraged to use single quotes.</span>
+												<span>
+													Press <kbd className='pointer-events-none h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100'>Ctrl</kbd> + <kbd className='pointer-events-none h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100'>F</kbd> to open the editor search tool for finding or replacing text.
+												</span>
 											</PopoverContent>
 										</Popover>
 
@@ -286,14 +289,14 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
 												</>
 											)}
 										</Button>
-										
+
 										<Button
 											onClick={toggleImportant}
 											variant="ghost"
 											className="h-6 px-2 font-medium border border-border bg-muted/30 text-muted-foreground hover:text-amber-500 transition-colors"
 										>
 											<span className="text-[10px]">
-												{hasImportant ? "Remove !important" : "Add !important"}
+												{hasImportant ? "Remove !important" : "Toggle !important"}
 											</span>
 										</Button>
 									</div>
