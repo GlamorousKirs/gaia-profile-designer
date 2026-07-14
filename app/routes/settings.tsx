@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import type { ChangeEvent } from 'react'
 import {
 	Database,
@@ -10,7 +10,6 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { useProfileStore } from '../store/useProfileStore'
 import { migrationService } from '../store/migrationService'
-import { entries, createStore } from 'idb-keyval'
 import { db } from "../lib/db";
 import { toast } from "sonner"
 
@@ -39,7 +38,6 @@ interface DataItem {
 	icon: LucideIcon
 }
 
-const DB_NAME = 'gaia-profile-designer'
 const STORES = ['snippets', 'colorLibraries', 'logos', 'panels']
 
 const Settings: React.FC = () => {
@@ -53,21 +51,26 @@ const Settings: React.FC = () => {
 	const [selectedExportIds, setSelectedExportIds] = useState<Set<string>>(new Set())
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
-	const selectAll = (source: 'indexeddb' | 'localstorage') => {
-		const itemsToSelect = allItems.filter(i => i.source === source);
-		const newSelection = new Set(selectedExportIds);
+	const groupedItems = useMemo(() => ({
+		indexeddb: allItems.filter(i => i.source === 'indexeddb'),
+		localstorage: allItems.filter(i => i.source === 'localstorage')
+	}), [allItems]);
 
-		itemsToSelect.forEach(item => newSelection.add(item.id));
-		setSelectedExportIds(newSelection);
-	};
+	const selectAll = useCallback((source: 'indexeddb' | 'localstorage') => {
+		setSelectedExportIds(prev => {
+			const next = new Set(prev);
+			groupedItems[source].forEach(item => next.add(item.id));
+			return next;
+		});
+	}, [groupedItems]);
 
-	const unselectAll = (source: 'indexeddb' | 'localstorage') => {
-		const itemsToUnselect = allItems.filter(i => i.source === source);
-		const newSelection = new Set(selectedExportIds);
-
-		itemsToUnselect.forEach(item => newSelection.delete(item.id));
-		setSelectedExportIds(newSelection);
-	};
+	const unselectAll = useCallback((source: 'indexeddb' | 'localstorage') => {
+		setSelectedExportIds(prev => {
+			const next = new Set(prev);
+			groupedItems[source].forEach(item => next.delete(item.id));
+			return next;
+		});
+	}, [groupedItems]);
 
 	const verifyStoragePayload = useCallback(async () => {
 		try {
@@ -117,15 +120,13 @@ const Settings: React.FC = () => {
 		fileInputRef.current?.click();
 	};
 
-	const toggleSelection = (id: string) => {
-		const newSelection = new Set(selectedExportIds)
-		if (newSelection.has(id)) {
-			newSelection.delete(id)
-		} else {
-			newSelection.add(id)
-		}
-		setSelectedExportIds(newSelection)
-	}
+	const toggleSelection = useCallback((id: string) => {
+		setSelectedExportIds(prev => {
+			const next = new Set(prev);
+			next.has(id) ? next.delete(id) : next.add(id);
+			return next;
+		});
+	}, []);
 
 	const handleExport = async (): Promise<void> => {
 		if (selectedExportIds.size === 0) {
@@ -140,13 +141,12 @@ const Settings: React.FC = () => {
 
 			for (const storeName of STORES) {
 				if (selectedExportIds.has(`idb-${storeName}`)) {
-					const store = createStore(DB_NAME, storeName)
-					const records = await entries(store)
-					const data = Object.fromEntries(records)
+					const table = (db as any)[storeName]
+					const dataArray = await table.toArray()
 
 					const exportPayload = {
 						indexedDB: {
-							[storeName]: data
+							[storeName]: dataArray
 						}
 					}
 
@@ -333,7 +333,7 @@ const Settings: React.FC = () => {
 										</div>
 									</div>
 									<div className="border border-border rounded-md p-4 space-y-4">
-										{allItems.filter(i => i.source === 'indexeddb').map((item) => (
+										{groupedItems.indexeddb.map((item) => (
 											<div key={item.id} className="flex items-center gap-3">
 												<Checkbox
 													checked={selectedExportIds.has(item.id)}
@@ -357,7 +357,7 @@ const Settings: React.FC = () => {
 										</div>
 									</div>
 									<div className="border border-border rounded-md p-4 space-y-4">
-										{allItems.filter(i => i.source === 'localstorage').map((item) => (
+										{groupedItems.localstorage.map((item) => (
 											<div key={item.id} className="flex items-center gap-3">
 												<Checkbox
 													checked={selectedExportIds.has(item.id)}
