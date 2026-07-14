@@ -25,7 +25,7 @@ export async function migrateGStudioToGaia() {
 		}
 
 		// 2. Migrate local storage libraries to Dexie
-		const libraryData = localStorage.getItem("gstudio-libraries");
+		const libraryData = localStorage.getItem("libraries");
 		if (libraryData) {
 			const libraries = JSON.parse(libraryData);
 			for (const [libName, colors] of Object.entries(libraries)) {
@@ -34,7 +34,7 @@ export async function migrateGStudioToGaia() {
 					colors: colors as string[]
 				});
 			}
-			localStorage.removeItem("gstudio-libraries");
+			localStorage.removeItem("libraries");
 			console.log("Migration complete: color libraries transferred to Dexie.");
 		}
 

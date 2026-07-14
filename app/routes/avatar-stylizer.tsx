@@ -11,7 +11,7 @@ export default function AvatarAnimatorPage() {
 
 	useEffect(() => {
 		try {
-			const storedData = localStorage.getItem("gstudio-user")
+			const storedData = localStorage.getItem("user")
 			if (storedData) {
 				const parsed = JSON.parse(storedData)
 				if (parsed?.state?.avatarUrl) {

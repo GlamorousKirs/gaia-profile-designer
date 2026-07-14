@@ -59,7 +59,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<link href="https://fonts.googleapis.com/css2?family=Stack+Sans+Notch:wght@200..700&display=swap" rel="stylesheet" />
 			</head>
 			<body>
-				<ThemeProvider attribute="data-theme" storageKey="gstudio-theme" defaultTheme="catppuccin" enableSystem>
+				<ThemeProvider attribute="data-theme" storageKey="theme" defaultTheme="catppuccin" enableSystem>
 					<TooltipProvider>
 						<SmoothScroll>
 							<main className="w-full min-h-screen flex flex-col">
@@ -86,8 +86,8 @@ export default function App() {
 	useEffect(() => {
 		const runMigrations = async () => {
 			const migrations = [
-				{ oldKey: 'autosave_draft_code', newKey: 'gstudio-autosave-draft-code' },
-				{ oldKey: 'myapp_v1_autosave_code', newKey: 'gstudio-autosave-code' }
+				{ oldKey: 'autosave_draft_code', newKey: 'autosave-draft-code' },
+				{ oldKey: 'myapp_v1_autosave_code', newKey: 'autosave-code' }
 			];
 
 			migrations.forEach(({ oldKey, newKey }) => {

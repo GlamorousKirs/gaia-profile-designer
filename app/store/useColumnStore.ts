@@ -25,7 +25,7 @@ export const useColumnStore = create<ColumnLayoutStore>()(
 			})),
 		}),
 		{
-			name: "gstudio-panel-column-assignments",
+			name: "panel-column-assignments",
 			storage: createJSONStorage(() => localStorage),
 		}
 	)

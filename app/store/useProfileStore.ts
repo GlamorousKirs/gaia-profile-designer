@@ -21,7 +21,7 @@ export const useProfileStore = create<ProfileState>()(
 			setProfile: (newProfile) => set((state) => ({ ...state, ...newProfile })),
 		}),
 		{
-			name: "gstudio-user",
+			name: "user",
 			storage: createJSONStorage(() => localStorage),
 			partialize: (state) => ({
 				username: state.username,

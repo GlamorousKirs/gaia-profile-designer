@@ -59,7 +59,7 @@ export default function Studio() {
 
 	useEffect(() => {
 		if (!searchParams.get("id")) {
-			const savedDraft = localStorage.getItem("gstudio-autosave-draft-code")
+			const savedDraft = localStorage.getItem("autosave-draft-code")
 			if (savedDraft) {
 				setCssCode(savedDraft)
 			}
@@ -67,14 +67,14 @@ export default function Studio() {
 	}, [searchParams])
 
 	useEffect(() => {
-		const hasVisited = localStorage.getItem("gstudio-has-visited-studio")
+		const hasVisited = localStorage.getItem("has-visited-studio")
 		if (!hasVisited) {
 			setIsProfileOpen(true)
 		}
 	}, [])
 
 	const handleCloseProfile = () => {
-		localStorage.setItem("gstudio-has-visited-studio", "true")
+		localStorage.setItem("has-visited-studio", "true")
 		setIsProfileOpen(false)
 	}
 
@@ -140,7 +140,7 @@ export default function Studio() {
 				.then((rawCss) => {
 					const cleanCss = typeof rawCss === "string" ? rawCss : ""
 					setCssCode(cleanCss)
-					localStorage.setItem("gstudio-autosave-code", cleanCss)
+					localStorage.setItem("autosave-code", cleanCss)
 				})
 				.catch((err) => {
 					console.error(`Failed to dynamically evaluate configuration at ${targetPath}:`, err)
@@ -150,7 +150,7 @@ export default function Studio() {
 
 	useEffect(() => {
 		if (cssCode) {
-			localStorage.setItem("gstudio-autosave-draft-code", cssCode)
+			localStorage.setItem("autosave-draft-code", cssCode)
 		}
 	}, [cssCode])
 

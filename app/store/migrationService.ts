@@ -22,7 +22,6 @@ type MigrationData = z.infer<typeof MigrationSchema>;
 
 const DATABASE_NAME = "gaia-profile-designer";
 const STORE_NAME = "snippets";
-const PREFIX = "gstudio-";
 
 const migrationDbStore = createStore(DATABASE_NAME, STORE_NAME);
 
@@ -30,7 +29,7 @@ const getGStudioLocalStorageData = (): Record<string, string> => {
 	const data: Record<string, string> = {};
 	for (let i = 0; i < localStorage.length; i++) {
 		const key = localStorage.key(i);
-		if (key && key.startsWith(PREFIX)) {
+		if (key) {
 			data[key] = localStorage.getItem(key) || "";
 		}
 	}
@@ -87,15 +86,13 @@ export const migrationService = {
 
 		for (let i = localStorage.length - 1; i >= 0; i--) {
 			const key = localStorage.key(i);
-			if (key && key.startsWith(PREFIX)) {
+			if (key) {
 				localStorage.removeItem(key);
 			}
 		}
 
 		for (const [key, value] of Object.entries(parsedData.gstudioLocalStorage)) {
-			if (key.startsWith(PREFIX)) {
-				localStorage.setItem(key, String(value));
-			}
+			localStorage.setItem(key, String(value));
 		}
 
 		await clear(migrationDbStore);
@@ -134,7 +131,7 @@ export const migrationService = {
 	purgeSystemData: async (): Promise<void> => {
 		for (let i = localStorage.length - 1; i >= 0; i--) {
 			const key = localStorage.key(i);
-			if (key && key.startsWith(PREFIX)) {
+			if (key) {
 				localStorage.removeItem(key);
 			}
 		}

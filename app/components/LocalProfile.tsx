@@ -13,7 +13,6 @@ interface LocalProfileProps {
 }
 
 const SAFE_URL_REGEX = /^https?:\/\//i
-const PREFIX = "gstudio-"
 
 export function LocalProfile({ isOpen, onClose }: LocalProfileProps) {
   const store = useProfileStore()
@@ -109,7 +108,7 @@ export function LocalProfile({ isOpen, onClose }: LocalProfileProps) {
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-center">
                       <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Username</Label>
-                      <span className="text-[8px] font-mono opacity-40 text-muted-foreground">{PREFIX}user</span>
+                      <span className="text-[8px] font-mono opacity-40 text-muted-foreground">user</span>
                     </div>
                     <Input
                       className="bg-primary/5 border-primary/10"
