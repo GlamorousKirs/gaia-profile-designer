@@ -100,39 +100,39 @@ const SortableItem = memo(function SortableItem({ id, onRemove, onEdit }: { id: 
 	const isCustom = Object.keys(customPanels).includes(id);
 	const displayId = id.startsWith("#id_") ? id : `#id_${id}`;
 
+	const itemContent = (
+		<div
+			ref={setNodeRef}
+			style={style}
+			{...attributes}
+			{...listeners}
+			className="group flex items-center justify-between gap-2 px-2 py-2 hover:bg-accent hover:text-accent-foreground cursor-grab active:cursor-grabbing touch-none w-full font-mono text-[11px] rounded-md"
+		>
+			<div className="flex items-center gap-2 truncate">
+				<GripVertical className="size-3 opacity-40 shrink-0" />
+				<span className="truncate">{displayId}</span>
+			</div>
+		</div>
+	);
+
+	if (!isCustom) {
+		return itemContent;
+	}
+
 	return (
 		<ContextMenu>
-			<ContextMenuTrigger>
-				<div
-					ref={setNodeRef}
-					style={style}
-					{...attributes}
-					{...listeners}
-					className="group flex items-center justify-between gap-2 px-2 py-2 hover:bg-accent hover:text-accent-foreground cursor-grab active:cursor-grabbing touch-none w-full font-mono text-[11px] rounded-md"
+			<ContextMenuTrigger>{itemContent}</ContextMenuTrigger>
+			<ContextMenuContent>
+				<ContextMenuItem onClick={() => onEdit(id)}>
+					Edit
+				</ContextMenuItem>
+				<ContextMenuItem
+					onClick={() => onRemove(id)}
+					className="text-destructive focus:text-destructive"
 				>
-					<div className="flex items-center gap-2 truncate">
-						<GripVertical className="size-3 opacity-40 shrink-0" />
-						<span className="truncate">{displayId}</span>
-					</div>
-				</div>
-			</ContextMenuTrigger>
-			{(isCustom || !id.startsWith("#id_")) && (
-				<ContextMenuContent>
-					{isCustom && (
-						<ContextMenuItem onClick={() => onEdit(id)}>
-							Edit
-						</ContextMenuItem>
-					)}
-					{isCustom && (
-						<ContextMenuItem
-							onClick={() => onRemove(id)}
-							className="text-destructive focus:text-destructive"
-						>
-							Remove
-						</ContextMenuItem>
-					)}
-				</ContextMenuContent>
-			)}
+					Remove
+				</ContextMenuItem>
+			</ContextMenuContent>
 		</ContextMenu>
 	);
 });

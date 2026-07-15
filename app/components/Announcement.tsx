@@ -56,7 +56,7 @@ export function Announcement() {
 			<PopoverContent className="w-80 p-4" align="end">
 				<div className="flex flex-col gap-4">
 					<h4 className="font-semibold text-sm">Updates</h4>
-					<div className="flex flex-col gap-4">
+					<div className="flex flex-col gap-4 max-h-[60vh] overflow-y-auto pr-2">
 						{ANNOUNCEMENTS.map((item, index) => (
 							<div key={index} className="flex flex-col gap-2">
 								<div className="flex justify-between items-center">

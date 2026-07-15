@@ -12,6 +12,11 @@ export interface AnnouncementItem {
 }
 
 export const ANNOUNCEMENTS: AnnouncementItem[] = [
+		{
+		date: "Update #4",
+		timestamp: "2026-07-15",
+		message: `- Added Media Panel creation. #id_about is now editable. Right click on them to edit. \n\nI might take a break soon. Expect less frequent updates. I hope you're enjoying the project though! Let me know when you find a bug. I'll try to fix it when I have time.`,
+	},
 	{
 		date: "Update #3",
 		timestamp: "2026-07-15",
@@ -36,7 +41,7 @@ export const ANNOUNCEMENTS: AnnouncementItem[] = [
 		warning: "(Clicking the Clear Storage will immediately clear it) Sorry for the inconvenience!",
 		links: [
 			{
-				label: "Let me know",
+				label: "Add a comment",
 				url: "https://www.gaiaonline.com/profiles/sunkirs/20150259/?mode=addcomment",
 				prefix: "Have feedback? ",
 			},
