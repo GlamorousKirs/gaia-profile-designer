@@ -1,0 +1,87 @@
+#custom_648_content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+}
+
+#custom_648_content>br {
+    display: none;
+}
+
+.spoiler-wrapper {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    aspect-ratio: 1 / 1;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.spoiler-wrapper.spoiler-hidden .spoiler {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    font-size: 0;
+}
+
+.spoiler-wrapper:not(.spoiler-hidden) .spoiler {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10001;
+    color: #fff;
+    font-size: 10px;
+    text-align: center;
+    line-height: 25px;
+}
+
+.spoiler-title {
+    inset: 0;
+}
+
+.spoiler-wrapper:not(.spoiler-hidden) .spoiler-title {
+    position: fixed;
+    z-index: 10000;
+    background: url(https://i.ibb.co/kxG8j51/Firefly-100s-1084px.png) #000000 repeat center;
+    animation: 20s stars linear infinite;
+    user-select: none;
+    -webkit-user-select: none;
+    overflow: visible;
+}
+
+@keyframes stars {
+    100% {
+        background-position: 0px 500px;
+    }
+}
+
+.spoiler-control {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    font-size: 0;
+}
+
+.user_img {
+    width: 100%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.spoiler-hidden .user_img {
+    opacity: 0.8;
+}
+
+.spoiler-wrapper.spoiler-hidden:hover .user_img {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.spoiler-wrapper:not(.spoiler-hidden) .user_img {
+    width: auto;
+    height: auto;
+
+}

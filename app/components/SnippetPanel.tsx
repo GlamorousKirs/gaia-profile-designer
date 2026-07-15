@@ -199,6 +199,11 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
 	}
 
 	const handleSaveModal = () => {
+		if (modalSnippet?.isReadOnly) {
+			setIsModalOpen(false);
+			return;
+		}
+
 		if (modalSnippet) {
 			updateSnippet(modalSnippet.id, modalCode)
 			renameSnippet(modalSnippet.id, modalTitle)
@@ -242,6 +247,7 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
 									type="text"
 									value={modalTitle}
 									onChange={(e) => setModalTitle(e.target.value)}
+									readOnly={modalSnippet?.isReadOnly}
 									className="bg-transparent text-foreground focus:outline-none focus:ring-0 flex-1 font-sans placeholder-muted-foreground/40 p-0 normal-case tracking-normal"
 									placeholder="Snippet Designation"
 								/>
@@ -301,6 +307,7 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
 										onChange={(value) => setModalCode(value)}
 										theme={studioTheme}
 										extensions={extensions}
+										editable={!modalSnippet?.isReadOnly}
 										basicSetup={{
 											lineNumbers: false,
 											foldGutter: false,
@@ -321,14 +328,16 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
 										className="h-6.5 text-[10px] px-3 font-medium bg-muted/40 hover:bg-muted border border-border text-muted-foreground hover:text-foreground"
 										onClick={() => setIsModalOpen(false)}
 									>
-										Cancel
+										{modalSnippet?.isReadOnly ? "Close" : "Cancel"}
 									</Button>
-									<Button
-										className="h-6.5 text-[10px] px-3 font-medium bg-primary hover:bg-primary/90 text-primary-foreground gap-1 shadow-sm transition-colors"
-										onClick={handleSaveModal}
-									>
-										<Save className="size-3" /> Save Snippet
-									</Button>
+									{!modalSnippet?.isReadOnly && (
+										<Button
+											className="h-6.5 text-[10px] px-3 font-medium bg-primary hover:bg-primary/90 text-primary-foreground gap-1 shadow-sm transition-colors"
+											onClick={handleSaveModal}
+										>
+											<Save className="size-3" /> Save Snippet
+										</Button>
+									)}
 								</div>
 							</div>
 						) : isLoading ? (
