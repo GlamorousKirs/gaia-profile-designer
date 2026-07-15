@@ -96,8 +96,7 @@ const SortableItem = memo(function SortableItem({ id, onRemove, onEdit }: { id: 
 	const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 	const style = { transform: CSS.Transform.toString(transform), transition };
 
-	const customPanels = useCustomPanelStore((state) => state.panels);
-	const isCustom = Object.keys(customPanels).includes(id);
+	const isCustom = useCustomPanelStore((state) => Object.keys(state.panels).includes(id));
 	const displayId = id.startsWith("#id_") ? id : `#id_${id}`;
 
 	const itemContent = (
@@ -115,27 +114,29 @@ const SortableItem = memo(function SortableItem({ id, onRemove, onEdit }: { id: 
 		</div>
 	);
 
-	if (!isCustom) {
-		return itemContent;
-	}
+	if (!isCustom) return itemContent;
 
 	return (
 		<ContextMenu>
 			<ContextMenuTrigger>{itemContent}</ContextMenuTrigger>
 			<ContextMenuContent>
-				<ContextMenuItem onClick={() => onEdit(id)}>
-					Edit
-				</ContextMenuItem>
-				<ContextMenuItem
-					onClick={() => onRemove(id)}
-					className="text-destructive focus:text-destructive"
-				>
-					Remove
-				</ContextMenuItem>
+				<ContextMenuItem onClick={() => onEdit(id)}>Edit</ContextMenuItem>
+				<ContextMenuItem onClick={() => onRemove(id)} className="text-destructive focus:text-destructive">Remove</ContextMenuItem>
 			</ContextMenuContent>
 		</ContextMenu>
 	);
 });
+
+const DragOverlayWrapper = memo(({ activeId }: { activeId: string | null }) => (
+	<DragOverlay>
+		{activeId ? (
+			<div className="flex items-center gap-2 px-2 py-2 bg-accent cursor-grabbing w-full font-mono text-[11px] rounded-md border shadow-lg">
+				<GripVertical className="size-3 opacity-60" />
+				{activeId.startsWith("#id_") ? activeId : `#id_${activeId}`}
+			</div>
+		) : null}
+	</DragOverlay>
+));
 
 export default function ColumnManager() {
 	const { columns, setColumns } = useColumnStore();
@@ -160,11 +161,8 @@ export default function ColumnManager() {
 
 	const handleEditPanel = useCallback((id: string) => {
 		setEditingId(id);
-		if (id.startsWith("#id_media_")) {
-			setIsMediaDrawerOpen(true);
-		} else {
-			setIsDrawerOpen(true);
-		}
+		if (id.startsWith("#id_media_")) setIsMediaDrawerOpen(true);
+		else setIsDrawerOpen(true);
 	}, []);
 
 	const handleCreateClick = useCallback(() => {
@@ -172,9 +170,7 @@ export default function ColumnManager() {
 		setIsDrawerOpen(true);
 	}, []);
 
-	useEffect(() => {
-		loadPanels();
-	}, [loadPanels]);
+	useEffect(() => { loadPanels(); }, [loadPanels]);
 
 	const sensors = useSensors(
 		useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -192,9 +188,7 @@ export default function ColumnManager() {
 		return Object.keys(viewColumns).find((key) => viewColumns[key as keyof typeof viewColumns].includes(id));
 	}, [viewColumns]);
 
-	const handleDragStart = useCallback((event: DragStartEvent) => {
-		setActiveId(event.active.id as string);
-	}, []);
+	const handleDragStart = useCallback((event: DragStartEvent) => setActiveId(event.active.id as string), []);
 
 	const handleDragOver = useCallback((event: DragOverEvent) => {
 		const { active, over } = event;
@@ -252,18 +246,12 @@ export default function ColumnManager() {
 
 	const handlePanelConfirm = useCallback((d: any) => {
 		const panelId = editingId === "about" ? "about" : d.id;
-
 		if (editingId && editingId !== panelId) {
 			removePanel(editingId);
 			addPanel(panelId, { ...d, id: panelId });
-
 			setColumns((prev: ColumnLayoutState) => {
 				const updateCol = (col: string[]) => col.map(id => id === editingId ? panelId : id);
-				return {
-					column1: updateCol(prev.column1),
-					column2: updateCol(prev.column2),
-					column3: updateCol(prev.column3),
-				};
+				return { column1: updateCol(prev.column1), column2: updateCol(prev.column2), column3: updateCol(prev.column3) };
 			});
 		} else if (editingId) {
 			updatePanel(editingId, { ...d, id: panelId });
@@ -272,62 +260,21 @@ export default function ColumnManager() {
 		}
 		setEditingId(null);
 	}, [editingId, updatePanel, addPanel, removePanel, setColumns]);
+
 	return (
-		<DndContext
-			sensors={sensors}
-			collisionDetection={closestCenter}
-			onDragStart={handleDragStart}
-			onDragOver={handleDragOver}
-			onDragEnd={handleDragEnd}
-		>
+		<DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
 			<div className="flex flex-col gap-4 p-3">
 				<div className="flex gap-2">
-					<Button
-						onClick={handleCreateClick}
-						variant="outline"
-						className="flex-1 text-[11px] h-8"
-					>
-						Create Custom
-					</Button>
-					<Button
-						onClick={() => setIsMediaDrawerOpen(true)}
-						variant="outline"
-						className="flex-1 text-[11px] h-8"
-					>
-						Create Media
-					</Button>
+					<Button onClick={handleCreateClick} variant="outline" className="flex-1 text-[11px] h-8">Create Custom</Button>
+					<Button onClick={() => setIsMediaDrawerOpen(true)} variant="outline" className="flex-1 text-[11px] h-8">Create Media</Button>
 				</div>
-
 				{(Object.entries(viewColumns) as [string, string[]][]).map(([id, items]) => (
-					<DroppableColumn
-						key={id}
-						id={id}
-						items={items}
-						onRemove={handleRemovePanel}
-						onEdit={handleEditPanel}
-					/>
+					<DroppableColumn key={id} id={id} items={items} onRemove={handleRemovePanel} onEdit={handleEditPanel} />
 				))}
 			</div>
-			<CreatePanelDialog
-				open={isDrawerOpen}
-				onOpenChange={handleDrawerChange}
-				defaultValues={editingId ? customPanels[editingId] : undefined}
-				onConfirm={handlePanelConfirm}
-			/>
-			<CreateMediaPanelDialog
-				open={isMediaDrawerOpen}
-				onOpenChange={handleMediaDrawerChange}
-				defaultValues={editingId && editingId.startsWith("#id_media_") ? customPanels[editingId] : undefined}
-				onConfirm={handlePanelConfirm}
-			/>
-			<DragOverlay>
-				{activeId ? (
-					<div className="flex items-center gap-2 px-2 py-2 bg-accent cursor-grabbing w-full font-mono text-[11px] rounded-md border shadow-lg">
-						<GripVertical className="size-3 opacity-60" />
-						{activeId.startsWith("#id_") ? activeId : `#id_${activeId}`}
-					</div>
-				) : null}
-			</DragOverlay>
+			<CreatePanelDialog open={isDrawerOpen} onOpenChange={handleDrawerChange} defaultValues={editingId ? customPanels[editingId] : undefined} onConfirm={handlePanelConfirm} />
+			<CreateMediaPanelDialog open={isMediaDrawerOpen} onOpenChange={handleMediaDrawerChange} defaultValues={editingId && editingId.startsWith("#id_media_") ? customPanels[editingId] : undefined} onConfirm={handlePanelConfirm} />
+			<DragOverlayWrapper activeId={activeId} />
 		</DndContext>
 	);
-};
+}
