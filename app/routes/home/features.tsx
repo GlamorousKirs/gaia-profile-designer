@@ -70,8 +70,7 @@ export function Features() {
 			<div className="container mx-auto px-4 relative z-10">
 				<div className="text-center mb-10">
 					<motion.h2 
-						className="text-4xl font-extrabold tracking-tight sm:text-5xl" 
-						style={{ fontFamily: "Philosopher, sans-serif" }}
+						className="text-4xl font-extrabold tracking-tight sm:text-5xl font-title"
 						initial={{ opacity: 0, y: 20 }} 
 						whileInView={{ opacity: 1, y: 0 }} 
 						viewport={{ once: true }}

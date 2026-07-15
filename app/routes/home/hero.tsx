@@ -34,7 +34,7 @@ export function Hero() {
 				animate="visible"
 			>
 				<motion.h1
-					className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-heading font-extrabold tracking-tight leading-[0.9] bg-clip-text text-transparent bg-linear-to-b from-foreground to-primary/70 pb-5"
+					className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-title font-extrabold tracking-tight leading-[0.9] bg-clip-text text-transparent bg-linear-to-b from-foreground to-primary/70 pb-5"
 					variants={itemVariants}
 				>
 					GAIA PROFILE<br />DESIGNER

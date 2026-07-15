@@ -28,7 +28,7 @@ export const GalleryHeader = memo(function GalleryHeader({
 				Gallery
 			</h1>
 			<p className="text-muted-foreground max-w-lg mx-auto mb-8">
-				Find the perfect preset for your profile from our ready-made collection.
+				Work in progress..
 			</p>
 
 			<div className="flex flex-col items-center justify-center gap-4 sm:flex-row">

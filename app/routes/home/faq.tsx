@@ -15,7 +15,7 @@ export function FAQ() {
 			<div className="max-w-6xl mx-auto px-6">
 				<div className="flex flex-col md:flex-row gap-12">
 					<div className="md:w-1/3">
-						<h2 className="text-6xl font-heading tracking-tighter leading-none text-foreground sticky top-24">
+						<h2 className="text-6xl font-title tracking-tighter leading-none text-foreground sticky top-24">
 							<span className="block bg-clip-text text-transparent bg-linear-to-br from-white to-blue-200">
 								ASKED
 							</span>
