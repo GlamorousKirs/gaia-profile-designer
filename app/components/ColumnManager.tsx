@@ -251,12 +251,14 @@ export default function ColumnManager() {
 	}, []);
 
 	const handlePanelConfirm = useCallback((d: any) => {
-		if (editingId && editingId !== d.id) {
+		const panelId = editingId === "about" ? "about" : d.id;
+
+		if (editingId && editingId !== panelId) {
 			removePanel(editingId);
-			addPanel(d.id, d);
+			addPanel(panelId, { ...d, id: panelId });
 
 			setColumns((prev: ColumnLayoutState) => {
-				const updateCol = (col: string[]) => col.map(id => id === editingId ? d.id : id);
+				const updateCol = (col: string[]) => col.map(id => id === editingId ? panelId : id);
 				return {
 					column1: updateCol(prev.column1),
 					column2: updateCol(prev.column2),
@@ -264,13 +266,12 @@ export default function ColumnManager() {
 				};
 			});
 		} else if (editingId) {
-			updatePanel(editingId, d);
+			updatePanel(editingId, { ...d, id: panelId });
 		} else if (d.id) {
-			addPanel(d.id, d);
+			addPanel(panelId, { ...d, id: panelId });
 		}
 		setEditingId(null);
 	}, [editingId, updatePanel, addPanel, removePanel, setColumns]);
-
 	return (
 		<DndContext
 			sensors={sensors}

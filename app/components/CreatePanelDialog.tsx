@@ -72,13 +72,18 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
 		handleInsert(start, end, newText)
 		setMediaInputs({ url: "", label: "", youtube: "", image: "" })
 	}
+
 	const handleSubmit = () => {
-		const suffix = formData.id.trim() === ""
+		let finalId = formData.id.trim() === ""
 			? generateNumericId()
 			: formData.id.replace('#id_custom_', '');
 
+		if (defaultValues?.id === "about") {
+			finalId = "about";
+		}
+
 		onConfirm({
-			id: `#id_custom_${suffix}`,
+			id: finalId === "about" ? "about" : `#id_custom_${finalId}`,
 			name: formData.name.trim() === "" ? "Custom" : formData.name,
 			content: formData.content
 		});
