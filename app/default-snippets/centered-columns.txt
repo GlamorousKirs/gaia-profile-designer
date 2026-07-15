@@ -1,0 +1,8 @@
+#columns {
+	position: absolute;
+	top: 172px;
+	width: 1024px;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+}

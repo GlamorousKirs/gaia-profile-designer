@@ -95,6 +95,7 @@ const SortableItem = memo(function SortableItem({ id, onRemove, onEdit }: { id: 
 
 	const customPanels = useCustomPanelStore((state) => state.panels);
 	const isCustom = Object.keys(customPanels).includes(id);
+	const displayId = isCustom && !id.startsWith("#id_") ? `#id_${id}` : id;
 
 	return (
 		<ContextMenu>
@@ -108,7 +109,7 @@ const SortableItem = memo(function SortableItem({ id, onRemove, onEdit }: { id: 
 				>
 					<div className="flex items-center gap-2 truncate">
 						<GripVertical className="size-3 opacity-40 shrink-0" />
-						<span className="truncate">{id}</span>
+						<span className="truncate">{displayId}</span>
 					</div>
 				</div>
 			</ContextMenuTrigger>

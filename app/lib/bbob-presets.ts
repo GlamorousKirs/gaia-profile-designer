@@ -10,6 +10,14 @@ export const customPreset = presetHTML5.extend((tags: any) => ({
         tag: 'em',
         content: node.content
     }),
+    img: (node: any) => ({
+        tag: 'img',
+        attrs: {
+            src: node.content[0] || '',
+            class: "user_img",
+            alt: "User Image",
+        }
+    }),
     br: () => ({ tag: 'br' }),
     quote: (node: any) => {
         const author = (node.attrs && Object.values(node.attrs)[0]) || "Quote:";

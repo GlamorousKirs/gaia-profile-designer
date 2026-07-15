@@ -1,16 +1,33 @@
-export const ANNOUNCEMENTS = [
+export interface AnnouncementItem {
+	date: string;
+	timestamp: string;
+	message: string;
+	warning?: string;
+	links?: {
+		label: string;
+		url: string;
+		prefix: string;
+	}[];
+	showClearStorage?: boolean;
+}
+
+export const ANNOUNCEMENTS: AnnouncementItem[] = [
+	{
+		date: "Update #3",
+		timestamp: "2026-07-15",
+		message: `- Added "Centered Columns" snippet.\n- Added BBCode image support for custom panels. You can now also highlight text to wrap it with tags when using the BBcode toolbar.\n- Fixed custom panels. CSS styling not applying correctly when targeting custom panels because their IDs were being generated with a double prefix (e.q., #id_#id_custom_...)`,
+	},
 	{
 		date: "Update #2",
 		timestamp: "2026-07-15",
 		message: "Exporting and importing data has been fixed; you can now use them.",
-		warning: "",
 		links: [
 			{
 				label: "Settings",
 				url: "https://glamorouskirs.github.io/gaia-profile-designer/settings",
-				prefix: "Go to "
-			}
-		]
+				prefix: "Go to ",
+			},
+		],
 	},
 	{
 		date: "Update #1",
@@ -21,8 +38,9 @@ export const ANNOUNCEMENTS = [
 			{
 				label: "Let me know",
 				url: "https://www.gaiaonline.com/profiles/sunkirs/20150259/?mode=addcomment",
-				prefix: "Have feedback? "
-			}
-		]
-	}
+				prefix: "Have feedback? ",
+			},
+		],
+		showClearStorage: true,
+	},
 ];

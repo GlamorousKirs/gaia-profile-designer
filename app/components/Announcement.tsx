@@ -63,33 +63,35 @@ export function Announcement() {
 									<p className="text-sm font-medium">{item.date}</p>
 									<span className="text-[10px] text-muted-foreground">{item.timestamp}</span>
 								</div>
-								<p className="text-xs text-muted-foreground">{item.message}</p>
+								<p className="text-xs text-muted-foreground whitespace-pre-wrap">{item.message}</p>
 								{item.warning && (
 									<p className="text-[10px] text-destructive italic">{item.warning}</p>
 								)}
-								<div className="flex flex-wrap gap-2 text-xs">
-									{item.links.map((link, lIdx) => (
-										<span key={lIdx}>
-											{link.prefix}
-											<a
-												href={link.url}
-												target="_blank"
-												rel="noreferrer"
-												className="text-primary underline underline-offset-4"
+								{(item.links || item.showClearStorage) && (
+									<div className="flex flex-wrap gap-2 text-xs">
+										{item.links?.map((link, lIdx) => (
+											<span key={lIdx}>
+												{link.prefix}
+												<a
+													href={link.url}
+													target="_blank"
+													rel="noreferrer"
+													className="text-primary underline underline-offset-4"
+												>
+													{link.label}
+												</a>
+											</span>
+										))}
+										{item.showClearStorage && (
+											<button
+												onClick={clearStorage}
+												className="text-destructive underline underline-offset-4"
 											>
-												{link.label}
-											</a>
-										</span>
-									))}
-									{index === 1 && (
-										<button
-											onClick={clearStorage}
-											className="text-destructive underline underline-offset-4"
-										>
-											Clear Storage
-										</button>
-									)}
-								</div>
+												Clear Storage
+											</button>
+										)}
+									</div>
+								)}
 								{index < ANNOUNCEMENTS.length - 1 && <Separator className="mt-2" />}
 							</div>
 						))}

@@ -4,13 +4,13 @@ export const THEMES = [
   {
     "id": "dark",
     "name": "Dark Mode",
-    "primary": "oklch(0.92 0.004 286.32)",
-    "bg": "oklch(0.141 0.005 285.823)"
+    "primary": "oklch(0.922 0 0)",
+    "bg": "oklch(0.145 0 0)"
   },
   {
     "id": "light",
     "name": "Light Mode",
-    "primary": "oklch(0.21 0.006 285.885)",
+    "primary": "oklch(0.205 0 0)",
     "bg": "oklch(1 0 0)"
   },
   {

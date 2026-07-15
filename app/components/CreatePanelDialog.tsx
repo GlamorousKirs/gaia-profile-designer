@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import {
 	Dialog,
 	DialogContent,
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Bold, Italic, Film, MessageSquareQuote, Code, EyeOff } from "lucide-react"
+import { Bold, Italic, Film, MessageSquareQuote, Code, EyeOff, Image } from "lucide-react"
 
 interface CreatePanelDialogProps {
 	open: boolean
@@ -23,11 +23,12 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
 	const [name, setName] = useState("")
 	const [id, setId] = useState("")
 	const [content, setContent] = useState("")
+	const textareaRef = useRef<HTMLTextAreaElement>(null)
 
 	useEffect(() => {
 		if (defaultValues) {
 			setName(defaultValues.name)
-			setId(defaultValues.id.replace('#id_custom_', ''))
+			setId(defaultValues.id.replace('custom_', ''))
 			setContent(defaultValues.content)
 		} else {
 			setName("")
@@ -37,19 +38,41 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
 	}, [defaultValues, open])
 
 	const insertTag = (tag: string) => {
-		const openTag = `[${tag}]`;
-		const closeTag = `[/${tag}]`;
-		setContent(prev => `${prev}${openTag}${closeTag}`);
-	};
+		const textarea = textareaRef.current
+		if (!textarea) return
+
+		const start = textarea.selectionStart
+		const end = textarea.selectionEnd
+		const selectedText = content.substring(start, end)
+		
+		const openTag = `[${tag}]`
+		const closeTag = `[/${tag}]`
+		const textToInsert = `${openTag}${selectedText}${closeTag}`
+
+		const newContent = 
+			content.substring(0, start) + 
+			textToInsert + 
+			content.substring(end)
+
+		setContent(newContent)
+
+		setTimeout(() => {
+			textarea.focus()
+			textarea.setSelectionRange(
+				start + openTag.length,
+				start + openTag.length + selectedText.length
+			)
+		}, 0)
+	}
 
 	const handleSubmit = () => {
-		const numericId = id.trim() === "" ? Math.floor(10000 + Math.random() * 90000).toString() : id;
-		const finalId = `#id_custom_${numericId}`;
-		const finalName = name.trim() === "" ? "Custom" : name;
+		const numericId = id.trim() === "" ? Math.floor(10000 + Math.random() * 90000).toString() : id
+		const finalId = `custom_${numericId}`
+		const finalName = name.trim() === "" ? "Custom" : name
 
-		onConfirm({ id: finalId, name: finalName, content });
-		onOpenChange(false);
-	};
+		onConfirm({ id: finalId, name: finalName, content })
+		onOpenChange(false)
+	}
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
@@ -76,6 +99,7 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
 						<div className="flex gap-1 flex-wrap">
 							<Button type="button" variant="outline" size="sm" onClick={() => insertTag('b')}><Bold className="w-4 h-4" /></Button>
 							<Button type="button" variant="outline" size="sm" onClick={() => insertTag('i')}><Italic className="w-4 h-4" /></Button>
+							<Button type="button" variant="outline" size="sm" onClick={() => insertTag('img')}><Image className="w-4 h-4" /></Button>
 							<Button type="button" variant="outline" size="sm" onClick={() => insertTag('spoiler')}><EyeOff className="w-4 h-4" /></Button>
 							<Button type="button" variant="outline" size="sm" onClick={() => insertTag('youtube')}><Film className="w-4 h-4" /></Button>
 							<Button type="button" variant="outline" size="sm" onClick={() => insertTag('quote')}><MessageSquareQuote className="w-4 h-4" /></Button>
@@ -85,6 +109,7 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
 
 					<div className="grid gap-2">
 						<Textarea
+							ref={textareaRef}
 							id="content"
 							value={content}
 							onChange={(e) => setContent(e.target.value)}
