@@ -102,7 +102,13 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
 						</div>
 						<div className="grid gap-2">
 							<Label htmlFor="id">ID</Label>
-							<Input id="id" value={formData.id} onChange={(e) => setFormData(p => ({ ...p, id: e.target.value }))} placeholder="12345" disabled={!!defaultValues} />
+							<Input
+								id="id"
+								value={formData.id}
+								onChange={(e) => setFormData(p => ({ ...p, id: e.target.value }))}
+								placeholder="12345"
+								disabled={defaultValues?.id === "about"}
+							/>
 						</div>
 					</div>
 

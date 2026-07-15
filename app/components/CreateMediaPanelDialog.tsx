@@ -73,13 +73,12 @@ export function CreateMediaPanelDialog({ open, onOpenChange, onConfirm, defaultV
 						</div>
 						<div className="grid gap-2">
 							<Label htmlFor="media-id">ID</Label>
-							<Input
-								id="media-id"
-								value={formData.id}
-								onChange={(e) => setFormData(p => ({ ...p, id: e.target.value }))}
-								placeholder="12345"
-								disabled={!!defaultValues}
-							/>
+						<Input
+	id="media-id"
+	value={formData.id}
+	onChange={(e) => setFormData(p => ({ ...p, id: e.target.value }))}
+	placeholder="12345"
+/>
 						</div>
 					</div>
 

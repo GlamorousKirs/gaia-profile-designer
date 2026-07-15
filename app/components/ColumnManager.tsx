@@ -245,11 +245,31 @@ export default function ColumnManager() {
 		if (!open) setEditingId(null);
 	}, []);
 
+	const handleMediaDrawerChange = useCallback((open: boolean) => {
+		setIsMediaDrawerOpen(open);
+		if (!open) setEditingId(null);
+	}, []);
+
 	const handlePanelConfirm = useCallback((d: any) => {
-		if (editingId) updatePanel(editingId, d);
-		else if (d.id) addPanel(d.id, d);
+		if (editingId && editingId !== d.id) {
+			removePanel(editingId);
+			addPanel(d.id, d);
+
+			setColumns((prev: ColumnLayoutState) => {
+				const updateCol = (col: string[]) => col.map(id => id === editingId ? d.id : id);
+				return {
+					column1: updateCol(prev.column1),
+					column2: updateCol(prev.column2),
+					column3: updateCol(prev.column3),
+				};
+			});
+		} else if (editingId) {
+			updatePanel(editingId, d);
+		} else if (d.id) {
+			addPanel(d.id, d);
+		}
 		setEditingId(null);
-	}, [editingId, updatePanel, addPanel]);
+	}, [editingId, updatePanel, addPanel, removePanel, setColumns]);
 
 	return (
 		<DndContext
@@ -295,7 +315,7 @@ export default function ColumnManager() {
 			/>
 			<CreateMediaPanelDialog
 				open={isMediaDrawerOpen}
-				onOpenChange={setIsMediaDrawerOpen}
+				onOpenChange={handleMediaDrawerChange}
 				defaultValues={editingId && editingId.startsWith("#id_media_") ? customPanels[editingId] : undefined}
 				onConfirm={handlePanelConfirm}
 			/>
