@@ -19,15 +19,17 @@ export const updateCssValue = (css: string, selector: string, property: string, 
 	}
 
 	if (property) {
-		if (property === 'color' && value.includes('gradient')) {
-			targetRule.nodes = targetRule.nodes.filter((n: any) => !['background', '-webkit-background-clip', '-webkit-text-fill-color', 'background-clip'].includes(n.prop));
+		const gradientProps = ['background', '-webkit-background-clip', '-webkit-text-fill-color', 'background-clip'];
+
+		if (value.includes('gradient')) {
+			targetRule.nodes = targetRule.nodes.filter((n: any) => !gradientProps.includes(n.prop) && n.prop !== 'background-color');
 			targetRule.append({ prop: 'background', value: value });
 			targetRule.append({ prop: '-webkit-background-clip', value: 'text' });
 			targetRule.append({ prop: '-webkit-text-fill-color', value: 'transparent' });
 			targetRule.append({ prop: 'background-clip', value: 'text' });
 		} 
 		else {
-			targetRule.nodes = targetRule.nodes.filter((n: any) => n.prop !== property);
+			targetRule.nodes = targetRule.nodes.filter((n: any) => n.prop !== property && !gradientProps.includes(n.prop));
 			targetRule.append({ prop: property, value: value });
 		}
 	}
