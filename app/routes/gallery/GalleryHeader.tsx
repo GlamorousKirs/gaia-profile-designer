@@ -24,7 +24,7 @@ export const GalleryHeader = memo(function GalleryHeader({
 }: GalleryHeaderProps) {
 	return (
 		<header className="mb-16 text-center">
-			<h1 className="text-4xl font-bold tracking-tighter text-foreground mb-4">
+			<h1 className="text-4xl font-bold tracking-tighter text-foreground mb-4 font-title">
 				Gallery
 			</h1>
 			<p className="text-muted-foreground max-w-lg mx-auto mb-8">
