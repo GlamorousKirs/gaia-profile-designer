@@ -62,14 +62,13 @@ export function LogoRecolor({ rawSvgContent, isSvgLoading, onSave }: LogoRecolor
 				</linearGradient>
 			`;
 			svg.querySelectorAll("path, circle, rect, polygon").forEach((el) => {
-				if (el.getAttribute("fill") !== "none") el.setAttribute("fill", `url(#${gradientId})`);
+				el.removeAttribute("style");
+				el.setAttribute("fill", `url(#${gradientId})`);
 			});
 		} else {
 			svg.querySelectorAll("path, circle, rect, polygon").forEach((el) => {
-				const fill = el.getAttribute("fill");
-				if (!fill || fill === "currentColor" || fill.startsWith("#") || fill === "black" || fill.startsWith("url")) {
-					el.setAttribute("fill", logoColor);
-				}
+				el.removeAttribute("style");
+				el.setAttribute("fill", logoColor);
 			});
 		}
 
@@ -113,7 +112,6 @@ export function LogoRecolor({ rawSvgContent, isSvgLoading, onSave }: LogoRecolor
 
 	const handleSaveToGallery = useCallback(async () => {
 		await addLogo(exportName, memoizedSvg);
-
 		toast.success(
 			<div className="flex items-center justify-between w-75">
 				<span>Saved to gallery</span>
@@ -126,7 +124,8 @@ export function LogoRecolor({ rawSvgContent, isSvgLoading, onSave }: LogoRecolor
 	}, [addLogo, exportName, memoizedSvg]);
 
 	return (
-		<div className="flex flex-col gap-4">
+		<div className="w-full bg-background border rounded-xl shadow-xl overflow-hidden">
+			<div className="p-5 border-b font-semibold">Gaia Logo Recolor</div>
 			<div className="p-6 bg-muted/20 border-b flex justify-center items-center">
 				{isSvgLoading ? <Loader2 className="animate-spin size-8" /> :
 					<div dangerouslySetInnerHTML={{ __html: memoizedSvg }} />

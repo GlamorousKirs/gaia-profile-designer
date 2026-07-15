@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react"
 import { fetchLogosFromCloudinary, type CloudinaryLogo } from "@/lib/cloudinary"
 import { Search, Image as ImageIcon, Palette, Heart, List, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { LogoRecolor } from "./LogoRecolor"
 import { useLogoStore } from "@/store/logoStore"
@@ -73,7 +73,6 @@ export function GaiaLogoPanel({ tagName = "gaia-logo", onSelectLogo }: GaiaLogoP
 							<Button variant="outline" size="sm" className="h-7 text-[10px] gap-1.5 flex-1"><Palette className="size-3" /> Recolor</Button>
 						</DialogTrigger>
 						<DialogContent className="sm:max-w-3xl overflow-hidden p-0 shadow-2xl">
-							<DialogHeader className="p-5 border-b"><DialogTitle>Gaia Logo Recolor</DialogTitle></DialogHeader>
 							<LogoRecolor
 								rawSvgContent={rawSvgContent}
 								isSvgLoading={isSvgLoading}
