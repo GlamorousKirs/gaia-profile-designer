@@ -203,10 +203,10 @@ export const Canvas = memo(function Canvas({
 				<style id="user-overrides"></style>
 				<style id="extension-features-styles"></style>
 				<style>
-					.highlight-hover { outline: 2px dashed #ff4500 !important; outline-offset: 4px; cursor: crosshair !important; }
-					.highlight-selected { outline: 2px solid #ff4500 !important; outline-offset: 4px; }
+					.highlight-hover { outline: 2px dashed #ff4500 !important; outline-offset: 2px; cursor: crosshair !important; }
+					.highlight-selected { outline: 2px solid #ff4500 !important; outline-offset: 2px; }
 					body { box-sizing: border-box; }
-					html.highlight-selected body { outline: 2px solid #ff4500 !important; outline-offset: 4px; }
+					html.highlight-selected body { outline: 2px solid #ff4500 !important; outline-offset: 2px; }
 					* { user-select: none !important; }
 					
 					.iframe-selection-shield {

@@ -25,7 +25,9 @@
 
 		while (current && current !== document.body && current !== document.documentElement) {
 			if (!current.classList?.contains('iframe-selection-shield')) {
-				if (current.id) {
+				if (current.tagName === 'H2') {
+					pathSegments.unshift('h2');
+				} else if (current.id) {
 					pathSegments.unshift(`#${current.id}`);
 				} else if (current.className && typeof current.className === 'string') {
 					const primaryClass = current.classList[0];
@@ -73,7 +75,7 @@
 			}
 		});
 	}
-	
+
 	const structuralObserver = new MutationObserver(() => applyIdentityOverrides());
 	structuralObserver.observe(document.documentElement, { childList: true, subtree: true });
 
