@@ -36,7 +36,7 @@ const DEFAULT_SOLID_COLOR = "#605270";
 
 export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 	const { libraries, loadLibraries, saveLibrary, deleteLibrary } = useColorStore();
-	
+
 	const [activeMode, setActiveMode] = useState<"solid" | "gradient">("solid");
 	const [stops, setStops] = useState<GradientStop[]>(DEFAULT_GRADIENT_STOPS);
 	const [angle, setAngle] = useState(DEFAULT_GRADIENT_ANGLE);
@@ -140,16 +140,19 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 					/>
 				</PopoverTrigger>
 				<PopoverContent className="w-auto p-0 border-none bg-transparent shadow-none" align="start">
-					<div className="custom-layout p-0 rounded-lg backdrop-blur-md bg-background border flex flex-col w-64 overflow-hidden">
+					<div
+						className="custom-layout p-0 rounded-lg backdrop-blur-md bg-background border flex flex-col w-64 overflow-hidden"
+						onClick={(e) => e.stopPropagation()}
+					>
 						<div className="flex p-1 gap-1 border-b">
-							<button 
-								onClick={() => { setActiveMode("solid"); onChange(DEFAULT_SOLID_COLOR); }} 
+							<button
+								onClick={() => { setActiveMode("solid"); onChange(DEFAULT_SOLID_COLOR); }}
 								className={`flex items-center justify-center gap-1 flex-1 py-1 text-[10px] font-bold rounded-[calc(var(--radius)-2px)] ${activeMode === "solid" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
 							>
 								SOLID
 							</button>
-							<button 
-								onClick={() => { setActiveMode("gradient"); setStops(DEFAULT_GRADIENT_STOPS); setAngle(DEFAULT_GRADIENT_ANGLE); onChange(generateGradientString(DEFAULT_GRADIENT_STOPS, DEFAULT_GRADIENT_ANGLE)); }} 
+							<button
+								onClick={() => { setActiveMode("gradient"); setStops(DEFAULT_GRADIENT_STOPS); setAngle(DEFAULT_GRADIENT_ANGLE); onChange(generateGradientString(DEFAULT_GRADIENT_STOPS, DEFAULT_GRADIENT_ANGLE)); }}
 								className={`flex items-center justify-center gap-1 flex-1 py-1 text-[10px] font-bold rounded-[calc(var(--radius)-2px)] ${activeMode === "gradient" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
 							>
 								GRADIENT

@@ -10,15 +10,13 @@ interface ColorPickerUIProps {
 }
 
 export const ColorPickerUI = ({ color, onChange }: ColorPickerUIProps) => {
-	const safeColor = colord(color).isValid() 
-		? colord(color).toHex() 
-		: "#000000";
+	const validColor = colord(color).isValid() ? color : "#c7e6ff";
 
 	return (
 		<div className="custom-layout">
-			<HexAlphaColorPicker 
-				color={safeColor} 
-				onChange={(newColor) => onChange(newColor)} 
+			<HexAlphaColorPicker
+				color={validColor}
+				onChange={(newColor) => onChange(newColor)}
 			/>
 		</div>
 	);
