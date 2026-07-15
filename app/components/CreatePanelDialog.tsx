@@ -25,7 +25,7 @@ import { generateNumericId } from "@/lib/generate-panel-id";
 export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues }: any) {
 	const [formData, setFormData] = useState({ name: "", id: "", content: "" })
 	const [mediaInputs, setMediaInputs] = useState({ url: "", label: "", youtube: "", image: "" })
-	
+
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
 
 	useEffect(() => {
@@ -64,26 +64,26 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
 	const insertMedia = (type: 'url' | 'youtube' | 'image') => {
 		const { start, end, selectedText } = getSelection()
 		let newText = ""
-		
+
 		if (type === 'url') newText = `[url=${mediaInputs.url}]${mediaInputs.label || selectedText || mediaInputs.url}[/url]`
 		if (type === 'youtube') newText = `[youtube]${mediaInputs.youtube || selectedText}[/youtube]`
 		if (type === 'image') newText = `[img]${mediaInputs.image || selectedText}[/img]`
-		
+
 		handleInsert(start, end, newText)
 		setMediaInputs({ url: "", label: "", youtube: "", image: "" })
 	}
-const handleSubmit = () => {
-	const suffix = formData.id.trim() === "" 
-		? generateNumericId() 
-		: formData.id.replace('#id_custom_', '');
-	
-	onConfirm({ 
-		id: `#id_custom_${suffix}`, 
-		name: formData.name.trim() === "" ? "Custom" : formData.name, 
-		content: formData.content 
-	});
-	onOpenChange(false);
-};
+	const handleSubmit = () => {
+		const suffix = formData.id.trim() === ""
+			? generateNumericId()
+			: formData.id.replace('#id_custom_', '');
+
+		onConfirm({
+			id: `#id_custom_${suffix}`,
+			name: formData.name.trim() === "" ? "Custom" : formData.name,
+			content: formData.content
+		});
+		onOpenChange(false);
+	};
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
@@ -98,11 +98,11 @@ const handleSubmit = () => {
 					<div className="grid grid-cols-2 gap-4">
 						<div className="grid gap-2">
 							<Label htmlFor="name">Panel Name</Label>
-							<Input id="name" value={formData.name} onChange={(e) => setFormData(p => ({...p, name: e.target.value}))} placeholder="Custom" />
+							<Input id="name" value={formData.name} onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))} placeholder="Custom" />
 						</div>
 						<div className="grid gap-2">
 							<Label htmlFor="id">ID</Label>
-							<Input id="id" value={formData.id} onChange={(e) => setFormData(p => ({...p, id: e.target.value}))} placeholder="12345" disabled={!!defaultValues} />
+							<Input id="id" value={formData.id} onChange={(e) => setFormData(p => ({ ...p, id: e.target.value }))} placeholder="12345" disabled={!!defaultValues} />
 						</div>
 					</div>
 
@@ -110,14 +110,14 @@ const handleSubmit = () => {
 						<Button type="button" variant="outline" size="sm" onClick={() => insertTag('b')}><Bold className="w-4 h-4" /></Button>
 						<Button type="button" variant="outline" size="sm" onClick={() => insertTag('i')}><Italic className="w-4 h-4" /></Button>
 						<Button type="button" variant="outline" size="sm" onClick={() => insertTag('spoiler')}><EyeOff className="w-4 h-4" /></Button>
-						
+
 						<AlertDialog>
-							<AlertDialogTrigger><Button type="button" variant="outline" size="sm" onClick={() => setMediaInputs(p => ({...p, label: getSelection().selectedText}))}><LinkIcon className="w-4 h-4" /></Button></AlertDialogTrigger>
+							<AlertDialogTrigger><Button type="button" variant="outline" size="sm" onClick={() => setMediaInputs(p => ({ ...p, label: getSelection().selectedText }))}><LinkIcon className="w-4 h-4" /></Button></AlertDialogTrigger>
 							<AlertDialogContent>
 								<AlertDialogHeader><AlertDialogTitle>Insert URL Link</AlertDialogTitle></AlertDialogHeader>
 								<div className="grid gap-4">
-									<Input value={mediaInputs.url} onChange={(e) => setMediaInputs(p => ({...p, url: e.target.value}))} placeholder="https://example.com" />
-									<Input value={mediaInputs.label} onChange={(e) => setMediaInputs(p => ({...p, label: e.target.value}))} placeholder="Link Label" />
+									<Input value={mediaInputs.url} onChange={(e) => setMediaInputs(p => ({ ...p, url: e.target.value }))} placeholder="https://example.com" />
+									<Input value={mediaInputs.label} onChange={(e) => setMediaInputs(p => ({ ...p, label: e.target.value }))} placeholder="Link Label" />
 								</div>
 								<AlertDialogFooter>
 									<AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -127,10 +127,10 @@ const handleSubmit = () => {
 						</AlertDialog>
 
 						<AlertDialog>
-							<AlertDialogTrigger><Button type="button" variant="outline" size="sm" onClick={() => setMediaInputs(p => ({...p, youtube: getSelection().selectedText}))}><Film className="w-4 h-4" /></Button></AlertDialogTrigger>
+							<AlertDialogTrigger><Button type="button" variant="outline" size="sm" onClick={() => setMediaInputs(p => ({ ...p, youtube: getSelection().selectedText }))}><Film className="w-4 h-4" /></Button></AlertDialogTrigger>
 							<AlertDialogContent>
 								<AlertDialogHeader><AlertDialogTitle>Insert YouTube Video</AlertDialogTitle></AlertDialogHeader>
-								<Input value={mediaInputs.youtube} onChange={(e) => setMediaInputs(p => ({...p, youtube: e.target.value}))} placeholder="YouTube URL" />
+								<Input value={mediaInputs.youtube} onChange={(e) => setMediaInputs(p => ({ ...p, youtube: e.target.value }))} placeholder="YouTube URL" />
 								<AlertDialogFooter>
 									<AlertDialogCancel>Cancel</AlertDialogCancel>
 									<AlertDialogAction onClick={() => insertMedia('youtube')}>Insert</AlertDialogAction>
@@ -139,10 +139,10 @@ const handleSubmit = () => {
 						</AlertDialog>
 
 						<AlertDialog>
-							<AlertDialogTrigger><Button type="button" variant="outline" size="sm" onClick={() => setMediaInputs(p => ({...p, image: getSelection().selectedText}))}><ImageIcon className="w-4 h-4" /></Button></AlertDialogTrigger>
+							<AlertDialogTrigger><Button type="button" variant="outline" size="sm" onClick={() => setMediaInputs(p => ({ ...p, image: getSelection().selectedText }))}><ImageIcon className="w-4 h-4" /></Button></AlertDialogTrigger>
 							<AlertDialogContent>
 								<AlertDialogHeader><AlertDialogTitle>Insert Image</AlertDialogTitle></AlertDialogHeader>
-								<Input value={mediaInputs.image} onChange={(e) => setMediaInputs(p => ({...p, image: e.target.value}))} placeholder="Image URL" />
+								<Input value={mediaInputs.image} onChange={(e) => setMediaInputs(p => ({ ...p, image: e.target.value }))} placeholder="Image URL" />
 								<AlertDialogFooter>
 									<AlertDialogCancel>Cancel</AlertDialogCancel>
 									<AlertDialogAction onClick={() => insertMedia('image')}>Insert</AlertDialogAction>
@@ -157,8 +157,7 @@ const handleSubmit = () => {
 					<Textarea
 						ref={textareaRef}
 						value={formData.content}
-						onChange={(e) => setFormData(p => ({...p, content: e.target.value}))}
-						placeholder="Enter text.."
+						onChange={(e) => setFormData(p => ({ ...p, content: e.target.value }))}
 						className="h-50"
 						data-lenis-prevent
 					/>

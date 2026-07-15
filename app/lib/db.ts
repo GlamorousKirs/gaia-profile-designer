@@ -29,7 +29,7 @@ const db = new Dexie('gaia-profile-designer') as Dexie & {
 	panels: EntityTable<CustomPanel, 'id'>;
 	logos: EntityTable<Logo, 'id'>;
 	snippets: EntityTable<Snippet, 'id'>;
-	colorLibraries: EntityTable<ColorLibrary, 'id'>; 
+	colorLibraries: EntityTable<ColorLibrary, 'id'>;
 };
 
 db.version(1).stores({

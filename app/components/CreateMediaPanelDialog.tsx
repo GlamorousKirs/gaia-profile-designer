@@ -41,14 +41,14 @@ export function CreateMediaPanelDialog({ open, onOpenChange, onConfirm, defaultV
 			return
 		}
 
-		const suffix = formData.id.trim() === "" 
-			? generateNumericId() 
+		const suffix = formData.id.trim() === ""
+			? generateNumericId()
 			: formData.id.replace('#id_media_', '');
-		
-		onConfirm({ 
-			id: `#id_media_${suffix}`, 
-			name: formData.name.trim() === "" ? "Media" : formData.name, 
-			url: formData.url 
+
+		onConfirm({
+			id: `#id_media_${suffix}`,
+			name: formData.name.trim() === "" ? "Media" : formData.name,
+			url: formData.url
 		});
 		onOpenChange(false);
 	};
@@ -62,14 +62,14 @@ export function CreateMediaPanelDialog({ open, onOpenChange, onConfirm, defaultV
 				<div className="grid">
 					<Field data-invalid={isInvalid ? true : undefined}>
 						<FieldLabel htmlFor="youtube-url">YouTube URL</FieldLabel>
-						<Input 
+						<Input
 							id="youtube-url"
-							value={formData.url} 
+							value={formData.url}
 							onChange={(e) => {
-								setFormData(p => ({...p, url: e.target.value}));
+								setFormData(p => ({ ...p, url: e.target.value }));
 								setIsInvalid(false);
-							}} 
-							placeholder="https://www.youtube.com/watch?v=..." 
+							}}
+							placeholder="https://www.youtube.com/watch?v=..."
 							aria-invalid={isInvalid}
 						/>
 						{isInvalid && (

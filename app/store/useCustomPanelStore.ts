@@ -17,11 +17,11 @@ export const useCustomPanelStore = create<CustomPanelStore>((set) => ({
 			acc[panel.id] = panel;
 			return acc;
 		}, {});
-		
+
 		if (!panelMap["about"]) {
-			panelMap["about"] = { id: "about", name: "About", content: "Content here" };
+			panelMap["about"] = { id: "about", name: "About", content: "" };
 		}
-		
+
 		set({ panels: panelMap });
 	},
 	addPanel: async (id, data) => {

@@ -12,7 +12,7 @@ export interface AnnouncementItem {
 }
 
 export const ANNOUNCEMENTS: AnnouncementItem[] = [
-		{
+	{
 		date: "Update #4",
 		timestamp: "2026-07-15",
 		message: `- Added Media Panel creation. #id_about is now editable. Right click on them to edit. \n\nI'm taking a break soon. Expect less frequent updates. I hope you're enjoying the project though! Let me know when you find a bug. I'll try to fix it when I have time.\n\nTip: Selecting the Gaia logo on the canvas will display the logo menu in the right sidebar.`,

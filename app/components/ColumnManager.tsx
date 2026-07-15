@@ -35,7 +35,7 @@ import {
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 
-const GAIA_ASSETS = Object.keys(import.meta.glob("/app/gaia_assets/panels/*.html")).map((path) => 
+const GAIA_ASSETS = Object.keys(import.meta.glob("/app/gaia_assets/panels/*.html")).map((path) =>
 	path.split("/").pop()!.replace(".html", "")
 );
 
@@ -261,16 +261,16 @@ export default function ColumnManager() {
 		>
 			<div className="flex flex-col gap-4 p-3">
 				<div className="flex gap-2">
-					<Button 
-						onClick={handleCreateClick} 
-						variant="outline" 
+					<Button
+						onClick={handleCreateClick}
+						variant="outline"
 						className="flex-1 text-[11px] h-8"
 					>
 						Create Custom
 					</Button>
-					<Button 
-						onClick={() => setIsMediaDrawerOpen(true)} 
-						variant="outline" 
+					<Button
+						onClick={() => setIsMediaDrawerOpen(true)}
+						variant="outline"
 						className="flex-1 text-[11px] h-8"
 					>
 						Create Media
