@@ -1,6 +1,6 @@
 import { useState, useRef, useTransition, useEffect, lazy, Suspense, useMemo, useCallback } from "react"
 import { motion, useDragControls, AnimatePresence } from "motion/react"
-import { Copy, Check, Library, ChevronUp, ChevronDown, Sparkles, MoveDiagonal, BookOpen } from "lucide-react"
+import { Copy, Check, SquareDashedBottomCode, ChevronUp, ChevronDown, Code, MoveDiagonal, BookOpen } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { EditorView, tooltips } from "@codemirror/view"
@@ -187,8 +187,8 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
 									<div className="absolute left-1/2 top-1.5 -translate-x-1/2 w-8 h-1 rounded-full bg-muted-foreground/20 pointer-events-none" />
 
 									<div className="flex items-center gap-2 mt-1">
-										<Sparkles className="size-3.5 text-primary" />
-										<span className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">Styles</span>
+										<Code className="size-3.5 text-primary" />
+										<span className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">CSS</span>
 									</div>
 
 									<div className="flex items-center gap-1.5 mt-1" onPointerDown={(e) => e.stopPropagation()}>
@@ -238,7 +238,7 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
 												: "bg-muted/50 hover:bg-muted border-border text-foreground"}`}
 											aria-label={snippetsOpen ? "Close snippets panel" : "Open snippets panel"}
 										>
-											<Library className="size-3" /> Snippets
+											<SquareDashedBottomCode className="size-3" /> Snippets
 										</Button>
 									</div>
 								</div>
@@ -293,10 +293,10 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
 										<Button
 											onClick={toggleImportant}
 											variant="ghost"
-											className="h-6 px-2 font-medium border border-border bg-muted/30 text-muted-foreground hover:text-amber-500 transition-colors"
+											className="h-6 px-2 font-medium border border-border bg-muted/30 text-muted-foreground"
 										>
 											<span className="text-[10px]">
-												{hasImportant ? "Remove !important" : "Toggle !important"}
+												{hasImportant ? "Remove !important" : "Add !important"}
 											</span>
 										</Button>
 									</div>

@@ -4,7 +4,7 @@ import { useVirtualizer } from "@tanstack/react-virtual"
 import { useSnippetStore, useFilteredSnippets } from "@/store/useSnippetStore"
 import type { Snippet, SnippetActionType } from "@/store/useSnippetStore"
 import {
-	Plus, Trash2, Edit2, FileCode, X, Save,
+	Plus, Trash2, Edit2, SquareDashedBottomCode, X, Save,
 	MoreHorizontal, ArrowUp, ArrowDown, FileStack, ArrowRightLeft, Database
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -68,7 +68,7 @@ const SnippetRow = memo(({
 					{snippet.isReadOnly ? (
 						<Database className="size-3.5 shrink-0 text-primary" />
 					) : (
-						<FileCode className="size-3.5 shrink-0 text-foreground" />
+						<SquareDashedBottomCode className="size-3.5 shrink-0" />
 					)}
 					{isEditing ? (
 						<input
@@ -116,7 +116,7 @@ const SnippetRow = memo(({
 							<DropdownMenuSeparator className="bg-border/60" />
 
 							<DropdownMenuItem onClick={(e) => openEditorModal(snippet, e)}>
-								<FileCode className="size-3.5" /> {snippet.isReadOnly ? "View Snippet" : "Edit Snippet"}
+								<SquareDashedBottomCode className="size-3.5" /> {snippet.isReadOnly ? "View Snippet" : "Edit Snippet"}
 							</DropdownMenuItem>
 
 							{!snippet.isReadOnly && (
@@ -238,7 +238,7 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
 			>
 				<div style={{ width }} className="h-full flex flex-col select-text overflow-hidden">
 					<div
-						className="h-10 shrink-0 border-b border-border flex items-center justify-between px-4 text-[11px] font-medium uppercase tracking-wide text-muted-foreground bg-muted/40 cursor-grab active:cursor-grabbing select-none"
+						className="h-10 shrink-0 border-b border-border flex items-center justify-between px-4 text-[11px] font-medium tracking-wide text-muted-foreground bg-muted/40 cursor-grab active:cursor-grabbing select-none"
 						onPointerDown={(e) => dragControls.start(e)}
 					>
 						{isModalOpen ? (
@@ -253,7 +253,8 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
 								/>
 							</div>
 						) : (
-							<span>Library</span>
+
+							<span>Snippets</span>
 						)}
 						<div className="flex items-center gap-1.5" onPointerDown={(e) => e.stopPropagation()}>
 							{isModalOpen ? (
@@ -318,7 +319,7 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
 											indentOnInput: true,
 										}}
 										className="w-full h-full text-[11px] font-mono"
-										placeholder="Type or paste CSS styling block rules..."
+										placeholder="Type or paste CSS code here."
 									/>
 								</div>
 
