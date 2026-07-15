@@ -13,6 +13,7 @@ import {
 	FieldDescription,
 	FieldLabel,
 } from "@/components/ui/field"
+import { Label } from "@/components/ui/label";
 import { generateNumericId } from "@/lib/generate-panel-id";
 
 export function CreateMediaPanelDialog({ open, onOpenChange, onConfirm, defaultValues }: any) {
@@ -59,7 +60,29 @@ export function CreateMediaPanelDialog({ open, onOpenChange, onConfirm, defaultV
 				<DialogHeader>
 					<DialogTitle>{defaultValues ? "Edit Media Panel" : "Create Media Panel"}</DialogTitle>
 				</DialogHeader>
-				<div className="grid">
+				<div className="grid gap-4">
+					<div className="grid grid-cols-2 gap-4">
+						<div className="grid gap-2">
+							<Label htmlFor="media-name">Panel Name</Label>
+							<Input
+								id="media-name"
+								value={formData.name}
+								onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))}
+								placeholder="Media"
+							/>
+						</div>
+						<div className="grid gap-2">
+							<Label htmlFor="media-id">ID</Label>
+							<Input
+								id="media-id"
+								value={formData.id}
+								onChange={(e) => setFormData(p => ({ ...p, id: e.target.value }))}
+								placeholder="12345"
+								disabled={!!defaultValues}
+							/>
+						</div>
+					</div>
+
 					<Field data-invalid={isInvalid ? true : undefined}>
 						<FieldLabel htmlFor="youtube-url">YouTube URL</FieldLabel>
 						<Input
