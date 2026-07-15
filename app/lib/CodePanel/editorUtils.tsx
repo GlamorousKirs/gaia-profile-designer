@@ -2,12 +2,11 @@ import { EditorView } from "@codemirror/view"
 import type { SnippetActionType } from "@/store/useSnippetStore"
 
 export const SCALE_OPTIONS = [
+	{ label: "0.8x", value: 0.8 },
 	{ label: "1.0x (Default)", value: 1.0 },
 	{ label: "1.2x", value: 1.2 },
 	{ label: "1.4x", value: 1.4 },
 	{ label: "1.6x", value: 1.6 },
-	{ label: "1.8x", value: 1.8 },
-	{ label: "2.0x", value: 2.0 },
 ]
 
 export const scrollToTop = (editorViewRef: React.RefObject<EditorView | null>) => {

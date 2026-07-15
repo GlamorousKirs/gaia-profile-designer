@@ -1,6 +1,6 @@
 import { useState, useRef, useTransition, useEffect, lazy, Suspense, useMemo, useCallback } from "react"
 import { motion, useDragControls, AnimatePresence } from "motion/react"
-import { Copy, Check, SquareDashedBottomCode, ChevronUp, ChevronDown, Code, MoveDiagonal, BookOpen } from "lucide-react"
+import { Copy, Check, SquareDashedBottomCode, ChevronUp, ChevronDown, Code, MoveDiagonal, BookOpen, MoreVertical, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { EditorView, tooltips } from "@codemirror/view"
@@ -15,6 +15,9 @@ import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
+	DropdownMenuSub,
+	DropdownMenuSubContent,
+	DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
 	Popover,
@@ -22,9 +25,9 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover"
 
-const BASE_EDITOR_WIDTH = 460
+const BASE_EDITOR_WIDTH = 500
 const BASE_SNIPPETS_WIDTH = 300
-const BASE_HEIGHT = 340
+const BASE_HEIGHT = 350
 const STORAGE_KEY = "autosave-code"
 
 const structuralSpring = { type: "spring", stiffness: 380, damping: 38 } as const
@@ -42,6 +45,7 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
 	const [scaleMultiplier, setScaleMultiplier] = useState(1.0)
 	const [isDragging, setIsDragging] = useState(false)
 	const [copied, setCopied] = useState(false)
+	const [panelOpacity, setPanelOpacity] = useState(1.0)
 	const [, startTransition] = useTransition()
 	const dragControls = useDragControls()
 	const panelRef = useRef<HTMLDivElement>(null)
@@ -175,20 +179,21 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
 							transition={structuralSpring}
 							style={{
 								width: isFlexColumnLayout ? currentEditorWidth : currentEditorWidth + (snippetsOpen ? currentSnippetsWidth : 0),
-								height: isFlexColumnLayout && snippetsOpen ? currentHeight * 1.5 : currentHeight
+								height: isFlexColumnLayout && snippetsOpen ? currentHeight * 1.5 : currentHeight,
+								backgroundColor: `color-mix(in srgb, var(--card), transparent ${100 - panelOpacity * 100}%)`
 							}}
-							className={`flex ${isFlexColumnLayout ? "flex-col" : "flex-row"} overflow-hidden p-0 pointer-events-auto RegalPanel will-change-[width,height,transform] bg-card border border-border rounded-xl shadow-2xl ring-1 ring-border/20`}
+							className={`flex ${isFlexColumnLayout ? "flex-col" : "flex-row"} overflow-hidden p-0 pointer-events-auto RegalPanel will-change-[width,height,transform] border border-border rounded-xl ring-1 ring-border/20`}
 						>
 							<div style={{ width: "100%", maxWidth: currentEditorWidth }} className="grid grid-rows-[40px_1fr_36px] h-full flex-1 shrink-0 z-10 bg-transparent">
 								<div
-									className="relative flex items-center justify-between px-4 bg-muted/40 border-b border-border cursor-grab active:cursor-grabbing select-none"
+									className="relative flex items-center justify-between px-4 cursor-grab active:cursor-grabbing select-none"
 									onPointerDown={(e) => dragControls.start(e)}
 								>
 									<div className="absolute left-1/2 top-1.5 -translate-x-1/2 w-8 h-1 rounded-full bg-muted-foreground/20 pointer-events-none" />
 
 									<div className="flex items-center gap-2 mt-1">
 										<Code className="size-3.5 text-primary" />
-										<span className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">CSS</span>
+										<span className="text-[11px] font-medium tracking-wide text-primary uppercase">CSS</span>
 									</div>
 
 									<div className="flex items-center gap-1.5 mt-1" onPointerDown={(e) => e.stopPropagation()}>
@@ -206,36 +211,12 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
 											</PopoverContent>
 										</Popover>
 
-										<DropdownMenu modal={false}>
-											<DropdownMenuTrigger>
-												<Button
-													variant="ghost"
-													className="h-6 text-[11px] px-2 font-medium bg-muted/50 hover:bg-muted border border-border text-foreground rounded-md transition-all gap-1"
-													aria-label={`Open scale menu. Current scale is ${scaleMultiplier}x`}
-												>
-													<MoveDiagonal className="size-2.5 text-muted-foreground/70" />
-													{scaleMultiplier.toFixed(1)}x
-												</Button>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent align="end" className="w-32 bg-popover border-border text-popover-foreground">
-												{SCALE_OPTIONS.map((opt) => (
-													<DropdownMenuItem
-														key={opt.value}
-														onClick={() => setScaleMultiplier(opt.value)}
-														className={`text-[11px] focus:bg-accent focus:text-accent-foreground ${scaleMultiplier === opt.value ? "font-bold text-primary bg-muted/40" : ""}`}
-													>
-														{opt.label}
-													</DropdownMenuItem>
-												))}
-											</DropdownMenuContent>
-										</DropdownMenu>
-
 										<Button
 											variant={snippetsOpen ? "secondary" : "ghost"}
 											onClick={() => startTransition(() => setSnippetsOpen(!snippetsOpen))}
-											className={`h-6 text-[11px] px-2.5 font-medium border rounded-md transition-all gap-1 ${snippetsOpen
-												? "bg-accent border-primary text-accent-foreground hover:bg-accent/80"
-												: "bg-muted/50 hover:bg-muted border-border text-foreground"}`}
+											className={`h-6 text-[11px] px-2.5 font-medium rounded-md transition-all gap-1 ${snippetsOpen
+												? "bg-accent text-accent-foreground hover:bg-accent/80"
+												: "hover:bg-muted/50 text-foreground"}`}
 											aria-label={snippetsOpen ? "Close snippets panel" : "Open snippets panel"}
 										>
 											<SquareDashedBottomCode className="size-3" /> Snippets
@@ -243,11 +224,11 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
 									</div>
 								</div>
 
-								<ScrollArea className="w-full bg-background/40 overflow-hidden">
+								<ScrollArea className="w-full overflow-hidden">
 									<div className="h-full w-full">
 										<Suspense fallback={
 											<div className="flex items-center justify-center h-full text-xs font-mono text-muted-foreground animate-pulse">
-												Loading ecosystem...
+												Loading ..
 											</div>
 										}>
 											<CodeMirror
@@ -270,58 +251,72 @@ export default function CodePanel({ isOpen, code, setCode }: CodePanelProps) {
 									</div>
 								</ScrollArea>
 
-								<div className="h-9 border-t border-border flex items-center justify-between px-3 bg-muted/20 select-none">
-									<div className="flex items-center gap-1.5" onPointerDown={(e) => e.stopPropagation()}>
-										<Button
-											onClick={() => handleCopy(codeRef, setCopied)}
-											variant="ghost"
-											className="gap-1.5 h-6 px-2.5 font-medium border border-border bg-muted/30 text-muted-foreground hover:text-foreground transition-colors"
-										>
-											{copied ? (
-												<>
-													<Check className="size-3 text-emerald-500" />
-													<span className="text-[10px] text-emerald-500">Copied</span>
-												</>
-											) : (
-												<>
-													<Copy className="size-3" />
-													<span className="text-[10px]">Copy</span>
-												</>
-											)}
-										</Button>
+<div className="h-9 flex items-center justify-between px-3 select-none">
+	<div className="flex items-center gap-1" onPointerDown={(e) => e.stopPropagation()}>
+		<DropdownMenu modal={false}>
+			<DropdownMenuTrigger>
+				<Button variant="ghost" size="icon" className="size-6 text-muted-foreground hover:text-foreground">
+					<MoreVertical className="size-3.5" />
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align="start" className="w-40 text-[11px] bg-popover border-border text-popover-foreground">
+				<DropdownMenuItem onClick={() => handleCopy(codeRef, setCopied)}>
+					{copied ? "Copied" : "Copy Code"}
+				</DropdownMenuItem>
+				<DropdownMenuItem onClick={toggleImportant}>
+					{hasImportant ? "Remove !important" : "Add !important"}
+				</DropdownMenuItem>
+				
+				<DropdownMenuSub>
+					<DropdownMenuSubTrigger>Transparency</DropdownMenuSubTrigger>
+					<DropdownMenuSubContent>
+						{[1.0, 0.8, 0.6, 0.4, 0.2, 0].map((val) => (
+							<DropdownMenuItem key={val} onClick={() => setPanelOpacity(val)}>
+								{val * 100}% {panelOpacity === val && "✓"}
+							</DropdownMenuItem>
+						))}
+					</DropdownMenuSubContent>
+				</DropdownMenuSub>
 
-										<Button
-											onClick={toggleImportant}
-											variant="ghost"
-											className="h-6 px-2 font-medium border border-border bg-muted/30 text-muted-foreground"
-										>
-											<span className="text-[10px]">
-												{hasImportant ? "Remove !important" : "Add !important"}
-											</span>
-										</Button>
-									</div>
+				<DropdownMenuSub>
+					<DropdownMenuSubTrigger>Scale</DropdownMenuSubTrigger>
+					<DropdownMenuSubContent>
+						{SCALE_OPTIONS.map((opt) => (
+							<DropdownMenuItem
+								key={opt.value}
+								onClick={() => setScaleMultiplier(opt.value)}
+								className={scaleMultiplier === opt.value ? "font-bold text-primary" : ""}
+							>
+								{opt.label} {scaleMultiplier === opt.value && "✓"}
+							</DropdownMenuItem>
+						))}
+					</DropdownMenuSubContent>
+				</DropdownMenuSub>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	</div>
 
-									<div className="flex items-center gap-1" onPointerDown={(e) => e.stopPropagation()}>
-										<Button
-											size="icon"
-											variant="ghost"
-											className="size-6 rounded-md bg-muted/30 border border-border text-muted-foreground hover:text-foreground transition-colors"
-											onClick={() => scrollToTop(editorViewRef)}
-											aria-label="Scroll to top of code"
-										>
-											<ChevronUp className="size-3.5" />
-										</Button>
-										<Button
-											size="icon"
-											variant="ghost"
-											className="size-6 rounded-md bg-muted/30 border border-border text-muted-foreground hover:text-foreground transition-colors"
-											onClick={() => scrollToBottom(editorViewRef)}
-											aria-label="Scroll to bottom of code"
-										>
-											<ChevronDown className="size-3.5" />
-										</Button>
-									</div>
-								</div>
+	<div className="flex items-center gap-1" onPointerDown={(e) => e.stopPropagation()}>
+		<Button
+			size="icon"
+			variant="ghost"
+			className="size-6 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+			onClick={() => scrollToTop(editorViewRef)}
+			aria-label="Scroll to top"
+		>
+			<ChevronUp className="size-3.5" />
+		</Button>
+		<Button
+			size="icon"
+			variant="ghost"
+			className="size-6 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+			onClick={() => scrollToBottom(editorViewRef)}
+			aria-label="Scroll to bottom"
+		>
+			<ChevronDown className="size-3.5" />
+		</Button>
+	</div>
+</div>
 							</div>
 
 							<AnimatePresence initial={false}>

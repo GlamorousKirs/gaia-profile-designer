@@ -238,7 +238,7 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
 			>
 				<div style={{ width }} className="h-full flex flex-col select-text overflow-hidden">
 					<div
-						className="h-10 shrink-0 border-b border-border flex items-center justify-between px-4 text-[11px] font-medium tracking-wide text-muted-foreground bg-muted/40 cursor-grab active:cursor-grabbing select-none"
+						className="h-10 shrink-0 flex items-center justify-between px-4 text-[11px] font-medium tracking-wide text-muted-foreground cursor-grab active:cursor-grabbing select-none"
 						onPointerDown={(e) => dragControls.start(e)}
 					>
 						{isModalOpen ? (
@@ -298,7 +298,7 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
 
 					<div
 						ref={scrollContainerRef}
-						className="flex-1 bg-background/40 overflow-y-auto min-h-0 relative p-2"
+						className="flex-1 overflow-y-auto min-h-0 relative p-2"
 					>
 						{isModalOpen ? (
 							<div className="flex flex-col gap-3 h-full justify-between pb-1">
