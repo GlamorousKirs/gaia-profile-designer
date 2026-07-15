@@ -21,6 +21,7 @@ export function ElementPropertiesPanel({
 }: ElementPropertiesPanelProps) {
 	const isUpdatingRef = useRef(false)
 	const [values, setValues] = useState<Record<string, any>>({})
+	const [isIframe, setIsIframe] = useState(false)
 	const [collapsibles, setCollapsibles] = useState({
 		showPadding: false,
 		showMargin: false,
@@ -37,6 +38,7 @@ export function ElementPropertiesPanel({
 			if (iframe && iframe.contentDocument) {
 				domElement = iframe.contentDocument.querySelector(selectedSelector) as HTMLElement
 				if (domElement) {
+					setIsIframe(domElement.tagName === "IFRAME")
 					computed = iframe.contentWindow?.getComputedStyle(domElement) || null
 				}
 			}
@@ -60,14 +62,12 @@ export function ElementPropertiesPanel({
 			return fallback
 		}
 
-		const getStr = (p: string, fallback = "#ffffff"): string => {
+		const getStr = (p: string, fallback = ""): string => {
 			const m = cssBlock.match(new RegExp(`(?<!-)${p}\\s*:\\s*([^;}\\s]+)`, "i"))
 			if (m) return m[1]
 			if (computed) {
 				const val = computed.getPropertyValue(p)
-				if (val && val !== "initial" && val !== "none" && val !== "rgba(0, 0, 0, 0)") {
-					return val
-				}
+				if (val && val !== "initial") return val
 			}
 			return fallback
 		}
@@ -91,6 +91,8 @@ export function ElementPropertiesPanel({
 					nextValues[prop.property] = getNum(prop.property, prop.fallback ?? 0)
 				} else if (prop.type === "color") {
 					nextValues[prop.property] = getStr(prop.property, prop.fallback ?? "#ffffff")
+				} else if (prop.type === "text" || prop.type === "select") {
+					nextValues[prop.property] = getStr(prop.property, prop.fallback ?? "")
 				}
 			})
 			section.groups?.forEach((group) => {
@@ -102,6 +104,12 @@ export function ElementPropertiesPanel({
 			section.gridProperties?.forEach((prop) => {
 				nextValues[prop.property] = getNum(prop.property, prop.fallback ?? 0)
 			})
+		})
+
+		nextValues["position"] = getStr("position", "static")
+		const positionProps = ["top", "right", "bottom", "left"]
+		positionProps.forEach((p) => {
+			nextValues[p] = getNum(p, 0)
 		})
 
 		setValues(nextValues)
@@ -140,77 +148,115 @@ export function ElementPropertiesPanel({
 	}
 
 	return (
-		<div className="flex flex-col gap-4 p-3 h-full overflow-y-auto min-h-0 bg-background/50">
-			<Card>
-				<CardContent className="flex flex-col gap-1.5 p-0">
-					<div className="flex items-center justify-between px-1">
-						<h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">Selected Element</h3>
-						<Button variant="ghost" size="sm" onClick={handleResetStyles} className="h-4 px-1 text-[9px] text-muted-foreground hover:text-destructive gap-0.5"><RotateCcw className="size-2.5" />Reset</Button>
-					</div>
-					<Card className="p-2 w-full font-mono text-[11px] break-all text-primary select-text">
-						<CardContent className="p-0">{selectedSelector || "None selected"}</CardContent>
-					</Card>
-				</CardContent>
-			</Card>
+		<div className="flex flex-col h-full w-full overflow-hidden">
+			<div className="flex-1 overflow-y-auto p-3 bg-background/50">
+				<Card>
+					<CardContent className="flex flex-col gap-1.5 p-0">
+						<div className="flex items-center justify-between px-1">
+							<h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">Selected Element</h3>
+							<Button variant="ghost" size="sm" onClick={handleResetStyles} className="h-4 px-1 text-[9px] text-muted-foreground hover:text-destructive gap-0.5"><RotateCcw className="size-2.5" />Reset</Button>
+						</div>
+						<Card className="p-2 w-full font-mono text-[11px] break-all text-primary select-text">
+							<CardContent className="p-0">{selectedSelector || "None selected"}</CardContent>
+						</Card>
+					</CardContent>
+				</Card>
 
-			<Card>
-				<CardContent className="flex flex-col gap-5 p-0">
-					{PROPERTY_SECTIONS.map((section) => (
-						<div key={section.title} className="flex flex-col gap-1.5">
-							<div className="flex items-center justify-between px-1">
-								<h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">{section.title}</h3>
-								{section.hasCollapsibleSide && section.collapsibleKey && (
-									<Button variant="ghost" size="sm" className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground" onClick={() => setCollapsibles(prev => ({ ...prev, [section.collapsibleKey!]: !prev[section.collapsibleKey as keyof typeof collapsibles] }))}>
-										{collapsibles[section.collapsibleKey as keyof typeof collapsibles] ? <Minus className="size-3" /> : <Plus className="size-3" />}
-									</Button>
-								)}
-							</div>
-							<div className="space-y-2.5">
-								{section.groups?.map((group, idx) => (
-									<div key={idx} className="flex gap-3">
-										<div className="flex-1">
-											<SliderProperty label={group.labelX} value={values[group.propertiesX[0]] ?? 0} suffix="px" onChange={(v) => handleAxisChange(group.propertiesX, v)} />
-										</div>
-										<div className="flex-1">
-											<SliderProperty label={group.labelY} value={values[group.propertiesY[0]] ?? 0} suffix="px" onChange={(v) => handleAxisChange(group.propertiesY, v)} />
-										</div>
+				<Card className="mt-4">
+					<CardContent className="flex flex-col gap-5 p-0">
+						{PROPERTY_SECTIONS.map((section) => {
+							if (section.title === "Clip Path" && !isIframe) return null
+
+							return (
+								<div key={section.title} className="flex flex-col gap-1.5">
+									<div className="flex items-center justify-between px-1">
+										<h3 className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">{section.title}</h3>
+										{section.hasCollapsibleSide && section.collapsibleKey && (
+											<Button variant="ghost" size="sm" className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground" onClick={() => setCollapsibles(prev => ({ ...prev, [section.collapsibleKey!]: !prev[section.collapsibleKey as keyof typeof collapsibles] }))}>
+												{collapsibles[section.collapsibleKey as keyof typeof collapsibles] ? <Minus className="size-3" /> : <Plus className="size-3" />}
+											</Button>
+										)}
 									</div>
-								))}
-								{section.properties && section.properties.filter(p => p.type === "slider").length > 0 && (
-									<div className="flex gap-3">
-										{section.properties.filter(p => p.type === "slider").map((p) => (
-											<div key={p.id} className="flex-1">
-												<SliderProperty label={p.label} value={values[p.property] ?? p.fallback ?? 0} suffix={p.suffix} min={p.min} max={p.max} onChange={(v) => handleValueChange(p.property, v, p.suffix)} />
+
+									{section.title === "Position" && (
+										<div className="flex flex-col gap-2.5 px-1">
+											<select value={values["position"] || "static"} onChange={(e) => handleValueChange("position", e.target.value)} className="bg-background border border-input rounded-md p-1 text-[11px] w-full">
+												<option value="static">Static</option>
+												<option value="relative">Relative</option>
+												<option value="absolute">Absolute</option>
+												<option value="fixed">Fixed</option>
+												<option value="sticky">Sticky</option>
+											</select>
+											<div className="grid grid-cols-2 gap-x-3 gap-y-2.5">
+												{section.gridProperties?.map((p) => (
+													<SliderProperty key={p.id} label={p.label.charAt(0)} value={values[p.property] ?? 0} suffix={p.suffix} min={p.min} max={p.max} onChange={(v) => handleValueChange(p.property, v, p.suffix)} />
+												))}
+											</div>
+										</div>
+									)}
+
+									<div className="space-y-2.5">
+										{section.groups?.map((group, idx) => (
+											<div key={idx} className="flex gap-3">
+												<div className="flex-1">
+													<SliderProperty label={group.labelX} value={values[group.propertiesX[0]] ?? 0} suffix="px" onChange={(v) => handleAxisChange(group.propertiesX, v)} />
+												</div>
+												<div className="flex-1">
+													<SliderProperty label={group.labelY} value={values[group.propertiesY[0]] ?? 0} suffix="px" onChange={(v) => handleAxisChange(group.propertiesY, v)} />
+												</div>
 											</div>
 										))}
-									</div>
-								)}
-								{section.properties?.filter(p => p.type === "color").map((p) => (
-									<div
-										key={p.id}
-										className="flex items-center justify-between gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors w-full font-mono text-[11px]"
-									>
-										<span className="text-[9px] font-bold text-muted-foreground uppercase pl-1 truncate">
-											{p.label}
-										</span>
-										<ColorPicker
-											color={values[p.property] ?? p.fallback ?? "#ffffff"}
-											onChange={(v) => handleValueChange(p.property, v)}
-										/>
-									</div>
-								))}
-								{section.collapsibleKey && collapsibles[section.collapsibleKey as keyof typeof collapsibles] && section.gridProperties && (
-									<div className="grid grid-cols-2 gap-x-3 gap-y-2.5 pt-2 border-t border-dashed border-border/40">
-										{section.gridProperties.map((p) => (
-											<SliderProperty key={p.id} label={p.label} value={values[p.property] ?? 0} suffix={p.suffix} min={p.min} max={p.max} onChange={(v) => handleValueChange(p.property, v, p.suffix)} />
+
+										{section.properties && section.properties.filter(p => p.type === "slider").length > 0 && (
+											<div className="flex gap-3">
+												{section.properties.filter(p => p.type === "slider").map((p) => (
+													<div key={p.id} className="flex-1">
+														<SliderProperty label={p.label} value={values[p.property] ?? p.fallback ?? 0} suffix={p.suffix} min={p.min} max={p.max} onChange={(v) => handleValueChange(p.property, v, p.suffix)} />
+													</div>
+												))}
+											</div>
+										)}
+
+										{section.properties?.filter(p => p.type === "color").map((p) => (
+											<div key={p.id} className="flex items-center justify-between gap-2 p-1.5 hover:bg-accent/40 rounded-md transition-colors w-full font-mono text-[11px]">
+												<span className="text-[9px] font-bold text-muted-foreground uppercase pl-1 truncate">{p.label}</span>
+												<ColorPicker color={values[p.property] ?? p.fallback ?? "#ffffff"} onChange={(v) => handleValueChange(p.property, v)} />
+											</div>
 										))}
+
+										{section.properties?.filter(p => p.type === "select").map((p) => {
+											if (section.title !== "Clip Path") return null;
+
+											return (
+												<div key={p.id} className="flex flex-col gap-2 p-1">
+													<select
+														value={values[p.property] ?? "none"}
+														onChange={(e) => handleValueChange(p.property, e.target.value)}
+														className="w-full bg-background border border-input rounded-md p-1.5 text-[11px] font-mono"
+													>
+														<option value="none">None</option>
+														<option value="circle(50%)">Circle</option>
+														<option value="inset(10% 10% 10% 10%)">Inset</option>
+														<option value="ellipse(50% 50% at 50% 50%)">Ellipse</option>
+													</select>
+												</div>
+											);
+										})}
+
+										{section.collapsibleKey && collapsibles[section.collapsibleKey as keyof typeof collapsibles] && section.gridProperties && (
+											<div className="grid grid-cols-2 gap-x-3 gap-y-2.5 pt-2 border-t border-dashed border-border/40">
+												{section.gridProperties.map((p) => (
+													<SliderProperty key={p.id} label={p.label} value={values[p.property] ?? 0} suffix={p.suffix} min={p.min} max={p.max} onChange={(v) => handleValueChange(p.property, v, p.suffix)} />
+												))}
+											</div>
+										)}
 									</div>
-								)}
-							</div>
-						</div>
-					))}
-				</CardContent>
-			</Card>
+								</div>
+							)
+						})}
+					</CardContent>
+				</Card>
+			</div>
 		</div>
 	)
 }

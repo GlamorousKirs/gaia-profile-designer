@@ -26,7 +26,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useColumnStore, type ColumnLayoutState } from "@/store/useColumnStore";
 import { useCustomPanelStore } from "@/store/useCustomPanelStore";
-import { CreatePanelDialog } from "~/components/CreatePanelDialog"; // Updated import[cite: 3]
+import { CreatePanelDialog } from "~/components/CreatePanelDialog";
 import {
 	ContextMenu,
 	ContextMenuContent,

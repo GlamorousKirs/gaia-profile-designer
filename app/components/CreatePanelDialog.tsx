@@ -89,7 +89,7 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
 							value={content}
 							onChange={(e) => setContent(e.target.value)}
 							placeholder="Enter text.."
-							className="h-[200px] overflow-y-auto"
+							className="h-50 overflow-y-auto"
 							data-lenis-prevent
 						/>
 					</div>

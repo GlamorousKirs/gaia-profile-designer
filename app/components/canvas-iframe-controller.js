@@ -24,20 +24,20 @@
 		let current = element;
 
 		while (current && current !== document.body && current !== document.documentElement) {
-			if (current.id) {
-				pathSegments.unshift(`#${current.id}`);
-			}
-			else if (current.className && typeof current.className === 'string') {
-				const primaryClass = current.classList[0];
-				if (primaryClass && !primaryClass.startsWith('highlight-')) {
-					pathSegments.unshift(`.${primaryClass}`);
+			if (!current.classList?.contains('iframe-selection-shield')) {
+				if (current.id) {
+					pathSegments.unshift(`#${current.id}`);
+				} else if (current.className && typeof current.className === 'string') {
+					const primaryClass = current.classList[0];
+					if (primaryClass && !primaryClass.startsWith('highlight-')) {
+						pathSegments.unshift(`.${primaryClass}`);
+					} else if (current === element) {
+						pathSegments.unshift(current.tagName.toLowerCase());
+					}
 				} else if (current === element) {
 					pathSegments.unshift(current.tagName.toLowerCase());
 				}
-			} else if (current === element) {
-				pathSegments.unshift(current.tagName.toLowerCase());
 			}
-
 			current = current.parentNode;
 		}
 
@@ -153,15 +153,21 @@
 	document.addEventListener('click', (event) => {
 		if (!window.isSelectionActive) return;
 
+		let target = event.target;
+		if (target.classList.contains('iframe-selection-shield')) {
+			const iframe = target.parentElement.querySelector('iframe');
+			if (iframe) target = iframe;
+		}
+
 		event.preventDefault();
 		event.stopPropagation();
 
-		const semanticSelection = getSemanticParentPath(event.target);
+		const semanticSelection = getSemanticParentPath(target);
 		const includeDescendants = event.shiftKey;
 		const isAdditiveSelection = event.ctrlKey || event.metaKey;
 
 		let processingSelector = semanticSelection;
-		if (includeDescendants && event.target !== document.body && event.target !== document.documentElement) {
+		if (includeDescendants && target !== document.body && target !== document.documentElement) {
 			processingSelector = `${semanticSelection}, ${semanticSelection} *`;
 			window.getSelection()?.removeAllRanges();
 		}

@@ -20,6 +20,7 @@ export interface ColorLibrary {
 
 export interface CustomPanel {
 	id: string;
+	name: string;
 	content: string;
 }
 

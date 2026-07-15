@@ -263,28 +263,27 @@ export const Canvas = memo(function Canvas({
 				const doc = win.document
 				if (isSelectionMode) {
 					doc.querySelectorAll("iframe, embed, object").forEach((el) => {
-						const iframeEl = el as HTMLIFrameElement
-						if (iframeEl.id === "viewer") return
+						const iframeEl = el as HTMLIFrameElement;
+						if (iframeEl.id === "viewer") return;
 
-						const parent = iframeEl.parentElement
-						if (parent) {
-							if (getComputedStyle(parent).position === "static") {
-								parent.style.position = "relative"
-							}
+						const rect = iframeEl.getBoundingClientRect();
+						const parent = iframeEl.parentElement;
 
-							let shield = parent.querySelector(".iframe-selection-shield") as HTMLDivElement | null
-							if (!shield) {
-								shield = doc.createElement("div")
-								shield.className = "iframe-selection-shield"
-								parent.appendChild(shield)
-							}
+						const isFixed = getComputedStyle(iframeEl).position === 'fixed';
 
-							shield.style.left = `${iframeEl.offsetLeft}px`
-							shield.style.top = `${iframeEl.offsetTop}px`
-							shield.style.width = `${iframeEl.offsetWidth || iframeEl.width || 470}px`
-							shield.style.height = `${iframeEl.offsetHeight || iframeEl.height || 264}px`
+						let shield = parent?.querySelector(".iframe-selection-shield") as HTMLDivElement | null;
+						if (!shield) {
+							shield = doc.createElement("div");
+							shield.className = "iframe-selection-shield";
+							doc.body.appendChild(shield);
 						}
-					})
+						shield.style.position = isFixed ? "fixed" : "absolute";
+						shield.style.left = `${rect.left}px`;
+						shield.style.top = `${rect.top}px`;
+						shield.style.width = `${rect.width}px`;
+						shield.style.height = `${rect.height}px`;
+						shield.style.zIndex = "999999";
+					});
 				} else {
 					doc.querySelectorAll(".iframe-selection-shield").forEach(el => el.remove())
 				}

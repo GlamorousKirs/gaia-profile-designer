@@ -129,7 +129,7 @@ function CollapsibleFilters({ grayscale, setGrayscale, brightness, setBrightness
 	setContrast: (v: number) => void;
 }) {
 	return (
-		<Accordion type="single" collapsible className="w-full rounded-lg px-2">
+		<Accordion className="w-full rounded-lg px-2">
 			<AccordionItem value="visual-filters" className="border-b-0">
 				<AccordionTrigger className="py-2 hover:no-underline text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
 					Other Filters
@@ -152,7 +152,7 @@ export function AvatarAnimator({ initialAvatarUrl = PRESET_IMAGES[0].url }) {
 		if (profile.avatarUrl) {
 			const [path, queryString] = profile.avatarUrl.split('?');
 			const query = queryString ? `?${queryString}` : '';
-			
+
 			const base = path.replace(/_96x96|_48x48|_flip/g, '');
 			const extension = base.endsWith('.gif') ? '.gif' : '.png';
 			const cleanBase = base.replace(/\.png|\.gif/g, '');
@@ -418,9 +418,9 @@ export function AvatarAnimator({ initialAvatarUrl = PRESET_IMAGES[0].url }) {
 								grayscale={hoverGrayscale}
 								setGrayscale={setHoverGrayscale}
 								brightness={hoverBrightness}
-								setBrightness={hoverBrightness}
+								setBrightness={setHoverBrightness}
 								contrast={hoverContrast}
-								setContrast={hoverContrast}
+								setContrast={setHoverContrast}
 							/>
 
 							<div className="flex items-center justify-between border-t border-muted/50 pt-3">

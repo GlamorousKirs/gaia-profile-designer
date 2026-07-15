@@ -78,19 +78,22 @@ export function SidebarPanel<T extends string>({
     </div>
   )
 
+  const panelWidth = isLeft ? "w-66" : "w-80"
+  const contentWidth = isLeft ? "w-64" : "w-77"
+
   return (
     <div className="flex h-full z-10 overflow-hidden select-none">
       {isLeft && controlActionRail}
 
       <div
         className={`h-full overflow-hidden relative flex shrink-0 transition-[width,padding] ease-[cubic-bezier(0.2,0.8,0.2,1)] will-change-[width,padding] ${isOpen
-            ? isLeft
-              ? "w-67 pr-3 duration-220"
-              : "w-67 pl-3 duration-220"
-            : "w-0 p-0 duration-180"
+          ? isLeft
+            ? `${panelWidth} pr-3 duration-220`
+            : `${panelWidth} pl-3 duration-220`
+          : "w-0 p-0 duration-180"
           }`}
       >
-        <div className="w-64 h-full absolute top-0 left-0 overflow-y-auto overflow-x-hidden">
+        <div className={`${contentWidth} h-full absolute top-0 left-0 overflow-y-auto overflow-x-hidden`}>
           {children}
         </div>
       </div>

@@ -1,7 +1,7 @@
 export interface PropertyConfig {
 	id: string;
 	label: string;
-	type: "slider" | "color";
+	type: "slider" | "color" | "text" | "select";
 	property: string;
 	suffix?: string;
 	fallback?: any;
@@ -30,6 +30,24 @@ export const PROPERTY_SECTIONS: SectionConfig[] = [
 		properties: [
 			{ id: "width", label: "W", type: "slider", property: "width", suffix: "px", fallback: 0, min: 0, max: 1200 },
 			{ id: "height", label: "H", type: "slider", property: "height", suffix: "px", fallback: 0, min: 0, max: 1200 }
+		]
+	},
+	{
+		title: "Position",
+		properties: [
+			{ id: "positionType", label: "Type", type: "select", property: "position" } as any
+		],
+		gridProperties: [
+			{ id: "posTop", label: "Top", type: "slider", property: "top", suffix: "px", min: -500, max: 500 },
+			{ id: "posRight", label: "Right", type: "slider", property: "right", suffix: "px", min: -500, max: 500 },
+			{ id: "posBottom", label: "Bottom", type: "slider", property: "bottom", suffix: "px", min: -500, max: 500 },
+			{ id: "posLeft", label: "Left", type: "slider", property: "left", suffix: "px", min: -500, max: 500 }
+		]
+	},
+	{
+		title: "Clip Path",
+		properties: [
+			{ id: "clipPath", label: "Path", type: "select", property: "clip-path", fallback: "none" }
 		]
 	},
 	{
@@ -85,13 +103,13 @@ export const PROPERTY_SECTIONS: SectionConfig[] = [
 		properties: [
 			{ id: "borderRadius", label: "Rad", type: "slider", property: "border-radius", suffix: "px", min: 0, max: 100 },
 			{ id: "borderWidth", label: "Thick", type: "slider", property: "border-width", suffix: "px", min: 0, max: 20 },
-			{ id: "borderColor", label: "Color", type: "color", property: "border-color", fallback: "#000000" }
+			{ id: "borderColor", label: "Border Color", type: "color", property: "border-color", fallback: "#000000" }
 		]
 	},
 	{
 		title: "Fills & Appearance",
 		properties: [
-			{ id: "bgColor", label: "Fill", type: "color", property: "background-color", fallback: "#ffffff" },
+			{ id: "bgColor", label: "Background Color", type: "color", property: "background-color", fallback: "#ffffff" },
 			{ id: "opacityVal", label: "Opac", type: "slider", property: "opacity", suffix: "%", fallback: 100, min: 0, max: 100 }
 		]
 	}
