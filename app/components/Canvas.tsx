@@ -129,16 +129,54 @@ export const Canvas = memo(function Canvas({
 			const compiled = (layoutToUse?.[colKey] ?? [])
 				.filter((id: string) => id !== "columns")
 				.map((id: string) => {
-					if (customPanels[id]) {
-						const processedContent = customPanels[id].content.replace(/\n/g, '<br>');
-						const htmlContent = bbobHTML(processedContent, customPreset());
+					const isCustom = customPanels[id];
+					const isAbout = id === "about";
 
+					if (isCustom) {
+						const panelData = customPanels[id];
+						const cleanId = id.replace('#', '');
+
+						if (id.startsWith("#id_media_")) {
+							const url = panelData.url || "";
+							let videoId = "";
+
+							if (url.includes("youtu.be/")) {
+								videoId = url.split("youtu.be/")[1]?.split("?")[0];
+							} else if (url.includes("v=")) {
+								videoId = url.split("v=")[1]?.split("&")[0];
+							}
+
+							return `
+								<div id="${cleanId}" class="panel media_panel">
+									<h2 id="media_${cleanId.split('_').pop()}_title">${panelData.name}</h2>
+									<iframe width="470" height="264"
+										src="https://www.youtube-nocookie.com/embed/${videoId}?&mute=0&autoplay=0" 
+										frameborder="0"
+										loading="lazy"
+										allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+										allowfullscreen=""></iframe>
+									<div class="clear"></div>
+								</div>`.trim();
+						}
+
+						const processedContent = (panelData.content || "").replace(/\n/g, '<br>');
+						const htmlContent = bbobHTML(processedContent, customPreset());
 						return `
-							<div id="id_${id}" class="panel custom_panel postcontent">
-								<h2 id="${id}_title">${customPanels[id].name}</h2>
-								<div id="${id}_content">${htmlContent}</div>
-								<div class="clear"></div>
-							</div>`.trim();
+				<div id="${cleanId}" class="panel custom_panel postcontent">
+					<h2 id="${cleanId}_title">${panelData.name}</h2>
+					${htmlContent}
+					<div class="clear"></div>
+				</div>`.trim();
+					}
+
+					if (isAbout) {
+						const panelData = customPanels[id];
+						return `
+				<div id="about" class="panel about_panel postcontent">
+					<h2 id="about_title">${panelData.name}</h2>
+					${(panelData.content || "").replace(/\n/g, '<br>')}
+					<div class="clear"></div>
+				</div>`.trim();
 					}
 					return panelHtmlModules[`/app/gaia_assets/panels/${id}.html`] || "";
 				})

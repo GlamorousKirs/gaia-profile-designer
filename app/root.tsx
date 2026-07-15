@@ -71,7 +71,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 								</Suspense>
 								{showFooter && <Footer />}
 							</main>
-							<Toaster position="top-center" closeButton/>
+							<Toaster position="top-center" closeButton />
 						</SmoothScroll>
 					</TooltipProvider>
 				</ThemeProvider>
@@ -104,7 +104,7 @@ export default function App() {
 			await migrateGStudioToGaia();
 		};
 
-		runMigrations(); 
+		runMigrations();
 	}, []);
 
 	return <Outlet />

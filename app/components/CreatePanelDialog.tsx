@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Bold, Italic, Film, MessageSquareQuote, Code, EyeOff, Link as LinkIcon, Image as ImageIcon } from "lucide-react"
-
+import { generateNumericId } from "@/lib/generate-panel-id";
 export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues }: any) {
 	const [formData, setFormData] = useState({ name: "", id: "", content: "" })
 	const [mediaInputs, setMediaInputs] = useState({ url: "", label: "", youtube: "", image: "" })
@@ -72,16 +72,18 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
 		handleInsert(start, end, newText)
 		setMediaInputs({ url: "", label: "", youtube: "", image: "" })
 	}
-
-	const handleSubmit = () => {
-		const numericId = formData.id.trim() === "" ? Math.floor(10000 + Math.random() * 90000).toString() : formData.id
-		onConfirm({ 
-			id: `#id_custom_${numericId}`, 
-			name: formData.name.trim() === "" ? "Custom" : formData.name, 
-			content: formData.content 
-		})
-		onOpenChange(false)
-	}
+const handleSubmit = () => {
+	const suffix = formData.id.trim() === "" 
+		? generateNumericId() 
+		: formData.id.replace('#id_custom_', '');
+	
+	onConfirm({ 
+		id: `#id_custom_${suffix}`, 
+		name: formData.name.trim() === "" ? "Custom" : formData.name, 
+		content: formData.content 
+	});
+	onOpenChange(false);
+};
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
@@ -163,7 +165,7 @@ export function CreatePanelDialog({ open, onOpenChange, onConfirm, defaultValues
 				</div>
 
 				<DialogFooter>
-					<Button className="w-full" onClick={handleSubmit}>{defaultValues ? "Save Changes" : "Create Panel"}</Button>
+					<Button className="w-full" onClick={handleSubmit}>{defaultValues ? "Save Changes" : "Create"}</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

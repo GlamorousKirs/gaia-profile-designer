@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { useColumnStore, type ColumnLayoutState } from "@/store/useColumnStore";
 import { useCustomPanelStore } from "@/store/useCustomPanelStore";
 import { CreatePanelDialog } from "~/components/CreatePanelDialog";
+import { CreateMediaPanelDialog } from "@/components/CreateMediaPanelDialog";
 import {
 	ContextMenu,
 	ContextMenuContent,
@@ -34,7 +35,9 @@ import {
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 
-const GAIA_ASSETS = ["about", "badges", "comments", "contact", "details", "equipment", "footprints", "forum", "friends", "gifts", "interests", "journal", "media", "signature", "store", "wishlist"];
+const GAIA_ASSETS = Object.keys(import.meta.glob("/app/gaia_assets/panels/*.html")).map((path) => 
+	path.split("/").pop()!.replace(".html", "")
+);
 
 const DroppableColumn = memo(function DroppableColumn({ id, items, onRemove, onEdit }: { id: string; items: string[]; onRemove: (id: string) => void; onEdit: (id: string) => void }) {
 	const { setNodeRef } = useDroppable({ id });
@@ -95,7 +98,7 @@ const SortableItem = memo(function SortableItem({ id, onRemove, onEdit }: { id: 
 
 	const customPanels = useCustomPanelStore((state) => state.panels);
 	const isCustom = Object.keys(customPanels).includes(id);
-	const displayId = isCustom && !id.startsWith("#id_") ? `#id_${id}` : id;
+	const displayId = id.startsWith("#id_") ? id : `#id_${id}`;
 
 	return (
 		<ContextMenu>
@@ -113,17 +116,21 @@ const SortableItem = memo(function SortableItem({ id, onRemove, onEdit }: { id: 
 					</div>
 				</div>
 			</ContextMenuTrigger>
-			{isCustom && (
+			{(isCustom || !id.startsWith("#id_")) && (
 				<ContextMenuContent>
-					<ContextMenuItem onClick={() => onEdit(id)}>
-						Edit
-					</ContextMenuItem>
-					<ContextMenuItem
-						onClick={() => onRemove(id)}
-						className="text-destructive focus:text-destructive"
-					>
-						Remove
-					</ContextMenuItem>
+					{isCustom && (
+						<ContextMenuItem onClick={() => onEdit(id)}>
+							Edit
+						</ContextMenuItem>
+					)}
+					{isCustom && (
+						<ContextMenuItem
+							onClick={() => onRemove(id)}
+							className="text-destructive focus:text-destructive"
+						>
+							Remove
+						</ContextMenuItem>
+					)}
 				</ContextMenuContent>
 			)}
 		</ContextMenu>
@@ -137,7 +144,7 @@ export default function ColumnManager() {
 	const addPanel = useCustomPanelStore((state) => state.addPanel);
 	const removePanel = useCustomPanelStore((state) => state.removePanel);
 	const updatePanel = useCustomPanelStore((state) => state.updatePanel);
-
+	const [isMediaDrawerOpen, setIsMediaDrawerOpen] = useState(false);
 	const [activeId, setActiveId] = useState<string | null>(null);
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 	const [editingId, setEditingId] = useState<string | null>(null);
@@ -153,7 +160,11 @@ export default function ColumnManager() {
 
 	const handleEditPanel = useCallback((id: string) => {
 		setEditingId(id);
-		setIsDrawerOpen(true);
+		if (id.startsWith("#id_media_")) {
+			setIsMediaDrawerOpen(true);
+		} else {
+			setIsDrawerOpen(true);
+		}
 	}, []);
 
 	const handleCreateClick = useCallback(() => {
@@ -249,7 +260,23 @@ export default function ColumnManager() {
 			onDragEnd={handleDragEnd}
 		>
 			<div className="flex flex-col gap-4 p-3">
-				<Button onClick={handleCreateClick} variant="outline">Create Custom Panel</Button>
+				<div className="flex gap-2">
+					<Button 
+						onClick={handleCreateClick} 
+						variant="outline" 
+						className="flex-1 text-[11px] h-8"
+					>
+						Create Custom
+					</Button>
+					<Button 
+						onClick={() => setIsMediaDrawerOpen(true)} 
+						variant="outline" 
+						className="flex-1 text-[11px] h-8"
+					>
+						Create Media
+					</Button>
+				</div>
+
 				{(Object.entries(viewColumns) as [string, string[]][]).map(([id, items]) => (
 					<DroppableColumn
 						key={id}
@@ -266,11 +293,17 @@ export default function ColumnManager() {
 				defaultValues={editingId ? customPanels[editingId] : undefined}
 				onConfirm={handlePanelConfirm}
 			/>
+			<CreateMediaPanelDialog
+				open={isMediaDrawerOpen}
+				onOpenChange={setIsMediaDrawerOpen}
+				defaultValues={editingId && editingId.startsWith("#id_media_") ? customPanels[editingId] : undefined}
+				onConfirm={handlePanelConfirm}
+			/>
 			<DragOverlay>
 				{activeId ? (
 					<div className="flex items-center gap-2 px-2 py-2 bg-accent cursor-grabbing w-full font-mono text-[11px] rounded-md border shadow-lg">
 						<GripVertical className="size-3 opacity-60" />
-						{activeId}
+						{activeId.startsWith("#id_") ? activeId : `#id_${activeId}`}
 					</div>
 				) : null}
 			</DragOverlay>

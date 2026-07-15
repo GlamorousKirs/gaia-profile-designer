@@ -21,7 +21,8 @@ export interface ColorLibrary {
 export interface CustomPanel {
 	id: string;
 	name: string;
-	content: string;
+	content?: string;
+	url?: string;
 }
 
 const db = new Dexie('gaia-profile-designer') as Dexie & {
