@@ -198,7 +198,13 @@ export default function Studio() {
 									{activeLeftTab === "selectors" ? (
 										<SelectorPanel onSelectSelector={handleLeftSelectorAppend} />
 									) : (
-										<ColumnManager />
+										// Inside Studio.tsx, locate the ColumnManager inside SidebarPanel
+<ColumnManager 
+    onAddToCode={(selector) => {
+        setCssCode((prev) => updateCssValue(prev, selector, '', ''));
+        setIsCodeOpen(true);
+    }} 
+/>
 									)}
 								</Suspense>
 							</SidebarPanel>

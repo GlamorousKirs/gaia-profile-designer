@@ -15,9 +15,14 @@
 		}
 	}, true);
 
-	function getSemanticParentPath(element) {
+function getSemanticParentPath(element) {
 		if (!element || element === document.body || element === document.documentElement) {
 			return 'html, body';
+		}
+
+		// If the target clicked IS a column, return its ID immediately
+		if (element.id && (element.id === 'columns' || element.id.startsWith('column_'))) {
+			return `#${element.id}`;
 		}
 
 		const pathSegments = [];
@@ -25,19 +30,24 @@
 
 		while (current && current !== document.body && current !== document.documentElement) {
 			if (!current.classList?.contains('iframe-selection-shield')) {
-				if (current.tagName === 'H2') {
-					pathSegments.unshift('h2');
-				} else if (current.id) {
-					pathSegments.unshift(`#${current.id}`);
-				} else if (current.className && typeof current.className === 'string') {
-					const primaryClass = current.classList[0];
-					if (primaryClass && !primaryClass.startsWith('highlight-')) {
-						pathSegments.unshift(`.${primaryClass}`);
+				// While climbing, ignore column IDs so they don't get appended to panel selectors
+				const isColumn = current.id && (current.id === 'columns' || current.id.startsWith('column_'));
+				
+				if (!isColumn) {
+					if (current.tagName === 'H2') {
+						pathSegments.unshift('h2');
+					} else if (current.id) {
+						pathSegments.unshift(`#${current.id}`);
+					} else if (current.className && typeof current.className === 'string') {
+						const primaryClass = current.classList[0];
+						if (primaryClass && !primaryClass.startsWith('highlight-')) {
+							pathSegments.unshift(`.${primaryClass}`);
+						} else if (current === element) {
+							pathSegments.unshift(current.tagName.toLowerCase());
+						}
 					} else if (current === element) {
 						pathSegments.unshift(current.tagName.toLowerCase());
 					}
-				} else if (current === element) {
-					pathSegments.unshift(current.tagName.toLowerCase());
 				}
 			}
 			current = current.parentNode;
@@ -45,7 +55,6 @@
 
 		return pathSegments.length > 0 ? pathSegments.join(' ') : element.tagName.toLowerCase();
 	}
-
 	function applyIdentityOverrides() {
 		const avatarSelectors = 'img.avatar, [data-avatar], .avatar img, [id*="avatar"] img, #id_details img';
 		const avatarMedia = document.querySelectorAll(avatarSelectors);

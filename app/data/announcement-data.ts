@@ -13,6 +13,11 @@ export interface AnnouncementItem {
 
 export const ANNOUNCEMENTS: AnnouncementItem[] = [
 	{
+		date: "Update #5",
+		timestamp: "2026-07-16",
+		message: `An update for panels: Right-clicking on Panels in the left sidebar will show a context menu that lets you instantly add their selectors, along with useful pseudo-elements (::before, ::after) and pseudo-classes (:hover, :focus, :active), directly to your code editor. This also works on Selectors in the Selectors tab.`,
+	},
+	{
 		date: "Update #4",
 		timestamp: "2026-07-15",
 		message: `- Added Media Panel creation. #id_about is now editable. Right click on them to edit. \n\nI'm taking a break soon. Expect less frequent updates. I hope you're enjoying the project though! Let me know when you find a bug. I'll try to fix it when I have time.\n\nTip: Selecting the Gaia logo on the canvas will display the logo menu in the right sidebar.\n\nSometimes I update the proj without announcing it.`,

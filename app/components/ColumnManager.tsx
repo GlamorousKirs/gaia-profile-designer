@@ -39,7 +39,7 @@ const GAIA_ASSETS = Object.keys(import.meta.glob("/app/gaia_assets/panels/*.html
 	path.split("/").pop()!.replace(".html", "")
 );
 
-const DroppableColumn = memo(function DroppableColumn({ id, items, onRemove, onEdit }: { id: string; items: string[]; onRemove: (id: string) => void; onEdit: (id: string) => void }) {
+const DroppableColumn = memo(function DroppableColumn({ id, items, onRemove, onEdit, onAddToCode }: { id: string; items: string[]; onRemove: (id: string) => void; onEdit: (id: string) => void; onAddToCode: (id: string) => void }) {
 	const { setNodeRef } = useDroppable({ id });
 	const [search, setSearch] = useState("");
 
@@ -84,7 +84,7 @@ const DroppableColumn = memo(function DroppableColumn({ id, items, onRemove, onE
 			<CardContent ref={setNodeRef} className="flex-1 px-0 min-h-25">
 				<SortableContext id={id} items={filteredItems} strategy={verticalListSortingStrategy}>
 					<div className="divide-y divide-border/60">
-						{filteredItems.map((item) => <SortableItem key={item} id={item} onRemove={onRemove} onEdit={onEdit} />)}
+						{filteredItems.map((item) => <SortableItem key={item} id={item} onRemove={onRemove} onEdit={onEdit} onAddToCode={onAddToCode} />)}
 					</div>
 				</SortableContext>
 			</CardContent>
@@ -92,7 +92,7 @@ const DroppableColumn = memo(function DroppableColumn({ id, items, onRemove, onE
 	);
 });
 
-const SortableItem = memo(function SortableItem({ id, onRemove, onEdit }: { id: string; onRemove: (id: string) => void; onEdit: (id: string) => void }) {
+const SortableItem = memo(function SortableItem({ id, onRemove, onEdit, onAddToCode }: { id: string; onRemove: (id: string) => void; onEdit: (id: string) => void; onAddToCode: (id: string) => void }) {
 	const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 	const style = { transform: CSS.Transform.toString(transform), transition };
 
@@ -114,19 +114,28 @@ const SortableItem = memo(function SortableItem({ id, onRemove, onEdit }: { id: 
 		</div>
 	);
 
-	if (!isCustom) return itemContent;
-
 	return (
 		<ContextMenu>
 			<ContextMenuTrigger>{itemContent}</ContextMenuTrigger>
 			<ContextMenuContent>
-				<ContextMenuItem onClick={() => onEdit(id)}>Edit</ContextMenuItem>
-				<ContextMenuItem onClick={() => onRemove(id)} className="text-destructive focus:text-destructive">Remove</ContextMenuItem>
+				<ContextMenuItem onClick={() => onAddToCode(displayId)}>Add to code editor</ContextMenuItem>
+				<div className="h-px bg-border my-1" />
+				<ContextMenuItem onClick={() => onAddToCode(`${displayId}::before`)}>Add ::before</ContextMenuItem>
+				<ContextMenuItem onClick={() => onAddToCode(`${displayId}::after`)}>Add ::after</ContextMenuItem>
+				<ContextMenuItem onClick={() => onAddToCode(`${displayId}:hover`)}>Add :hover</ContextMenuItem>
+				<ContextMenuItem onClick={() => onAddToCode(`${displayId}:focus`)}>Add :focus</ContextMenuItem>
+				<ContextMenuItem onClick={() => onAddToCode(`${displayId}:active`)}>Add :active</ContextMenuItem>
+				{isCustom && (
+					<>
+						<div className="h-px bg-border my-1" />
+						<ContextMenuItem onClick={() => onEdit(id)}>Edit</ContextMenuItem>
+						<ContextMenuItem onClick={() => onRemove(id)} className="text-destructive focus:text-destructive">Remove</ContextMenuItem>
+					</>
+				)}
 			</ContextMenuContent>
 		</ContextMenu>
 	);
 });
-
 const DragOverlayWrapper = memo(({ activeId }: { activeId: string | null }) => (
 	<DragOverlay>
 		{activeId ? (
@@ -138,7 +147,7 @@ const DragOverlayWrapper = memo(({ activeId }: { activeId: string | null }) => (
 	</DragOverlay>
 ));
 
-export default function ColumnManager() {
+export default function ColumnManager({ onAddToCode }: { onAddToCode: (id: string) => void }) {
 	const { columns, setColumns } = useColumnStore();
 	const customPanels = useCustomPanelStore((state) => state.panels);
 	const loadPanels = useCustomPanelStore((state) => state.loadPanels);
@@ -269,7 +278,7 @@ export default function ColumnManager() {
 					<Button onClick={() => setIsMediaDrawerOpen(true)} variant="outline" className="flex-1 text-[11px] h-8">Create Media</Button>
 				</div>
 				{(Object.entries(viewColumns) as [string, string[]][]).map(([id, items]) => (
-					<DroppableColumn key={id} id={id} items={items} onRemove={handleRemovePanel} onEdit={handleEditPanel} />
+					<DroppableColumn key={id} id={id} items={items} onRemove={handleRemovePanel} onEdit={handleEditPanel} onAddToCode={onAddToCode} />
 				))}
 			</div>
 			<CreatePanelDialog open={isDrawerOpen} onOpenChange={handleDrawerChange} defaultValues={editingId ? customPanels[editingId] : undefined} onConfirm={handlePanelConfirm} />
