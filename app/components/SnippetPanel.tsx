@@ -16,6 +16,8 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import CodeMirror from "@uiw/react-codemirror"
+import { EditorView } from "@codemirror/view"
+import { EditorState } from "@codemirror/state"
 import { css } from "@codemirror/lang-css"
 import { studioTheme, customSearchTheme } from "@/codemirror/editor"
 
@@ -224,7 +226,15 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
 		setEditingId(null)
 	}
 
-	const extensions = useMemo(() => [css(), customSearchTheme], [])
+	const extensions = useMemo(() => {
+		const list = [css(), customSearchTheme]
+		if (modalSnippet?.isReadOnly) {
+			list.push(EditorState.readOnly.of(true))
+			list.push(EditorView.editable.of(false))
+			list.push(EditorView.contentAttributes.of({ tabindex: "0" }))
+		}
+		return list
+	}, [modalSnippet])
 
 	return (
 		<div className="flex shrink-0 h-full relative">
@@ -308,7 +318,6 @@ export function SnippetPanel({ dragControls, currentCode, onSelectSnippet, width
 										onChange={(value) => setModalCode(value)}
 										theme={studioTheme}
 										extensions={extensions}
-										editable={!modalSnippet?.isReadOnly}
 										basicSetup={{
 											lineNumbers: false,
 											foldGutter: false,
