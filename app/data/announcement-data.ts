@@ -13,6 +13,11 @@ export interface AnnouncementItem {
 
 export const ANNOUNCEMENTS: AnnouncementItem[] = [
 	{
+		date: "Update #6",
+		timestamp: "2026-07-17",
+		message: `I'm gonna be updating my footprints and comments panels to populate them with stuff from my Gaia profile every now and then. If you want to show up on them, feel free to stalk my profile and drop a comment! If you’d rather be taken off, just shoot me a PM. I'm only displaying a max of 10 recent visitors, and 9 recent comments. Once they're full, I won't be updating them with any new ones anymore.`,
+	},
+	{
 		date: "Update #5",
 		timestamp: "2026-07-16",
 		message: `An update for panels: Right-clicking on Panels in the left sidebar will show a context menu that lets you instantly add their selectors, along with useful pseudo-elements (::before, ::after) and pseudo-classes (:hover, :focus, :active), directly to your code editor. This also works on Selectors in the Selectors tab.`,
