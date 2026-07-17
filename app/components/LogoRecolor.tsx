@@ -18,7 +18,7 @@ interface LogoRecolorProps {
 
 const LOGO_SVG_URL = "https://res.cloudinary.com/dowqfxgfe/image/upload/v1783043322/gaiaonline-svg-logo_zfldzp.svg"
 const EQUALIZER_SVG_URL = "https://res.cloudinary.com/dowqfxgfe/image/upload/v1784253658/gaia-profile-designer_equalizer.svg"
-const EQUALIZER_PIXEL_SVG_URL = "https://res.cloudinary.com/dowqfxgfe/image/upload/v1784256820/gaia-profile-designer_equalizer-pixel_njnodo.svg"
+const EQUALIZER_style2_SVG_URL = "https://res.cloudinary.com/dowqfxgfe/image/upload/v1784256820/gaia-profile-designer_equalizer-pixel_njnodo.svg"
 
 const SVGDisplay = memo(({ content }: { content: string }) => (
 	<div 
@@ -33,14 +33,14 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 	const isStudioPage = location.pathname.includes("studio")
 
 	const [activeRecolorTab, setActiveRecolorTab] = useState<"logo" | "equalizer">("logo")
-	const [equalizerStyle, setEqualizerStyle] = useState<"standard" | "pixel">("standard")
+	const [equalizerStyle, setEqualizerStyle] = useState<"style1" | "style2">("style1")
 	const [logoColor, setLogoColor] = useState("#605270")
 	const [exportName, setExportName] = useState("gaia-header-logo")
 	const [scale, setScale] = useState<string>("1")
 	const addLogo = useLogoStore((state) => state.addLogo)
 
-	const [svgs, setSvgs] = useState({ logo: rawSvgContent, equalizer: "", equalizerPixel: "" })
-	const [loading, setLoading] = useState({ logo: isSvgLoading, equalizer: false, equalizerPixel: false })
+	const [svgs, setSvgs] = useState({ logo: rawSvgContent, equalizer: "", equalizerstyle2: "" })
+	const [loading, setLoading] = useState({ logo: isSvgLoading, equalizer: false, equalizerstyle2: false })
 
 	useEffect(() => {
 		const controller = new AbortController()
@@ -62,14 +62,14 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 			if (!rawSvgContent) fetchAsset("logo", LOGO_SVG_URL)
 		} else {
 			fetchAsset("equalizer", EQUALIZER_SVG_URL)
-			fetchAsset("equalizerPixel", EQUALIZER_PIXEL_SVG_URL)
+			fetchAsset("equalizerstyle2", EQUALIZER_style2_SVG_URL)
 		}
 		return () => controller.abort()
 	}, [activeRecolorTab, rawSvgContent])
 
 	const currentSvgContent = useMemo(() => {
 		if (activeRecolorTab === "logo") return svgs.logo
-		return equalizerStyle === "standard" ? svgs.equalizer : svgs.equalizerPixel
+		return equalizerStyle === "style1" ? svgs.equalizer : svgs.equalizerstyle2
 	}, [activeRecolorTab, equalizerStyle, svgs])
 
 	const dimensions = useMemo(() => {
@@ -182,7 +182,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 			</div>
 			
 			<div className="p-6 bg-muted/20 border-b flex justify-center items-center h-48">
-				{(activeRecolorTab === "logo" ? loading.logo : (loading.equalizer || loading.equalizerPixel)) ? <Loader2 className="animate-spin size-8" /> :
+				{(activeRecolorTab === "logo" ? loading.logo : (loading.equalizer || loading.equalizerstyle2)) ? <Loader2 className="animate-spin size-8" /> :
 					!currentSvgContent ? <span className="text-xs italic text-muted-foreground">Click tab to load preview</span> :
 					<SVGDisplay content={memoizedSvg} />
 				}
@@ -193,12 +193,12 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 						<div className="space-y-1.5">
 							<Label className="text-[10px] uppercase font-bold tracking-wider">Equalizer Style</Label>
 							<div className="grid grid-cols-2 gap-3">
-								{["standard", "pixel"].map((style) => (
+								{["style1", "style2"].map((style) => (
 									<button
 										key={style}
 										type="button"
 										onClick={() => {
-											setEqualizerStyle(style as "standard" | "pixel")
+											setEqualizerStyle(style as "style1" | "style2")
 											setExportName(`equalizer-${style}-recolored`)
 										}}
 										className={`flex flex-col items-center justify-center p-3 rounded-lg border text-center transition-all ${
@@ -207,7 +207,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 												: "border-muted bg-transparent hover:bg-muted/30"
 										}`}
 									>
-										<span className="text-[11px] font-medium mt-1">{style === "standard" ? "Standard" : "Pixel"}</span>
+										<span className="text-[11px] font-medium mt-1">{style === "style1" ? "Style 1" : "Style 2"}</span>
 									</button>
 								))}
 							</div>
