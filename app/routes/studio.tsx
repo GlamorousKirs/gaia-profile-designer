@@ -19,7 +19,7 @@ import { Settings, Move, Hash, Component, Image } from "lucide-react"
 
 const SelectorPanel = lazy(() => import("@/components/SelectorPanel"))
 const Canvas = lazy(() => import("~/components/Canvas").then((m) => ({ default: m.Canvas })))
-const SettingsPanel = lazy(() => import("@/components/SettingsPanel"))
+const SettingsPanel = lazy(() => import("~/components/ImageCollectionTab"))
 const GaiaLogoPanel = lazy(() => import("@/components/GaiaLogoPanel").then((m) => ({ default: m.GaiaLogoPanel })))
 import { updateCssValue, injectBlock } from "@/lib/CodePanel/cssProcessor";
 

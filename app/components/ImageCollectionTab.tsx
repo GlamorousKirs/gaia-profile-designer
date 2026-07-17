@@ -1,7 +1,7 @@
 import { memo } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
-const SettingsPanel = memo(() => {
+const ImageCollectionTab = memo(() => {
   return (
     <div className="flex flex-col h-full w-64 text-xs">
       <div className="p-3 pb-2 border-b border-border/40">
@@ -14,5 +14,5 @@ const SettingsPanel = memo(() => {
   )
 })
 
-SettingsPanel.displayName = "SettingsPanel"
-export default SettingsPanel
+ImageCollectionTab.displayName = "ImageCollectionTab"
+export default ImageCollectionTab

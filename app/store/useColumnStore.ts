@@ -9,7 +9,7 @@ export interface ColumnLayoutState {
 
 interface ColumnLayoutStore {
 	columns: ColumnLayoutState;
-	setColumns: (updater: (prev: ColumnLayoutState) => ColumnLayoutState) => void;
+	setColumns: (updater: ColumnLayoutState | ((prev: ColumnLayoutState) => ColumnLayoutState)) => void;
 }
 
 export const useColumnStore = create<ColumnLayoutStore>()(
@@ -21,7 +21,7 @@ export const useColumnStore = create<ColumnLayoutStore>()(
 				column3: []
 			},
 			setColumns: (updater) => set((state) => ({
-				columns: updater(state.columns)
+				columns: typeof updater === 'function' ? updater(state.columns) : updater
 			})),
 		}),
 		{
