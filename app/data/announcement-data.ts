@@ -15,7 +15,7 @@ export const ANNOUNCEMENTS: AnnouncementItem[] = [
 	{
 		date: "Update #6",
 		timestamp: "2026-07-17",
-		message: `Youtube embed in media, and custom panels has been updated to match the structure of Gaia profile's. \n\nI'm gonna be updating the footprint and comments panels to populate them with stuff from my Gaia profile every now and then. If you want to show up on them, stalk my profile and drop a comment! If you’d rather be taken off, just shoot me a PM. I'm only displaying a max of 9-10 recent visitors and comments. Once they're full, I won't be updating them with any new ones anymore.`,
+		message: `Youtube iframe in media, and custom panels has been updated to match the structure of Gaia profile's. \n\nI'm gonna be updating the footprint and comments panels to populate them with stuff from my Gaia profile every now and then. If you want to show up on them, stalk my profile and drop a comment! If you’d rather be taken off, just shoot me a PM. I'm only displaying a max of 9-10 recent visitors and comments. Once they're full, I won't be updating them with any new ones anymore.`,
 	},
 	{
 		date: "Update #5",
