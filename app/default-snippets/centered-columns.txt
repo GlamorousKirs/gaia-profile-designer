@@ -1,6 +1,6 @@
 #columns {
 	position: absolute;
-	top: 172px;
+	top: 170px;
 	width: 1024px;
 	left: 0;
 	right: 0;

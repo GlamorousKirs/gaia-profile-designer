@@ -1,5 +1,5 @@
-.menu_seperator, .premium_sparkle, #alerts_banner, .glow, #id_wishlist div:not(.item) {
-    display: none !important;
+.menu_seperator, .premium_sparkle, #alerts_banner, .glow {
+  display: none !important;
 }
 
 #id_wishlist {

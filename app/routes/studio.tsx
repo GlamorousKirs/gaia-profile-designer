@@ -175,7 +175,7 @@ export default function Studio() {
 
 	return (
 		<TooltipProvider>
-			<div className="flex flex-col w-screen h-screen bg-background overflow-hidden select-none text-foreground relative">
+			<div className="flex flex-col w-screen h-screen bg-background overflow-hidden select-none text-foreground relative bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]">
 				{!isMaximized && (
 					<StudioHeader
 						onOpenProfile={() => setIsProfileOpen(true)}
@@ -198,13 +198,12 @@ export default function Studio() {
 									{activeLeftTab === "selectors" ? (
 										<SelectorPanel onSelectSelector={handleLeftSelectorAppend} />
 									) : (
-										// Inside Studio.tsx, locate the ColumnManager inside SidebarPanel
-<ColumnManager 
-    onAddToCode={(selector) => {
-        setCssCode((prev) => updateCssValue(prev, selector, '', ''));
-        setIsCodeOpen(true);
-    }} 
-/>
+										<ColumnManager 
+											onAddToCode={(selector) => {
+												setCssCode((prev) => updateCssValue(prev, selector, '', ''));
+												setIsCodeOpen(true);
+											}} 
+										/>
 									)}
 								</Suspense>
 							</SidebarPanel>
