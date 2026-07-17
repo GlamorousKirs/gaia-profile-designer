@@ -66,10 +66,11 @@ export function CreateMediaPanelDialog({ open, onOpenChange, onConfirm, defaultV
 		onConfirm({
 			id: `#id_media_${suffix}`,
 			name: formData.name.trim() === "" ? "Media" : formData.name,
-			url: `https://www.youtube-nocookie.com/embed/${videoId}?=&mute=0&autoplay=0`
+			url: `https://www.youtube-nocookie.com/embed/${videoId}`
 		});
 		onOpenChange(false);
 	};
+
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent>
