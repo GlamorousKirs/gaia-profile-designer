@@ -17,7 +17,11 @@ import { Label } from "@/components/ui/label";
 import { generateNumericId } from "@/lib/generate-panel-id";
 
 export function CreateMediaPanelDialog({ open, onOpenChange, onConfirm, defaultValues }: any) {
-	const [formData, setFormData] = useState({ name: "Media", id: "", url: "" })
+	const [formData, setFormData] = useState({
+		name: "Media",
+		id: "",
+		url: "https://www.youtube.com/watch?v=zp7NtW_hKJI&list=RDzp7NtW_hKJI&start_radio=1"
+	})
 	const [isInvalid, setIsInvalid] = useState(false)
 
 	useEffect(() => {
@@ -25,8 +29,12 @@ export function CreateMediaPanelDialog({ open, onOpenChange, onConfirm, defaultV
 			setFormData(defaultValues ? {
 				name: defaultValues.name,
 				id: defaultValues.id.replace('#id_media_', ''),
-				url: defaultValues.url || ""
-			} : { name: "Media", id: "", url: "" })
+				url: defaultValues.url || "https://www.youtube.com/watch?v=zp7NtW_hKJI&list=RDzp7NtW_hKJI&start_radio=1"
+			} : {
+				name: "Media",
+				id: "",
+				url: "https://www.youtube.com/watch?v=zp7NtW_hKJI&list=RDzp7NtW_hKJI&start_radio=1"
+			})
 			setIsInvalid(false)
 		}
 	}, [defaultValues, open])
@@ -38,8 +46,17 @@ export function CreateMediaPanelDialog({ open, onOpenChange, onConfirm, defaultV
 
 	const handleSubmit = () => {
 		if (!validateYoutubeUrl(formData.url)) {
-			setIsInvalid(true)
-			return
+			setIsInvalid(true);
+			return;
+		}
+
+		const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+		const match = formData.url.match(regExp);
+		const videoId = (match && match[2].length === 11) ? match[2] : null;
+
+		if (!videoId) {
+			setIsInvalid(true);
+			return;
 		}
 
 		const suffix = formData.id.trim() === ""
@@ -49,11 +66,10 @@ export function CreateMediaPanelDialog({ open, onOpenChange, onConfirm, defaultV
 		onConfirm({
 			id: `#id_media_${suffix}`,
 			name: formData.name.trim() === "" ? "Media" : formData.name,
-			url: formData.url
+			url: `https://www.youtube-nocookie.com/embed/${videoId}?=&mute=0&autoplay=0`
 		});
 		onOpenChange(false);
 	};
-
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent>
@@ -73,15 +89,14 @@ export function CreateMediaPanelDialog({ open, onOpenChange, onConfirm, defaultV
 						</div>
 						<div className="grid gap-2">
 							<Label htmlFor="media-id">ID</Label>
-						<Input
-	id="media-id"
-	value={formData.id}
-	onChange={(e) => setFormData(p => ({ ...p, id: e.target.value }))}
-	placeholder="12345"
-/>
+							<Input
+								id="media-id"
+								value={formData.id}
+								onChange={(e) => setFormData(p => ({ ...p, id: e.target.value }))}
+								placeholder="12345"
+							/>
 						</div>
 					</div>
-
 					<Field data-invalid={isInvalid ? true : undefined}>
 						<FieldLabel htmlFor="youtube-url">YouTube URL</FieldLabel>
 						<Input

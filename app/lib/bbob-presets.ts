@@ -72,11 +72,10 @@ export const customPreset = presetHTML5.extend((tags: any) => ({
         return {
             tag: 'iframe',
             attrs: {
-                width: '470',
-                height: '264',
-                src: `https://www.youtube-nocookie.com/embed/${videoId}?&mute=0&autoplay=0`,
+                width: '425',
+                height: '344',
+                src: `https://www.youtube-nocookie.com/embed/${videoId}?=&mute=0&autoplay=0`,
                 frameborder: '0',
-                loading: 'lazy',
                 allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
                 allowfullscreen: '',
                 'data-ruffle-polyfilled': ''

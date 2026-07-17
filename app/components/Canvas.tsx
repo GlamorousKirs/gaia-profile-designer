@@ -138,23 +138,16 @@ export const Canvas = memo(function Canvas({
 
 						if (id.startsWith("#id_media_")) {
 							const url = panelData.url || "";
-							let videoId = "";
-
-							if (url.includes("youtu.be/")) {
-								videoId = url.split("youtu.be/")[1]?.split("?")[0];
-							} else if (url.includes("v=")) {
-								videoId = url.split("v=")[1]?.split("&")[0];
-							}
 
 							return `
 								<div id="${cleanId}" class="panel media_panel">
 									<h2 id="media_${cleanId.split('_').pop()}_title">${panelData.name}</h2>
-									<iframe width="470" height="264"
-										src="https://www.youtube-nocookie.com/embed/${videoId}?&mute=0&autoplay=0" 
+									<iframe width="425" height="344" 
+										src="${panelData.url}" 
 										frameborder="0"
-										loading="lazy"
 										allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
-										allowfullscreen=""></iframe>
+										allowfullscreen=""
+										data-ruffle-polyfilled=""></iframe>
 									<div class="clear"></div>
 								</div>`.trim();
 						}
