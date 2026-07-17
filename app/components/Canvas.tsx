@@ -142,7 +142,7 @@ export const Canvas = memo(function Canvas({
 							return `
 								<div id="${cleanId}" class="panel media_panel">
 									<h2 id="media_${cleanId.split('_').pop()}_title">${panelData.name}</h2>
-									<iframe width="425" height="344" 
+									<iframe width="470" height="264" 
 										src="${url}" 
 										frameborder="0"
 										allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" 

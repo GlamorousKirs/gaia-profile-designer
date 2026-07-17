@@ -72,8 +72,8 @@ export const customPreset = presetHTML5.extend((tags: any) => ({
         return {
             tag: 'iframe',
             attrs: {
-                width: '425',
-                height: '344',
+                width: '470',
+                height: '264',
                 src: `https://www.youtube-nocookie.com/embed/${videoId}`,
                 frameborder: '0',
                 allow: 'accelerometer; encrypted-media; gyroscope; picture-in-picture',
