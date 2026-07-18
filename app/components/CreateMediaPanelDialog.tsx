@@ -50,9 +50,13 @@ export function CreateMediaPanelDialog({ open, onOpenChange, onConfirm, defaultV
 			return;
 		}
 
+		let videoId = null;
 		const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
 		const match = formData.url.match(regExp);
-		const videoId = (match && match[2].length === 11) ? match[2] : null;
+		
+		if (match && match[2].length === 11) {
+			videoId = match[2];
+		}
 
 		if (!videoId) {
 			setIsInvalid(true);
@@ -66,7 +70,7 @@ export function CreateMediaPanelDialog({ open, onOpenChange, onConfirm, defaultV
 		onConfirm({
 			id: `#id_media_${suffix}`,
 			name: formData.name.trim() === "" ? "Media" : formData.name,
-			url: `https://www.youtube-nocookie.com/embed/${videoId}`
+			url: `https://www.youtube.com/embed/${videoId}`
 		});
 		onOpenChange(false);
 	};

@@ -136,23 +136,33 @@ export const Canvas = memo(function Canvas({
 						const panelData = customPanels[id];
 						const cleanId = id.replace('#', '');
 
-						if (id.startsWith("#id_media_")) {
-							const url = panelData.url || "";
+if (id.startsWith("#id_media_")) {
+	const rawUrl = panelData.url || "";
+	
+	// Convert standard watch URL to embed URL
+	let embedUrl = rawUrl;
+	if (rawUrl.includes("youtube.com/watch?v=")) {
+		const videoId = rawUrl.split("v=")[1].split("&")[0];
+		embedUrl = `https://www.youtube.com/embed/${videoId}`;
+	} else if (rawUrl.includes("youtu.be/")) {
+		const videoId = rawUrl.split("youtu.be/")[1].split("?")[0];
+		embedUrl = `https://www.youtube.com/embed/${videoId}`;
+	}
 
-							return `
-								<div id="${cleanId}" class="panel media_panel">
-									<h2 id="media_${cleanId.split('_').pop()}_title">${panelData.name}</h2>
-									<iframe width="470" height="264" 
-										src="${url}" 
-										frameborder="0"
-										allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" 
-										allowfullscreen=""
-										data-ruffle-polyfilled=""
-										loading="lazy">
-									</iframe>
-									<div class="clear"></div>
-								</div>`.trim();
-						}
+	return `
+		<div id="${cleanId}" class="panel media_panel">
+			<h2 id="media_${cleanId.split('_').pop()}_title">${panelData.name}</h2>
+			<iframe width="470" height="264" 
+				src="${embedUrl}" 
+				frameborder="0"
+				allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" 
+				allowfullscreen=""
+				data-ruffle-polyfilled=""
+				loading="lazy">
+			</iframe>
+			<div class="clear"></div>
+		</div>`.trim();
+}
 
 						const processedContent = (panelData.content || "").replace(/\n/g, '<br>');
 						const htmlContent = bbobHTML(processedContent, customPreset());
