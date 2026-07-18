@@ -78,9 +78,11 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 	}, [activeRecolorTab, equalizerStyle, svgs])
 
 	const dimensions = useMemo(() => {
-		const h = scale === "16" ? 16 : scale === "20" ? 20 : 57 * parseFloat(scale)
-		return { height: h, width: h * (121 / 57) }
-	}, [scale])
+		// Handles standard and fine-grained scale inputs
+		const baseSize = 57;
+		const h = scale === "16" ? 16 : scale === "20" ? 20 : baseSize * parseFloat(scale);
+		return { height: h, width: h * (121 / 57) };
+	}, [scale]);
 
 	const getColoredSvg = useCallback((content: string, width: number, height: number, color: string, rotate: boolean, cycle: boolean, speed: number) => {
 		if (!content) return ""
@@ -98,29 +100,28 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 		if (isGradient) {
 			const angleMatch = color.match(/(\d+)deg/)
 			const angle = angleMatch ? parseInt(angleMatch[1]) : 0
-			const stopMatches = Array.from(color.matchAll(/(#[a-fA-F0-9]{6})/g))
-			const stops = stopMatches.map((m, i) => ({
-				color: m[1],
-				offset: `${(i / (stopMatches.length - 1)) * 100}%`
-			}))
+			const stopMatches = Array.from(color.matchAll(/(#[a-fA-F0-9]{6})\s*(\d+)?%/g))
+			const stops = stopMatches.length > 0
+				? stopMatches.map((m, i) => ({ color: m[1], offset: m[2] ? `${m[2]}%` : (i === 0 ? "0%" : "100%") }))
+				: [{ color: "#605270", offset: "0%" }, { color: "#605270", offset: "100%" }]
+
+			const stopColors = stops.map(s => s.color).join(';');
 
 			const viewBox = svg.getAttribute("viewBox")?.split(" ") || [0, 0, width, height]
-			// Use String() to ensure the input to parseFloat is always a string
-			const x = parseFloat(String(viewBox[0]));
-			const y = parseFloat(String(viewBox[1]));
-			const w = parseFloat(String(viewBox[2]));
-			const h = parseFloat(String(viewBox[3]));
-
-			const transform = rotate ? `gradientTransform="rotate(${angle - 115}, ${x + w / 2}, ${y + h / 2})"` : ""
+			const x = viewBox[0]
+			const y = viewBox[1]
+			const w = viewBox[2]
+			const h = viewBox[3]
 
 			defs.innerHTML = `
 			<linearGradient id="custom-gradient" 
 				gradientUnits="userSpaceOnUse" 
-				x1="${x}" y1="${y}" x2="${x + w}" y2="${y + h}"
-				${transform}>
+				x1="${x}" y1="${y}" x2="${Number(x) + Number(w)}" y2="${Number(y) + Number(h)}"
+				gradientTransform="rotate(${angle - 115}, ${Number(x) + Number(w) / 2}, ${Number(y) + Number(h) / 2})">
 				${stops.map((s, i) => {
-				const sequence = stops.map((_, j) => stops[(i + j) % stops.length].color);
-				const values = [...sequence, sequence[0]].join(';');
+				// Create a sequence that goes through all colors and back
+				const colorList = stops.map(stop => stop.color);
+				const values = [...colorList, ...colorList.slice().reverse()].join(';');
 				return `
 						<stop offset="${s.offset}" stop-color="${s.color}">
 							${cycle ? `<animate attributeName="stop-color" values="${values}" dur="${speed}s" repeatCount="indefinite" calcMode="linear" />` : ""}
@@ -130,8 +131,8 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 			</linearGradient>
 			${rotate ? `
 				<style>
-					@keyframes rotate-grad { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-					#custom-gradient { animation: rotate-grad ${speed}s linear infinite; transform-origin: center; }
+					@keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+					#custom-gradient { animation: rotate ${speed}s linear infinite; transform-origin: center; }
 				</style>
 			` : ""}
 		`
@@ -284,8 +285,9 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 						<Select value={scale} onValueChange={(val) => val && setScale(val)}>
 							<SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
 							<SelectContent>
-								<SelectItem value="1">1x</SelectItem>
+								<SelectItem value="0.3">0.3x</SelectItem>
 								<SelectItem value="0.5">0.5x</SelectItem>
+								<SelectItem value="1">1x</SelectItem>
 								<SelectItem value="1.5">1.5x</SelectItem>
 								<SelectItem value="2">2x</SelectItem>
 							</SelectContent>
