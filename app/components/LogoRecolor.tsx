@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
 import { ColorPicker } from "@/components/colorpicker/ColorPicker"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useLogoStore } from "@/store/logoStore"
@@ -35,6 +36,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 	const [activeRecolorTab, setActiveRecolorTab] = useState<"logo" | "equalizer">("logo")
 	const [equalizerStyle, setEqualizerStyle] = useState<"style1" | "style2">("style1")
 	const [logoColor, setLogoColor] = useState("#605270")
+	const [animateGradient, setAnimateGradient] = useState(false)
 	const [exportName, setExportName] = useState("gaia-header-logo")
 	const [scale, setScale] = useState<string>("1")
 	const addLogo = useLogoStore((state) => state.addLogo)
@@ -77,7 +79,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 		return { height: h, width: h * (121 / 57) }
 	}, [scale])
 
-	const getColoredSvg = useCallback((content: string, width: number, height: number, color: string) => {
+	const getColoredSvg = useCallback((content: string, width: number, height: number, color: string, animate: boolean) => {
 		if (!content) return ""
 		const parser = new DOMParser()
 		const doc = parser.parseFromString(content, "image/svg+xml")
@@ -98,14 +100,34 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 				? stopMatches.map((m, i) => ({ color: m[1], offset: m[2] ? `${m[2]}%` : (i === 0 ? "0%" : "100%") }))
 				: [{ color: "#605270", offset: "0%" }, { color: "#605270", offset: "100%" }]
 
-			defs.innerHTML = `
-			<linearGradient id="custom-gradient" 
-				gradientUnits="objectBoundingBox" 
-				x1="0" y1="0" x2="1" y2="0"
-				gradientTransform="rotate(${angle - 90}, 0.5, 0.5)">
-				${stops.map(s => `<stop offset="${s.offset}" stop-color="${s.color}" />`).join('')}
-			</linearGradient>
-		`
+			const viewBox = svg.getAttribute("viewBox")?.split(" ") || [0, 0, width, height]
+			const x = viewBox[0]
+			const y = viewBox[1]
+			const w = viewBox[2]
+			const h = viewBox[3]
+
+			if (animate) {
+				defs.innerHTML = `
+					<style>
+						@keyframes rotate-grad { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+						#custom-gradient { animation: rotate-grad 3s linear infinite; transform-origin: center; }
+					</style>
+					<linearGradient id="custom-gradient" 
+						gradientUnits="userSpaceOnUse" 
+						x1="${x}" y1="${y}" x2="${Number(x) + Number(w)}" y2="${Number(y) + Number(h)}">
+						${stops.map(s => `<stop offset="${s.offset}" stop-color="${s.color}" />`).join('')}
+					</linearGradient>
+				`
+			} else {
+				defs.innerHTML = `
+					<linearGradient id="custom-gradient" 
+						gradientUnits="userSpaceOnUse" 
+						x1="${x}" y1="${y}" x2="${Number(x) + Number(w)}" y2="${Number(y) + Number(h)}"
+						gradientTransform="rotate(${angle - 115}, ${Number(x) + Number(w) / 2}, ${Number(y) + Number(h) / 2})">
+						${stops.map(s => `<stop offset="${s.offset}" stop-color="${s.color}" />`).join('')}
+					</linearGradient>
+				`
+			}
 			svg.querySelectorAll("*").forEach(el => el.setAttribute("fill", "url(#custom-gradient)"));
 		} else {
 			svg.querySelectorAll("*").forEach(el => el.setAttribute("fill", color));
@@ -116,7 +138,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 		return new XMLSerializer().serializeToString(svg)
 	}, [])
 
-	const memoizedSvg = useMemo(() => getColoredSvg(currentSvgContent, dimensions.width, dimensions.height, logoColor), [getColoredSvg, currentSvgContent, dimensions, logoColor])
+	const memoizedSvg = useMemo(() => getColoredSvg(currentSvgContent, dimensions.width, dimensions.height, logoColor, animateGradient), [getColoredSvg, currentSvgContent, dimensions, logoColor, animateGradient])
 
 	const convertSvgToDataUrl = useCallback((svgContent: string): string => {
 		return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgContent)))}`
@@ -216,6 +238,12 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 							<Input className="h-9 text-xs" value={logoColor} onChange={(e) => setLogoColor(e.target.value)} />
 						</div>
 					</div>
+					{logoColor.includes("linear-gradient") && (
+						<div className="flex items-center space-x-2">
+							<Switch id="animate-grad" checked={animateGradient} onCheckedChange={setAnimateGradient} />
+							<Label htmlFor="animate-grad" className="text-[10px] uppercase font-bold tracking-wider">Animate Gradient</Label>
+						</div>
+					)}
 					<div className="space-y-1.5">
 						<Label className="text-[10px] uppercase font-bold tracking-wider">File Name</Label>
 						<Input value={exportName} onChange={(e) => setExportName(e.target.value)} className="h-9 text-xs" />
