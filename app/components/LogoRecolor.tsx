@@ -36,7 +36,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 
 	const [activeRecolorTab, setActiveRecolorTab] = useState<"logo" | "equalizer">("logo")
 	const [equalizerStyle, setEqualizerStyle] = useState<"style1" | "style2">("style1")
-	const [logoColor, setLogoColor] = useState("#605270")
+	const [logoColor, setLogoColor] = useState("#6a8fff")
 	const [animateGradient, setAnimateGradient] = useState(false)
 	const [animateColors, setAnimateColors] = useState(false)
 	const [animationSpeed, setAnimationSpeed] = useState(3)
@@ -102,7 +102,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 			const stopMatches = Array.from(color.matchAll(/(#[a-fA-F0-9]{6})\s*(\d+)?%/g))
 			const stops = stopMatches.length > 0
 				? stopMatches.map((m, i) => ({ color: m[1], offset: m[2] ? `${m[2]}%` : (i === 0 ? "0%" : "100%") }))
-				: [{ color: "#605270", offset: "0%" }, { color: "#605270", offset: "100%" }]
+				: [{ color: "#6a8fff", offset: "0%" }, { color: "#6a8fff", offset: "100%" }]
 
 			const stopColors = stops.map(s => s.color).join(';');
 
@@ -190,7 +190,10 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 	return (
 		<div className="w-full bg-background border rounded-xl shadow-xl overflow-hidden">
 			<div className="p-5 border-b flex items-center justify-between">
-				<span className="font-semibold">Asset Recolor Panel</span>
+				<div>
+					<h2 className="font-semibold text-lg">{activeRecolorTab === "logo" ? "Gaia Logo" : "Equalizer"}</h2>
+					<p className="text-sm text-muted-foreground">{activeRecolorTab === "logo" ? "Recolor Gaia logo for your profile gaia header." : "Recolor equalizers for your media panel."}</p>
+				</div>
 				<Tabs
 					value={activeRecolorTab}
 					onValueChange={(val) => {
@@ -216,24 +219,32 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 				<div className="space-y-4">
 					{activeRecolorTab === "equalizer" && (
 						<div className="space-y-1.5">
-							<Label className="text-[10px] uppercase font-bold tracking-wider">Equalizer Style</Label>
-							<div className="grid grid-cols-2 gap-3">
-								{["style1", "style2"].map((style) => (
-									<button
-										key={style}
-										type="button"
-										onClick={() => {
-											setEqualizerStyle(style as "style1" | "style2")
-											setExportName(`equalizer-${style}-recolored`)
-										}}
-										className={`flex flex-col items-center justify-center p-3 rounded-lg border text-center transition-all ${equalizerStyle === style
-											? "border-primary bg-primary/5 ring-1 ring-primary"
-											: "border-muted bg-transparent hover:bg-muted/30"
-											}`}
-									>
-										<span className="text-[11px] font-medium mt-1">{style === "style1" ? "Style 1" : "Style 2"}</span>
-									</button>
-								))}
+							<Label className="text-[10px] uppercase font-bold tracking-wider">Styles</Label>
+							<div className="flex gap-1">
+								{[{ id: "style1", content: svgs.equalizer }, { id: "style2", content: svgs.equalizerstyle2 }].map((style) => {
+									// Generate the colored version of the icon for the preview
+									const previewSvg = getColoredSvg(style.content, 57, 57, logoColor, false, false, 0);
+
+									return (
+										<button
+											key={style.id}
+											type="button"
+											onClick={() => {
+												setEqualizerStyle(style.id as "style1" | "style2")
+												setExportName(`equalizer-${style.id}-recolored`)
+											}}
+											className={`size-10 flex items-center justify-center rounded-lg border transition-all ${equalizerStyle === style.id
+												? "border-primary bg-primary/5 ring-1 ring-primary"
+												: "border-muted bg-transparent hover:bg-muted/30"
+												}`}
+										>
+											<div
+												className="size-6 opacity-70 pointer-events-none [&>svg]:w-full [&>svg]:h-full"
+												dangerouslySetInnerHTML={{ __html: previewSvg }}
+											/>
+										</button>
+									);
+								})}
 							</div>
 						</div>
 					)}
