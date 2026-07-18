@@ -2,7 +2,6 @@
 	const userStyles = document.getElementById('user-overrides');
 	const identityStyles = document.getElementById('avatar-styles');
 	
-	// Create the label element
 	const label = document.createElement('div');
 	label.id = 'selector-label';
 	label.style.cssText = 'position: fixed; display: none; background: #ff4500; color: white; padding: 4px 8px; font-size: 12px; pointer-events: none; z-index: 1000000; border-radius: 4px; font-family: monospace; white-space: nowrap;';
@@ -14,15 +13,24 @@
 	let targetAvatar = "https://a1cdn.gaiaonline.com/dress-up/avatar/ava/f3/77/5e4a907513377f3_flip.png";
 	let targetUsername = "Sunkirs";
 
-	function getSemanticParentPath(element) {
+function getSemanticParentPath(element) {
 		if (!element || element === document.body || element === document.documentElement) {
 			return 'html, body';
 		}
-		if (element.id && (element.id === 'columns' || element.id.startsWith('column_'))) {
-			return `#${element.id}`;
+		
+		let targetElement = element;
+		if (targetElement.classList.contains('iframe-selection-shield')) {
+			const potentialIframe = targetElement.parentElement.querySelector('iframe');
+			if (potentialIframe) {
+				targetElement = potentialIframe;
+			}
+		}
+
+		if (targetElement.id && (targetElement.id === 'columns' || targetElement.id.startsWith('column_'))) {
+			return `#${targetElement.id}`;
 		}
 		const pathSegments = [];
-		let current = element;
+		let current = targetElement;
 		while (current && current !== document.body && current !== document.documentElement) {
 			if (!current.classList?.contains('iframe-selection-shield')) {
 				const isColumn = current.id && (current.id === 'columns' || current.id.startsWith('column_'));
@@ -35,19 +43,18 @@
 						const primaryClass = current.classList[0];
 						if (primaryClass && !primaryClass.startsWith('highlight-')) {
 							pathSegments.unshift(`.${primaryClass}`);
-						} else if (current === element) {
+						} else if (current === targetElement) {
 							pathSegments.unshift(current.tagName.toLowerCase());
 						}
-					} else if (current === element) {
+					} else if (current === targetElement) {
 						pathSegments.unshift(current.tagName.toLowerCase());
 					}
 				}
 			}
 			current = current.parentNode;
 		}
-		return pathSegments.length > 0 ? pathSegments.join(' ') : element.tagName.toLowerCase();
+		return pathSegments.length > 0 ? pathSegments.join(' ') : targetElement.tagName.toLowerCase();
 	}
-
 	function applyIdentityOverrides() {
 		const avatarSelectors = 'img.avatar, [data-avatar], .avatar img, [id*="avatar"] img, #id_details img';
 		const avatarMedia = document.querySelectorAll(avatarSelectors);
@@ -82,7 +89,7 @@
 		if (message.type === 'init-html' || message.type === 'update-html') {
 			const coreScript = document.querySelector('script');
 			document.body.innerHTML = message.html;
-			document.body.appendChild(label); // Re-append after innerHTML reset
+			document.body.appendChild(label);
 			if (coreScript) document.body.appendChild(coreScript);
 			applyIdentityOverrides();
 		}

@@ -15,7 +15,7 @@ export const ANNOUNCEMENTS: AnnouncementItem[] = [
 	{
 		date: "Update #7",
 		timestamp: "2026-07-17",
-		message: `You can now animate the gradient colors on your Gaia logo and Equalizers! `,
+		message: `- You can now animate the gradient colors on your Gaia logo and Equalizers! \n\n- Select Element has been updated. When you hover any part of your layout in canvas, a label will appear next to your cursor, displaying the selector. `,
 	},
 	{
 		date: "Update #6",
