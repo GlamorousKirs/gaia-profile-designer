@@ -13,6 +13,11 @@ export interface AnnouncementItem {
 
 export const ANNOUNCEMENTS: AnnouncementItem[] = [
 	{
+		date: "Update #7",
+		timestamp: "2026-07-17",
+		message: `You can now animate the gradient colors on your Gaia logo and Equalizers! `,
+	},
+	{
 		date: "Update #6",
 		timestamp: "2026-07-17",
 		message: `Youtube iframe in media, and custom panels has been updated to match the structure of Gaia profile's. \n\nEqualizer svg is stil being worked on, but you can still use it for your profile. Either use the Data URL or export as SVG and convert it to GIF. The Equalizer Style 2 icon is based on a free asset by Althindor, used and remixed with permission according to their licensing terms.\n\nI'm gonna be updating the footprint and comments panels to populate them with stuff from my Gaia profile every now and then. If you want to show up on them, stalk my profile and drop a comment! If you’d rather be taken off, just shoot me a PM. I'm only displaying a max of 9-10 recent visitors and comments. Once they're full, I won't be updating them with any new ones anymore.`,
