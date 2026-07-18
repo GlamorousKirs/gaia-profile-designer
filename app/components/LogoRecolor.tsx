@@ -21,9 +21,9 @@ const EQUALIZER_SVG_URL = "https://res.cloudinary.com/dowqfxgfe/image/upload/v17
 const EQUALIZER_style2_SVG_URL = "https://res.cloudinary.com/dowqfxgfe/image/upload/v1784256820/gaia-profile-designer_equalizer-pixel_njnodo.svg"
 
 const SVGDisplay = memo(({ content }: { content: string }) => (
-	<div 
-		className="max-w-full max-h-full flex justify-center items-center [&>svg]:max-w-full [&>svg]:max-h-full" 
-		dangerouslySetInnerHTML={{ __html: content }} 
+	<div
+		className="max-w-full max-h-full flex justify-center items-center [&>svg]:max-w-full [&>svg]:max-h-full"
+		dangerouslySetInnerHTML={{ __html: content }}
 	/>
 ))
 
@@ -92,26 +92,25 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 
 		if (isGradient) {
 			const angleMatch = color.match(/(\d+)deg/)
-			const angle = angleMatch ? parseInt(angleMatch[1]) : 90
+			const angle = angleMatch ? parseInt(angleMatch[1]) : 0
 			const stopMatches = Array.from(color.matchAll(/(#[a-fA-F0-9]{6})\s*(\d+)?%/g))
 			const stops = stopMatches.length > 0
 				? stopMatches.map((m, i) => ({ color: m[1], offset: m[2] ? `${m[2]}%` : (i === 0 ? "0%" : "100%") }))
 				: [{ color: "#605270", offset: "0%" }, { color: "#605270", offset: "100%" }]
 
+			// Applying (angle - 90) compensates for the coordinate system difference 
+			// and ensures the gradient flows in the expected direction.
 			defs.innerHTML = `
-				<linearGradient id="custom-gradient" gradientTransform="rotate(${angle})">
-					${stops.map(s => `<stop offset="${s.offset}" stop-color="${s.color}" />`).join('')}
-				</linearGradient>
-			`
-			svg.querySelectorAll("path, circle, rect, polygon").forEach(el => {
-				el.removeAttribute("style")
-				el.setAttribute("fill", `url(#custom-gradient)`)
-			})
+			<linearGradient id="custom-gradient" 
+				gradientUnits="objectBoundingBox" 
+				x1="0" y1="0" x2="1" y2="0"
+				gradientTransform="rotate(${angle - 90}, 0.5, 0.5)">
+				${stops.map(s => `<stop offset="${s.offset}" stop-color="${s.color}" />`).join('')}
+			</linearGradient>
+		`
+			svg.querySelectorAll("*").forEach(el => el.setAttribute("fill", "url(#custom-gradient)"));
 		} else {
-			svg.querySelectorAll("path, circle, rect, polygon").forEach(el => {
-				el.removeAttribute("style")
-				el.setAttribute("fill", color)
-			})
+			svg.querySelectorAll("*").forEach(el => el.setAttribute("fill", color));
 		}
 
 		svg.setAttribute("width", width.toString())
@@ -166,12 +165,12 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 		<div className="w-full bg-background border rounded-xl shadow-xl overflow-hidden">
 			<div className="p-5 border-b flex items-center justify-between">
 				<span className="font-semibold">Asset Recolor Panel</span>
-				<Tabs 
-					value={activeRecolorTab} 
+				<Tabs
+					value={activeRecolorTab}
 					onValueChange={(val) => {
 						setActiveRecolorTab(val as "logo" | "equalizer")
 						setExportName(val === "logo" ? "gaia-header-logo" : `equalizer-${equalizerStyle}-recolored`)
-					}} 
+					}}
 					className="w-48"
 				>
 					<TabsList className="grid w-full grid-cols-2 h-8 p-1">
@@ -180,11 +179,11 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 					</TabsList>
 				</Tabs>
 			</div>
-			
+
 			<div className="p-6 bg-muted/20 border-b flex justify-center items-center h-48">
 				{(activeRecolorTab === "logo" ? loading.logo : (loading.equalizer || loading.equalizerstyle2)) ? <Loader2 className="animate-spin size-8" /> :
 					!currentSvgContent ? <span className="text-xs italic text-muted-foreground">Click tab to load preview</span> :
-					<SVGDisplay content={memoizedSvg} />
+						<SVGDisplay content={memoizedSvg} />
 				}
 			</div>
 			<div className="grid grid-cols-2 gap-8 p-6">
@@ -201,11 +200,10 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 											setEqualizerStyle(style as "style1" | "style2")
 											setExportName(`equalizer-${style}-recolored`)
 										}}
-										className={`flex flex-col items-center justify-center p-3 rounded-lg border text-center transition-all ${
-											equalizerStyle === style
+										className={`flex flex-col items-center justify-center p-3 rounded-lg border text-center transition-all ${equalizerStyle === style
 												? "border-primary bg-primary/5 ring-1 ring-primary"
 												: "border-muted bg-transparent hover:bg-muted/30"
-										}`}
+											}`}
 									>
 										<span className="text-[11px] font-medium mt-1">{style === "style1" ? "Style 1" : "Style 2"}</span>
 									</button>
