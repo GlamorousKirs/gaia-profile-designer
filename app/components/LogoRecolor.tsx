@@ -25,7 +25,7 @@ const EQUALIZER_style2_SVG_URL = "https://res.cloudinary.com/dowqfxgfe/image/upl
 
 const SVGDisplay = memo(({ content }: { content: string }) => (
 	<div
-		className="max-w-full max-h-full flex justify-center items-center [&>svg]:max-w-full [&>svg]:max-h-full"
+		className="flex h-full w-full items-center justify-center [&>svg]:max-h-full [&>svg]:max-w-full"
 		dangerouslySetInnerHTML={{ __html: content }}
 	/>
 ))
@@ -84,10 +84,10 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 	}, [activeRecolorTab, equalizerStyle, svgs])
 
 	const dimensions = useMemo(() => {
-		const baseSize = 57;
-		const h = scale === "16" ? 16 : scale === "20" ? 20 : baseSize * parseFloat(scale);
-		return { height: h, width: h * (121 / 57) };
-	}, [scale]);
+		const baseSize = 57
+		const h = scale === "16" ? 16 : scale === "20" ? 20 : baseSize * parseFloat(scale)
+		return { height: h, width: h * (121 / 57) }
+	}, [scale])
 
 	const getColoredSvg = useCallback((content: string, width: number, height: number, color: string, rotate: boolean, cycle: boolean, speed: number) => {
 		if (!content) return ""
@@ -121,13 +121,13 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 				x1="${x}" y1="${y}" x2="${Number(x) + Number(w)}" y2="${Number(y) + Number(h)}"
 				gradientTransform="rotate(${angle - 115}, ${Number(x) + Number(w) / 2}, ${Number(y) + Number(h) / 2})">
 				${stops.map((s) => {
-				const colorList = stops.map(stop => stop.color);
-				const values = [...colorList, ...colorList.slice().reverse()].join(';');
+				const colorList = stops.map(stop => stop.color)
+				const values = [...colorList, ...colorList.slice().reverse()].join(';')
 				return `
 						<stop offset="${s.offset}" stop-color="${s.color}">
 							${cycle ? `<animate attributeName="stop-color" values="${values}" dur="${speed}s" repeatCount="indefinite" calcMode="linear" />` : ""}
 						</stop>
-					`;
+					`
 			}).join('')}
 			</linearGradient>
 			${rotate ? `
@@ -137,9 +137,9 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 				</style>
 			` : ""}
 		`
-			svg.querySelectorAll("*").forEach(el => el.setAttribute("fill", "url(#custom-gradient)"));
+			svg.querySelectorAll("*").forEach(el => el.setAttribute("fill", "url(#custom-gradient)"))
 		} else {
-			svg.querySelectorAll("*").forEach(el => el.setAttribute("fill", color));
+			svg.querySelectorAll("*").forEach(el => el.setAttribute("fill", color))
 		}
 
 		svg.setAttribute("width", width.toString())
@@ -161,7 +161,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 	const handleDownload = useCallback((isPng: boolean) => {
 		const img = new Image()
 		const url = URL.createObjectURL(new Blob([memoizedSvg], { type: "image/svg+xml;charset=utf-8" }))
-		
+
 		if (!isPng) {
 			const link = document.createElement("a")
 			link.download = `${exportName}.svg`
@@ -191,10 +191,10 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 	const cssSelector = activeRecolorTab === "logo" ? `#gaia_header #header_left img` : `.equalizer-asset`
 
 	return (
-		<div className="w-full bg-background border rounded-xl shadow-xl overflow-hidden">
-			<div className="p-5 border-b flex items-center justify-between">
+		<div className="w-full rounded-xl border bg-background shadow-xl">
+			<div className="flex items-center justify-between border-b p-5">
 				<div>
-					<h2 className="font-semibold text-lg">{activeRecolorTab === "logo" ? "Gaia Logo" : "Equalizer"}</h2>
+					<h2 className="text-lg font-semibold">{activeRecolorTab === "logo" ? "Gaia Logo" : "Equalizer"}</h2>
 					<p className="text-sm text-muted-foreground">{activeRecolorTab === "logo" ? "Recolor Gaia logo for your profile gaia header." : "Recolor equalizers for your media panel."}</p>
 				</div>
 				<Tabs
@@ -205,28 +205,28 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 					}}
 					className="w-48"
 				>
-					<TabsList className="grid w-full grid-cols-2 h-8 p-1">
+					<TabsList className="grid h-8 w-full grid-cols-2 p-1">
 						<TabsTrigger value="logo" className="text-[10px]">Logo</TabsTrigger>
 						<TabsTrigger value="equalizer" className="text-[10px]">Equalizer</TabsTrigger>
 					</TabsList>
 				</Tabs>
 			</div>
 
-			<div className="p-6 bg-muted/20 border-b flex justify-center items-center h-48">
-				{(activeRecolorTab === "logo" ? loading.logo : (loading.equalizer || loading.equalizerstyle2)) ? <Loader2 className="animate-spin size-8" /> :
+			<div className="flex h-48 items-center justify-center border-b bg-muted/20 p-6">
+				{(activeRecolorTab === "logo" ? loading.logo : (loading.equalizer || loading.equalizerstyle2)) ? <Loader2 className="size-8 animate-spin" /> :
 					!currentSvgContent ? <span className="text-xs italic text-muted-foreground">Click tab to load preview</span> :
 						<SVGDisplay content={memoizedSvg} />
 				}
 			</div>
-			<div className="grid grid-cols-2 gap-8 p-6">
+
+			<div className="grid grid-cols-1 gap-8 p-6 md:grid-cols-2">
 				<div className="space-y-4">
 					{activeRecolorTab === "equalizer" && (
 						<div className="space-y-1.5">
-							<Label className="text-[10px] uppercase font-bold tracking-wider">Styles</Label>
+							<Label className="text-[10px] font-bold uppercase tracking-wider">Styles</Label>
 							<div className="flex gap-2">
 								{[{ id: "style1", content: svgs.equalizer }, { id: "style2", content: svgs.equalizerstyle2 }].map((style) => {
-									const previewSvg = getColoredSvg(style.content, 57, 57, logoColor, false, false, 0);
-
+									const previewSvg = getColoredSvg(style.content, 57, 57, logoColor, false, false, 0)
 									return (
 										<button
 											key={style.id}
@@ -235,23 +235,23 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 												setEqualizerStyle(style.id as "style1" | "style2")
 												setExportName(`equalizer-${style.id}-recolored`)
 											}}
-											className={`size-10 flex items-center justify-center rounded-lg border transition-all ${equalizerStyle === style.id
+											className={`flex size-10 items-center justify-center rounded-lg border transition-all ${equalizerStyle === style.id
 												? "border-primary bg-primary/5 ring-1 ring-primary"
 												: "border-muted bg-transparent hover:bg-muted/30"
 												}`}
 										>
 											<div
-												className="size-4 opacity-70 pointer-events-none [&>svg]:w-full [&>svg]:h-full"
+												className="size-4 opacity-70 pointer-events-none [&>svg]:h-full [&>svg]:w-full"
 												dangerouslySetInnerHTML={{ __html: previewSvg }}
 											/>
 										</button>
-									);
+									)
 								})}
 							</div>
 						</div>
 					)}
 					<div className="space-y-1.5">
-						<Label className="text-[10px] uppercase font-bold tracking-wider">Color</Label>
+						<Label className="text-[10px] font-bold uppercase tracking-wider">Color</Label>
 						<div className="flex items-center gap-3">
 							<ColorPicker color={logoColor} onChange={setLogoColor} />
 							<Input className="h-9 text-xs" value={logoColor} onChange={(e) => setLogoColor(e.target.value)} />
@@ -261,17 +261,17 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 						<div className="space-y-3">
 							<div className="flex items-center space-x-2">
 								<Switch id="animate-grad" checked={animateGradient} onCheckedChange={setAnimateGradient} />
-								<Label htmlFor="animate-grad" className="text-[10px] uppercase font-bold tracking-wider">Animate Angle</Label>
+								<Label htmlFor="animate-grad" className="text-[10px] font-bold uppercase tracking-wider">Animate Angle</Label>
 							</div>
 							<div className="flex items-center space-x-2">
 								<Switch id="animate-colors" checked={animateColors} onCheckedChange={setAnimateColors} />
-								<Label htmlFor="animate-colors" className="text-[10px] uppercase font-bold tracking-wider">Cycle Colors</Label>
+								<Label htmlFor="animate-colors" className="text-[10px] font-bold uppercase tracking-wider">Cycle Colors</Label>
 							</div>
 							{(animateGradient || animateColors) && (
 								<div className="space-y-4">
-									<div className="flex justify-between items-center">
-										<Label className="text-[10px] uppercase font-bold tracking-wider">Animation Speed</Label>
-										<span className="text-[10px] font-mono text-muted-foreground">{animationSpeed}s</span>
+									<div className="flex items-center justify-between">
+										<Label className="text-[10px] font-bold uppercase tracking-wider">Animation Speed</Label>
+										<span className="font-mono text-[10px] text-muted-foreground">{animationSpeed}s</span>
 									</div>
 									<Slider
 										min={0.5}
@@ -279,60 +279,61 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 										step={0.5}
 										value={[animationSpeed]}
 										onValueChange={(val) => {
-											const newValue = Array.isArray(val) ? val[0] : val;
-											setAnimationSpeed(newValue);
+											const newValue = Array.isArray(val) ? val[0] : val
+											setAnimationSpeed(newValue)
 										}}
 									/>
 								</div>
 							)}
 						</div>
 					)}
-<div className="space-y-1.5">
-	<div className="flex gap-2">
-		<div className="flex-1 space-y-1.5">
-			<Label>File Name</Label>
-			<Input 
-				value={exportName} 
-				onChange={(e) => setExportName(e.target.value)} 
-			/>
-		</div>
-		<div className="w-24 space-y-1.5">
-			<Label>Image Size</Label>
-			<Select value={scale} onValueChange={(val) => val && setScale(val)}>
-				<SelectTrigger>
-					<SelectValue />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem value="0.3">0.3</SelectItem>
-					<SelectItem value="0.5">0.5</SelectItem>
-					<SelectItem value="1">1</SelectItem>
-					<SelectItem value="1.5">1.5</SelectItem>
-					<SelectItem value="2">2</SelectItem>
-				</SelectContent>
-			</Select>
-		</div>
-	</div>
-</div>
+					<div className="space-y-1.5">
+						<div className="flex gap-2">
+							<div className="flex-1 space-y-1.5">
+								<Label>File Name</Label>
+								<Input
+									value={exportName}
+									onChange={(e) => setExportName(e.target.value)}
+								/>
+							</div>
+							<div className="w-24 space-y-1.5">
+								<Label>Image Size</Label>
+								<Select value={scale} onValueChange={(val) => val && setScale(val)}>
+									<SelectTrigger>
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="0.3">0.3</SelectItem>
+										<SelectItem value="0.5">0.5</SelectItem>
+										<SelectItem value="1">1</SelectItem>
+										<SelectItem value="1.5">1.5</SelectItem>
+										<SelectItem value="2">2</SelectItem>
+									</SelectContent>
+								</Select>
+							</div>
+						</div>
+					</div>
 				</div>
+
 				<div className="space-y-6">
 					<div className="space-y-1.5">
-						<div className="flex justify-between items-center">
-							<Label className="text-[10px] uppercase font-bold tracking-wider">Data URI</Label>
+						<div className="flex items-center justify-between">
+							<Label className="text-[10px] font-bold uppercase tracking-wider">Data URI</Label>
 							<Button variant="ghost" size="icon" className="size-6" disabled={!currentSvgContent} onClick={() => copyToClipboard(convertSvgToDataUrl(memoizedSvg))}><Copy className="size-3" /></Button>
 						</div>
-						<div className="relative border rounded-md p-3 bg-secondary/30 h-32 overflow-auto">
-							<code className="text-[9px] text-muted-foreground font-mono break-all">
+						<div className="relative h-32 overflow-auto rounded-md border bg-secondary/30 p-3">
+							<code className="break-all font-mono text-[9px] text-muted-foreground">
 								{currentSvgContent ? convertSvgToDataUrl(memoizedSvg) : "No asset selected."}
 							</code>
 						</div>
 					</div>
 					<div className="space-y-1.5">
-						<div className="flex justify-between items-center">
-							<Label className="text-[10px] uppercase font-bold tracking-wider">CSS</Label>
+						<div className="flex items-center justify-between">
+							<Label className="text-[10px] font-bold uppercase tracking-wider">CSS</Label>
 							<Button variant="ghost" size="icon" className="size-6" disabled={!currentSvgContent} onClick={() => copyToClipboard(activeRecolorTab === "logo" ? `${cssSelector} {\n\tbackground: url('${convertSvgToDataUrl(memoizedSvg)}') no-repeat center / contain;\n}` : `background: url('${convertSvgToDataUrl(memoizedSvg)}') no-repeat center / contain;`)}><Copy className="size-3" /></Button>
 						</div>
-						<div className="relative border rounded-md p-3 bg-secondary/30 h-32 overflow-auto">
-							<code className="text-[9px] text-muted-foreground font-mono break-all">
+						<div className="relative h-32 overflow-auto rounded-md border bg-secondary/30 p-3">
+							<code className="break-all font-mono text-[9px] text-muted-foreground">
 								{currentSvgContent ? (
 									activeRecolorTab === "logo" ? (
 										<>
@@ -349,7 +350,8 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 					</div>
 				</div>
 			</div>
-			<div className="p-4 border-t bg-secondary/20 flex flex-wrap gap-2">
+
+			<div className="flex flex-wrap gap-2 border-t bg-secondary/20 p-4">
 				<Button
 					variant="secondary"
 					className="flex-1 gap-2"
