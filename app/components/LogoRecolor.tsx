@@ -98,8 +98,6 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 				? stopMatches.map((m, i) => ({ color: m[1], offset: m[2] ? `${m[2]}%` : (i === 0 ? "0%" : "100%") }))
 				: [{ color: "#605270", offset: "0%" }, { color: "#605270", offset: "100%" }]
 
-			// Applying (angle - 90) compensates for the coordinate system difference 
-			// and ensures the gradient flows in the expected direction.
 			defs.innerHTML = `
 			<linearGradient id="custom-gradient" 
 				gradientUnits="objectBoundingBox" 
