@@ -53,7 +53,7 @@ export function CreateMediaPanelDialog({ open, onOpenChange, onConfirm, defaultV
 		let videoId = null;
 		const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
 		const match = formData.url.match(regExp);
-		
+
 		if (match && match[2].length === 11) {
 			videoId = match[2];
 		}
