@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect, memo } from "react"
+import { useState, useCallback, useMemo, useEffect, memo, useRef } from "react"
 import { useLocation } from "react-router"
 import { toast } from "sonner"
 import { Loader2, Download, Check, Copy, Save, FileType } from "lucide-react"
@@ -18,6 +18,7 @@ interface LogoRecolorProps {
 	isSvgLoading: boolean
 }
 
+const svgCache: Record<string, string> = {}
 const LOGO_SVG_URL = "https://res.cloudinary.com/dowqfxgfe/image/upload/v1783043322/gaiaonline-svg-logo_zfldzp.svg"
 const EQUALIZER_SVG_URL = "https://res.cloudinary.com/dowqfxgfe/image/upload/v1784253658/gaia-profile-designer_equalizer.svg"
 const EQUALIZER_style2_SVG_URL = "https://res.cloudinary.com/dowqfxgfe/image/upload/v1784256820/gaia-profile-designer_equalizer-pixel_njnodo.svg"
@@ -31,6 +32,7 @@ const SVGDisplay = memo(({ content }: { content: string }) => (
 
 export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolorProps) {
 	const location = useLocation()
+	const parserRef = useRef(new DOMParser())
 	const isLogoRecolorPage = location.pathname.includes("logo-recolor")
 	const isStudioPage = location.pathname.includes("studio")
 
@@ -50,11 +52,15 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 	useEffect(() => {
 		const controller = new AbortController()
 		const fetchAsset = async (key: keyof typeof svgs, url: string) => {
-			if (svgs[key]) return
+			if (svgs[key] || svgCache[key]) {
+				if (!svgs[key]) setSvgs(prev => ({ ...prev, [key]: svgCache[key] }))
+				return
+			}
 			setLoading(prev => ({ ...prev, [key]: true }))
 			try {
 				const res = await fetch(url, { signal: controller.signal })
 				const text = await res.text()
+				svgCache[key] = text
 				setSvgs(prev => ({ ...prev, [key]: text }))
 			} catch (err) {
 				if (err instanceof Error && err.name !== 'AbortError') console.error(err)
@@ -85,8 +91,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 
 	const getColoredSvg = useCallback((content: string, width: number, height: number, color: string, rotate: boolean, cycle: boolean, speed: number) => {
 		if (!content) return ""
-		const parser = new DOMParser()
-		const doc = parser.parseFromString(content, "image/svg+xml")
+		const doc = parserRef.current.parseFromString(content, "image/svg+xml")
 		const svg = doc.documentElement
 
 		const isGradient = color.includes("linear-gradient")
@@ -104,8 +109,6 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 				? stopMatches.map((m, i) => ({ color: m[1], offset: m[2] ? `${m[2]}%` : (i === 0 ? "0%" : "100%") }))
 				: [{ color: "#6a8fff", offset: "0%" }, { color: "#6a8fff", offset: "100%" }]
 
-			const stopColors = stops.map(s => s.color).join(';');
-
 			const viewBox = svg.getAttribute("viewBox")?.split(" ") || [0, 0, width, height]
 			const x = viewBox[0]
 			const y = viewBox[1]
@@ -117,7 +120,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 				gradientUnits="userSpaceOnUse" 
 				x1="${x}" y1="${y}" x2="${Number(x) + Number(w)}" y2="${Number(y) + Number(h)}"
 				gradientTransform="rotate(${angle - 115}, ${Number(x) + Number(w) / 2}, ${Number(y) + Number(h) / 2})">
-				${stops.map((s, i) => {
+				${stops.map((s) => {
 				const colorList = stops.map(stop => stop.color);
 				const values = [...colorList, ...colorList.slice().reverse()].join(';');
 				return `
@@ -155,9 +158,19 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 		toast.success("Copied to clipboard")
 	}
 
-	const handleDownloadPng = useCallback(() => {
+	const handleDownload = useCallback((isPng: boolean) => {
 		const img = new Image()
 		const url = URL.createObjectURL(new Blob([memoizedSvg], { type: "image/svg+xml;charset=utf-8" }))
+		
+		if (!isPng) {
+			const link = document.createElement("a")
+			link.download = `${exportName}.svg`
+			link.href = url
+			link.click()
+			URL.revokeObjectURL(url)
+			return
+		}
+
 		img.onload = () => {
 			const canvas = document.createElement("canvas")
 			canvas.width = dimensions.width
@@ -174,16 +187,6 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 		}
 		img.src = url
 	}, [memoizedSvg, exportName, dimensions])
-
-	const handleDownloadSvg = useCallback(() => {
-		const blob = new Blob([memoizedSvg], { type: "image/svg+xml;charset=utf-8" })
-		const url = URL.createObjectURL(blob)
-		const link = document.createElement("a")
-		link.download = `${exportName}.svg`
-		link.href = url
-		link.click()
-		URL.revokeObjectURL(url)
-	}, [memoizedSvg, exportName])
 
 	const cssSelector = activeRecolorTab === "logo" ? `#gaia_header #header_left img` : `.equalizer-asset`
 
@@ -220,9 +223,8 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 					{activeRecolorTab === "equalizer" && (
 						<div className="space-y-1.5">
 							<Label className="text-[10px] uppercase font-bold tracking-wider">Styles</Label>
-							<div className="flex gap-1">
+							<div className="flex gap-2">
 								{[{ id: "style1", content: svgs.equalizer }, { id: "style2", content: svgs.equalizerstyle2 }].map((style) => {
-									// Generate the colored version of the icon for the preview
 									const previewSvg = getColoredSvg(style.content, 57, 57, logoColor, false, false, 0);
 
 									return (
@@ -239,7 +241,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 												}`}
 										>
 											<div
-												className="size-6 opacity-70 pointer-events-none [&>svg]:w-full [&>svg]:h-full"
+												className="size-4 opacity-70 pointer-events-none [&>svg]:w-full [&>svg]:h-full"
 												dangerouslySetInnerHTML={{ __html: previewSvg }}
 											/>
 										</button>
@@ -285,23 +287,32 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 							)}
 						</div>
 					)}
-					<div className="space-y-1.5">
-						<Label className="text-[10px] uppercase font-bold tracking-wider">File Name</Label>
-						<Input value={exportName} onChange={(e) => setExportName(e.target.value)} className="h-9 text-xs" />
-					</div>
-					<div className="space-y-1.5">
-						<Label className="text-[10px] uppercase font-bold tracking-wider">Image Size</Label>
-						<Select value={scale} onValueChange={(val) => val && setScale(val)}>
-							<SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
-							<SelectContent>
-								<SelectItem value="0.3">0.3x</SelectItem>
-								<SelectItem value="0.5">0.5x</SelectItem>
-								<SelectItem value="1">1x</SelectItem>
-								<SelectItem value="1.5">1.5x</SelectItem>
-								<SelectItem value="2">2x</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
+<div className="space-y-1.5">
+	<div className="flex gap-2">
+		<div className="flex-1 space-y-1.5">
+			<Label>File Name</Label>
+			<Input 
+				value={exportName} 
+				onChange={(e) => setExportName(e.target.value)} 
+			/>
+		</div>
+		<div className="w-24 space-y-1.5">
+			<Label>Image Size</Label>
+			<Select value={scale} onValueChange={(val) => val && setScale(val)}>
+				<SelectTrigger>
+					<SelectValue />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectItem value="0.3">0.3</SelectItem>
+					<SelectItem value="0.5">0.5</SelectItem>
+					<SelectItem value="1">1</SelectItem>
+					<SelectItem value="1.5">1.5</SelectItem>
+					<SelectItem value="2">2</SelectItem>
+				</SelectContent>
+			</Select>
+		</div>
+	</div>
+</div>
 				</div>
 				<div className="space-y-6">
 					<div className="space-y-1.5">
@@ -343,7 +354,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 					variant="secondary"
 					className="flex-1 gap-2"
 					disabled={!currentSvgContent}
-					onClick={handleDownloadPng}
+					onClick={() => handleDownload(true)}
 				>
 					<Download className="size-3.5" /> Export as PNG
 				</Button>
@@ -351,7 +362,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 					variant="secondary"
 					className="flex-1 gap-2"
 					disabled={!currentSvgContent}
-					onClick={handleDownloadSvg}
+					onClick={() => handleDownload(false)}
 				>
 					<FileType className="size-3.5" /> Export as SVG
 				</Button>
