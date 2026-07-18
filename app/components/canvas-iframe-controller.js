@@ -1,6 +1,12 @@
 (function () {
 	const userStyles = document.getElementById('user-overrides');
 	const identityStyles = document.getElementById('avatar-styles');
+	
+	// Create the label element
+	const label = document.createElement('div');
+	label.id = 'selector-label';
+	label.style.cssText = 'position: fixed; display: none; background: #ff4500; color: white; padding: 4px 8px; font-size: 12px; pointer-events: none; z-index: 1000000; border-radius: 4px; font-family: monospace; white-space: nowrap;';
+	document.body.appendChild(label);
 
 	let currentlyHovered = null;
 	let activeSelector = "";
@@ -8,29 +14,18 @@
 	let targetAvatar = "https://a1cdn.gaiaonline.com/dress-up/avatar/ava/f3/77/5e4a907513377f3_flip.png";
 	let targetUsername = "Sunkirs";
 
-	document.addEventListener('click', (event) => {
-		const link = event.target.closest('a');
-		if (link) {
-			event.preventDefault();
-		}
-	}, true);
-
 	function getSemanticParentPath(element) {
 		if (!element || element === document.body || element === document.documentElement) {
 			return 'html, body';
 		}
-
 		if (element.id && (element.id === 'columns' || element.id.startsWith('column_'))) {
 			return `#${element.id}`;
 		}
-
 		const pathSegments = [];
 		let current = element;
-
 		while (current && current !== document.body && current !== document.documentElement) {
 			if (!current.classList?.contains('iframe-selection-shield')) {
 				const isColumn = current.id && (current.id === 'columns' || current.id.startsWith('column_'));
-
 				if (!isColumn) {
 					if (current.tagName === 'H2') {
 						pathSegments.unshift('h2');
@@ -50,13 +45,12 @@
 			}
 			current = current.parentNode;
 		}
-
 		return pathSegments.length > 0 ? pathSegments.join(' ') : element.tagName.toLowerCase();
 	}
+
 	function applyIdentityOverrides() {
 		const avatarSelectors = 'img.avatar, [data-avatar], .avatar img, [id*="avatar"] img, #id_details img';
 		const avatarMedia = document.querySelectorAll(avatarSelectors);
-
 		Array.from(avatarMedia).forEach(img => {
 			if (targetAvatar && img.src !== targetAvatar) {
 				img.src = targetAvatar;
@@ -64,17 +58,14 @@
 				if (img.tagName === 'IMG') img.title = targetUsername;
 			}
 		});
-
 		const usernameSelectors = '.profile-header-username, #profile-header .username, #profile-header .profile-title, #id_details h2';
 		const profileHeaders = document.querySelectorAll(usernameSelectors);
-
 		Array.from(profileHeaders).forEach(header => {
 			if (targetUsername && header.textContent !== targetUsername) {
 				header.textContent = targetUsername;
 				header.setAttribute('title', targetUsername);
 			}
 		});
-
 		const commentUsernames = document.querySelectorAll('.message p a');
 		Array.from(commentUsernames).forEach(link => {
 			if (targetUsername && link.textContent !== targetUsername && link.getAttribute('href')?.includes('/profiles/')) {
@@ -88,46 +79,40 @@
 
 	window.addEventListener('message', (event) => {
 		const message = event.data;
-
 		if (message.type === 'init-html' || message.type === 'update-html') {
 			const coreScript = document.querySelector('script');
 			document.body.innerHTML = message.html;
+			document.body.appendChild(label); // Re-append after innerHTML reset
 			if (coreScript) document.body.appendChild(coreScript);
 			applyIdentityOverrides();
 		}
-
 		if (message.type === 'update-css' && userStyles) {
 			userStyles.textContent = message.css;
 		}
-
 		if (message.type === 'update-identity') {
 			targetAvatar = message.avatarUrl;
 			targetUsername = message.username;
 			applyIdentityOverrides();
-
 			if (identityStyles && targetAvatar) {
 				identityStyles.textContent =
 					`:root { --user-avatar-url: url("${targetAvatar}"); } ` +
 					`[data-avatar], [id*="avatar"], .avatar { content: var(--user-avatar-url) !important; }`;
 			}
 		}
-
 		if (message.type === 'toggle-selection-mode') {
 			window.isSelectionActive = message.active;
+			label.style.display = message.active ? 'block' : 'none';
 			if (!window.isSelectionActive && currentlyHovered) {
 				currentlyHovered.classList.remove('highlight-hover');
 				currentlyHovered = null;
 			}
 		}
-
 		if (message.type === 'sync-selected-element') {
 			activeSelector = message.selector || "";
 			document.documentElement.classList.remove('highlight-selected');
-
 			Array.from(document.querySelectorAll('.highlight-selected')).forEach(el => {
 				el.classList.remove('highlight-selected');
 			});
-
 			if (message.selector) {
 				try {
 					if (message.selector === "html, body") {
@@ -142,13 +127,22 @@
 		}
 	});
 
+	document.addEventListener('mousemove', (event) => {
+		if (!window.isSelectionActive) return;
+		label.style.left = (event.clientX + 15) + 'px';
+		label.style.top = (event.clientY + 15) + 'px';
+	});
+
 	document.addEventListener('mouseover', (event) => {
 		if (!window.isSelectionActive) return;
 		if (currentlyHovered && currentlyHovered !== event.target) {
 			currentlyHovered.classList.remove('highlight-hover');
 		}
 		currentlyHovered = event.target;
-		if (currentlyHovered) currentlyHovered.classList.add('highlight-hover');
+		if (currentlyHovered) {
+			currentlyHovered.classList.add('highlight-hover');
+			label.textContent = getSemanticParentPath(currentlyHovered);
+		}
 	});
 
 	document.addEventListener('mouseout', (event) => {
@@ -156,39 +150,33 @@
 		if (currentlyHovered === event.target) {
 			if (currentlyHovered) currentlyHovered.classList.remove('highlight-hover');
 			currentlyHovered = null;
+			label.textContent = '';
 		}
 	});
 
 	document.addEventListener('click', (event) => {
 		if (!window.isSelectionActive) return;
-
 		let target = event.target;
 		if (target.classList.contains('iframe-selection-shield')) {
 			const iframe = target.parentElement.querySelector('iframe');
 			if (iframe) target = iframe;
 		}
-
 		event.preventDefault();
 		event.stopPropagation();
-
 		const semanticSelection = getSemanticParentPath(target);
 		const includeDescendants = event.shiftKey;
 		const isAdditiveSelection = event.ctrlKey || event.metaKey;
-
 		let processingSelector = semanticSelection;
 		if (includeDescendants && target !== document.body && target !== document.documentElement) {
 			processingSelector = `${semanticSelection}, ${semanticSelection} *`;
 			window.getSelection()?.removeAllRanges();
 		}
-
 		let finalSelection = processingSelector;
-
 		if (isAdditiveSelection) {
 			if (activeSelector) {
 				const currentTokens = activeSelector.split(',').map(s => s.trim());
 				const newTokens = processingSelector.split(',').map(s => s.trim());
 				const uniqueTokens = newTokens.filter(s => !currentTokens.includes(s));
-
 				finalSelection = uniqueTokens.length > 0
 					? `${activeSelector}, ${uniqueTokens.join(", ")}`
 					: activeSelector;
@@ -196,7 +184,6 @@
 		} else if (activeSelector === finalSelection) {
 			finalSelection = "";
 		}
-
 		window.parent.postMessage({ type: 'element-selected', selector: finalSelection }, '*');
 	}, true);
 })();
