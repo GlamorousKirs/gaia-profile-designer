@@ -78,7 +78,6 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 	}, [activeRecolorTab, equalizerStyle, svgs])
 
 	const dimensions = useMemo(() => {
-		// Handles standard and fine-grained scale inputs
 		const baseSize = 57;
 		const h = scale === "16" ? 16 : scale === "20" ? 20 : baseSize * parseFloat(scale);
 		return { height: h, width: h * (121 / 57) };
@@ -119,7 +118,6 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 				x1="${x}" y1="${y}" x2="${Number(x) + Number(w)}" y2="${Number(y) + Number(h)}"
 				gradientTransform="rotate(${angle - 115}, ${Number(x) + Number(w) / 2}, ${Number(y) + Number(h) / 2})">
 				${stops.map((s, i) => {
-				// Create a sequence that goes through all colors and back
 				const colorList = stops.map(stop => stop.color);
 				const values = [...colorList, ...colorList.slice().reverse()].join(';');
 				return `
@@ -309,19 +307,20 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 					<div className="space-y-1.5">
 						<div className="flex justify-between items-center">
 							<Label className="text-[10px] uppercase font-bold tracking-wider">CSS</Label>
-							<Button variant="ghost" size="icon" className="size-6" disabled={!currentSvgContent} onClick={() => copyToClipboard(`${cssSelector} {\n\tpadding: 0 47px 0 0;\n\theight: 16px;\n\twidth: 0;\n\tbackground: url('${convertSvgToDataUrl(memoizedSvg)}') no-repeat center / contain;\n}`)}><Copy className="size-3" /></Button>
+							<Button variant="ghost" size="icon" className="size-6" disabled={!currentSvgContent} onClick={() => copyToClipboard(activeRecolorTab === "logo" ? `${cssSelector} {\n\tbackground: url('${convertSvgToDataUrl(memoizedSvg)}') no-repeat center / contain;\n}` : `background: url('${convertSvgToDataUrl(memoizedSvg)}') no-repeat center / contain;`)}><Copy className="size-3" /></Button>
 						</div>
 						<div className="relative border rounded-md p-3 bg-secondary/30 h-32 overflow-auto">
 							<code className="text-[9px] text-muted-foreground font-mono break-all">
 								{currentSvgContent ? (
-									<>
-										{cssSelector} {'{'}
-										{"\n\t"}padding: 0 47px 0 0;
-										{"\n\t"}height: 16px;
-										{"\n\t"}width: 0;
-										{"\n\t"}background: url('{convertSvgToDataUrl(memoizedSvg)}') no-repeat center / contain;
-										{"\n}"}
-									</>
+									activeRecolorTab === "logo" ? (
+										<>
+											{cssSelector} {'{'}
+											{"\n\t"}background: url('{convertSvgToDataUrl(memoizedSvg)}') no-repeat center / contain;
+											{"\n}"}
+										</>
+									) : (
+										<>background: url('{convertSvgToDataUrl(memoizedSvg)}') no-repeat center / contain;</>
+									)
 								) : "No asset selected."}
 							</code>
 						</div>
