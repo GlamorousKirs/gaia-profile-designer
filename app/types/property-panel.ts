@@ -28,6 +28,12 @@ export interface SectionConfig {
 
 export const PROPERTY_SECTIONS: SectionConfig[] = [
 	{
+		title: "Clip Path",
+		properties: [
+			{ id: "clipPath", label: "Path", type: "select", property: "clip-path", fallback: "none" }
+		]
+	},
+	{
 		title: "Dimensions",
 		properties: [
 			{ id: "width", label: "W", type: "slider", property: "width", suffix: "px", fallback: 0, min: 0, max: 1200 },
@@ -44,12 +50,6 @@ export const PROPERTY_SECTIONS: SectionConfig[] = [
 			{ id: "posRight", label: "Right", type: "slider", property: "right", suffix: "px", min: -500, max: 500 },
 			{ id: "posBottom", label: "Bottom", type: "slider", property: "bottom", suffix: "px", min: -500, max: 500 },
 			{ id: "posLeft", label: "Left", type: "slider", property: "left", suffix: "px", min: -500, max: 500 }
-		]
-	},
-	{
-		title: "Clip Path",
-		properties: [
-			{ id: "clipPath", label: "Path", type: "select", property: "clip-path", fallback: "none" }
 		]
 	},
 	{

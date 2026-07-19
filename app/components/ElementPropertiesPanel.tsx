@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { ColorPicker } from "@/components/colorpicker/ColorPicker"
 import { SliderProperty } from "@/components/PropertyControls"
 import { Button } from "@/components/ui/button"
-import { Minus, Plus, RotateCcw } from "lucide-react"
+import { Minus, Plus, RotateCcw, Target } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { PROPERTY_SECTIONS } from "../types/property-panel"
 
@@ -26,6 +26,7 @@ export function ElementPropertiesPanel({
 		showPadding: false,
 		showMargin: false,
 	})
+	const [clipParams, setClipParams] = useState({ radius: 50, x: 50, y: 50 })
 
 	useEffect(() => {
 		if (!selectedSelector || isUpdatingRef.current) return
@@ -131,6 +132,27 @@ export function ElementPropertiesPanel({
 		const regex = new RegExp(`${GlenSelector}\\s*{[^}]*}\\s*\\n?`, "gi")
 		setCssCode(cssCode.replace(regex, ""))
 		setTimeout(() => { isUpdatingRef.current = false }, 50)
+	}
+
+	const handleClipChange = (type: string, key: string, val: number) => {
+		const newParams = { ...clipParams, [key]: val }
+		setClipParams(newParams)
+		updateClip(type, newParams)
+	}
+
+	const updateClip = (type: string, params: typeof clipParams) => {
+		let clipValue = "none"
+		if (type === "circle") {
+			clipValue = `circle(${params.radius}% at ${params.x}% ${params.y}%)`
+		}
+		
+		handleValueChange("clip-path", clipValue)
+	}
+
+	const handleCenterPosition = () => {
+		const updatedParams = { ...clipParams, x: 50, y: 50 }
+		setClipParams(updatedParams)
+		updateClip("circle", updatedParams)
 	}
 
 	const handleTransformChange = (property: string, val: number) => {
@@ -289,6 +311,18 @@ export function ElementPropertiesPanel({
 														<option value="inset(10% 10% 10% 10%)">Inset</option>
 														<option value="ellipse(50% 50% at 50% 50%)">Ellipse</option>
 													</select>
+													<SliderProperty label="Radius" value={clipParams.radius} min={0} max={100} onChange={(v) => handleClipChange("circle", "radius", v)} />
+													<div className="flex items-end gap-2">
+														<div className="flex-1">
+															<SliderProperty label="X Pos" value={clipParams.x} min={0} max={100} onChange={(v) => handleClipChange("circle", "x", v)} />
+														</div>
+														<div className="flex-1">
+															<SliderProperty label="Y Pos" value={clipParams.y} min={0} max={100} onChange={(v) => handleClipChange("circle", "y", v)} />
+														</div>
+														<Button variant="outline" size="icon" className="size-8 flex-shrink-0" onClick={handleCenterPosition} title="Auto-center">
+															<Target className="size-4" />
+														</Button>
+													</div>
 												</div>
 											);
 										})}
