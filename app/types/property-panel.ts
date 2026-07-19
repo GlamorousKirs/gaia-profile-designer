@@ -1,12 +1,14 @@
 export interface PropertyConfig {
 	id: string;
 	label: string;
-	type: "slider" | "color" | "text" | "select";
+	type: 'text' | 'number' | 'boolean' | 'select' | 'slider' | 'color';
 	property: string;
-	suffix?: string;
 	fallback?: any;
+	suffix?: string;
 	min?: number;
 	max?: number;
+	step?: number;
+	options?: { label: string; value: any }[];
 }
 
 export interface SectionConfig {
@@ -111,6 +113,14 @@ export const PROPERTY_SECTIONS: SectionConfig[] = [
 		properties: [
 			{ id: "bgColor", label: "Background Color", type: "color", property: "background-color", fallback: "#ffffff" },
 			{ id: "opacityVal", label: "Opac", type: "slider", property: "opacity", suffix: "%", fallback: 100, min: 0, max: 100 }
+		]
+	},
+
+	{
+		title: "Transform",
+		properties: [
+			{ id: "scale", label: "Scale", property: "scale", type: "slider", min: 0, max: 2, step: 0.1, fallback: 1 },
+			{ id: "rotate", label: "Rotate", property: "rotate", type: "slider", min: -180, max: 180, suffix: "°", fallback: 0 }
 		]
 	}
 ];

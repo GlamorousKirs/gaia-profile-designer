@@ -52,7 +52,7 @@ export function ElementPropertiesPanel({
 		const cssBlock = match && match[1] ? match[1] : ""
 
 		const getNum = (p: string, fallback = 0): number => {
-			const m = cssBlock.match(new RegExp(`(?<!-)${p}\\s*:\\s*(-?\\d+)(?:px|%)?`, "i"))
+			const m = cssBlock.match(new RegExp(`(?<!-)${p}\\s*:\\s*(-?\\d+)(?:px|%|deg)?`, "i"))
 			if (m) return parseInt(m[1], 10)
 			if (computed) {
 				const val = computed.getPropertyValue(p)
@@ -106,6 +106,13 @@ export function ElementPropertiesPanel({
 			})
 		})
 
+		const transformStr = getStr("transform", "")
+		const rotateMatch = transformStr.match(/rotate\((-?\d+)(?:deg)?\)/i)
+		const scaleMatch = transformStr.match(/scale\(([\d.]+)\)/i)
+
+		nextValues["rotate"] = rotateMatch ? parseInt(rotateMatch[1], 10) : 0
+		nextValues["scale"] = scaleMatch ? parseFloat(scaleMatch[1]) : 1
+
 		nextValues["position"] = getStr("position", "static")
 		const positionProps = ["top", "right", "bottom", "left"]
 		positionProps.forEach((p) => {
@@ -126,9 +133,28 @@ export function ElementPropertiesPanel({
 		setTimeout(() => { isUpdatingRef.current = false }, 50)
 	}
 
-	const handleValueChange = (property: string, val: string | number, suffix?: string) => {
+	const handleTransformChange = (property: string, val: number) => {
 		isUpdatingRef.current = true
 		setValues(prev => ({ ...prev, [property]: val }))
+
+		const currentRotate = property === "rotate" ? val : (values["rotate"] || 0)
+		const currentScale = property === "scale" ? val : (values["scale"] || 1)
+
+		const transformValue = `rotate(${currentRotate}deg) scale(${currentScale})`
+		updateCssProperty("transform", transformValue)
+
+		setTimeout(() => { isUpdatingRef.current = false }, 50)
+	}
+
+	const handleValueChange = (property: string, val: string | number, suffix?: string) => {
+		if (property === "rotate" || property === "scale") {
+			handleTransformChange(property, val as number)
+			return
+		}
+
+		isUpdatingRef.current = true
+		setValues(prev => ({ ...prev, [property]: val }))
+
 		if (property === "background-color" && typeof val === "string" && val.includes("gradient")) {
 			updateCssProperty("background", val)
 		} else if (property === "opacity" && typeof val === "number") {
@@ -177,10 +203,18 @@ export function ElementPropertiesPanel({
 											</Button>
 										)}
 									</div>
-
 									{section.title === "Position" && (
 										<div className="flex flex-col gap-2.5 px-1">
-											<select value={values["position"] || "static"} onChange={(e) => handleValueChange("position", e.target.value)} className="bg-background border border-input rounded-md p-1 text-[11px] w-full">
+											<select
+												value={values["position"] || "static"}
+												onChange={(e) => {
+													handleValueChange("position", e.target.value);
+													if (["fixed", "sticky"].includes(e.target.value)) {
+														["top", "right", "bottom", "left"].forEach(p => handleValueChange(p, 0, "px"));
+													}
+												}}
+												className="bg-background border border-input rounded-md p-1 text-[11px] w-full"
+											>
 												<option value="static">Static</option>
 												<option value="relative">Relative</option>
 												<option value="absolute">Absolute</option>
@@ -189,7 +223,15 @@ export function ElementPropertiesPanel({
 											</select>
 											<div className="grid grid-cols-2 gap-x-3 gap-y-2.5">
 												{section.gridProperties?.map((p) => (
-													<SliderProperty key={p.id} label={p.label.charAt(0)} value={values[p.property] ?? 0} suffix={p.suffix} min={p.min} max={p.max} onChange={(v) => handleValueChange(p.property, v, p.suffix)} />
+													<SliderProperty
+														key={p.id}
+														label={p.label.charAt(0)}
+														value={values[p.property] ?? 0}
+														suffix={p.suffix}
+														min={p.min}
+														max={p.max}
+														onChange={(v) => handleValueChange(p.property, v, p.suffix)}
+													/>
 												))}
 											</div>
 										</div>
@@ -211,7 +253,15 @@ export function ElementPropertiesPanel({
 											<div className="flex gap-3">
 												{section.properties.filter(p => p.type === "slider").map((p) => (
 													<div key={p.id} className="flex-1">
-														<SliderProperty label={p.label} value={values[p.property] ?? p.fallback ?? 0} suffix={p.suffix} min={p.min} max={p.max} onChange={(v) => handleValueChange(p.property, v, p.suffix)} />
+														<SliderProperty
+															label={p.label}
+															value={values[p.property] ?? p.fallback ?? 0}
+															suffix={p.suffix || (p.property === "rotate" ? "deg" : p.property === "scale" ? "" : "px")}
+															min={p.min}
+															max={p.max}
+															step={p.step}
+															onChange={(v) => handleValueChange(p.property, v, p.suffix)}
+														/>
 													</div>
 												))}
 											</div>

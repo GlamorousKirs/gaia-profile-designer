@@ -17,7 +17,7 @@ export const SliderProperty = ({
   value,
   onChange,
   min = 0,
-  max, 
+  max,
   step = 1,
   suffix = "px",
   className,
@@ -31,24 +31,24 @@ export const SliderProperty = ({
     setIsDragging(true)
     startX.current = e.clientX
     startValue.current = value
-    ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
+      ; (e.target as HTMLElement).setPointerCapture(e.pointerId)
   }
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDragging) return
     const deltaX = e.clientX - startX.current
-    
-    let newValue = startValue.current + Math.round(deltaX * step * 1)
-    
+
+    let newValue = startValue.current + deltaX * step
+
     if (min !== undefined) newValue = Math.max(min, newValue)
     if (max !== undefined) newValue = Math.min(max, newValue)
-    
-    onChange(newValue)
+
+    onChange(Number(newValue.toFixed(step < 1 ? 2 : 0)))
   }
 
   const handlePointerUp = (e: React.PointerEvent) => {
     setIsDragging(false)
-    ;(e.target as HTMLElement).releasePointerCapture(e.pointerId)
+      ; (e.target as HTMLElement).releasePointerCapture(e.pointerId)
   }
 
   return (
@@ -68,7 +68,7 @@ export const SliderProperty = ({
           min={min}
           max={max}
           step={step}
-          onChange={(e) => onChange(Number(e.target.value))}
+          onChange={(e) => onChange(parseFloat(e.target.value))}
           className="w-full h-full bg-transparent p-0 text-xs font-mono text-foreground focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           {...props}
         />
@@ -95,7 +95,7 @@ export const ColorProperty = ({ color, onChange, label }: ColorInputProps) => {
   return (
     <div className="flex flex-col gap-1 w-full">
       {label && <span className="text-[10px] font-semibold text-muted-foreground/80 uppercase tracking-wider pl-0.5">{label}</span>}
-      
+
       <div className="flex items-center h-8 border border-border rounded bg-background hover:border-muted-foreground/20 focus-within:border-primary transition-colors p-1 gap-2">
         <Popover>
           <PopoverTrigger>
