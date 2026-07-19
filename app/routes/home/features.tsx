@@ -23,7 +23,7 @@ const FEATURES_DATA = [
 	},
 	{
 		name: "Gaia Logo Recoloring",
-		desc: "Recolor the Gaia logo.",
+		desc: "Recolor the Gaia logo, equalizers for media panel, or upload your own SVG file. You can apply gradient color with animation.",
 		image: `${baseUrl}optimized-assets/logo-recolor-preview.webp`,
 		to: "/logo-recolor",
 		showLink: true,
