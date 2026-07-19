@@ -1,11 +1,13 @@
 import { useState, useMemo, useEffect } from "react";
-import { Download, Copy, AlertCircle } from "lucide-react";
+import { Copy, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ColorPicker } from "@/components/colorpicker/ColorPicker";
 import { useProfileStore } from "@/store/useProfileStore";
@@ -144,9 +146,8 @@ function CollapsibleFilters({ grayscale, setGrayscale, brightness, setBrightness
 	);
 }
 
-export function AvatarAnimator({ initialAvatarUrl = PRESET_IMAGES[0].url }) {
+export function AvatarAnimator({ initialAvatarUrl }: { initialAvatarUrl?: string }) {
 	const profile = useProfileStore();
-	const [avatarUrl, setAvatarUrl] = useState<string>(profile.avatarUrl || initialAvatarUrl);
 
 	const templateImages = useMemo(() => {
 		if (profile.avatarUrl) {
@@ -158,22 +159,30 @@ export function AvatarAnimator({ initialAvatarUrl = PRESET_IMAGES[0].url }) {
 			const cleanBase = base.replace(/\.png|\.gif/g, '');
 
 			return [
-				{ label: "Body", url: `${cleanBase}${extension}${query}` },
+				{ label: "Body", url: `${cleanBase}_flip${extension}${query}` },
 				{ label: "Bust", url: `${cleanBase}_96x96${extension}${query}` },
 				{ label: "Head", url: `${cleanBase}_48x48.gif${query}` }
 			];
 		}
-		return PRESET_IMAGES;
+		return PRESET_IMAGES.map((img, i) => i === 0 ? { ...img, url: img.url.replace('.png', '_flip.png') } : img);
 	}, [profile.avatarUrl]);
+
+	const [avatarUrl, setAvatarUrl] = useState<string>(
+		initialAvatarUrl || templateImages[0].url
+	);
 
 	useEffect(() => {
 		if (profile.avatarUrl) {
 			setAvatarUrl(profile.avatarUrl);
+		} else {
+			setAvatarUrl(templateImages[0].url);
 		}
-	}, [profile.avatarUrl]);
+	}, [profile.avatarUrl, templateImages]);
 
 	const [imgError, setImgError] = useState<boolean>(false);
 	const [hasDefaultStyles, setHasDefaultStyles] = useState<boolean>(false);
+	const [applyToDecoration, setApplyToDecoration] = useState<boolean>(true);
+	const [applyToDetails, setApplyToDetails] = useState<boolean>(true);
 	const [borderRadius, setBorderRadius] = useState<number>(0);
 	const [shadowColor, setShadowColor] = useState<string>("#3b82f6");
 	const [shadowBlur, setShadowBlur] = useState<number>(0);
@@ -199,6 +208,13 @@ export function AvatarAnimator({ initialAvatarUrl = PRESET_IMAGES[0].url }) {
 	const [hoverAnimationPlayState, setHoverAnimationPlayState] = useState<string>("running");
 
 	const generatedCss = useMemo(() => {
+		const selectors = [];
+		if (applyToDecoration) selectors.push(".avatar_decoration img");
+		if (applyToDetails) selectors.push("#id_details img");
+
+		const selectorString = selectors.join(", ");
+		if (!selectorString) return "";
+
 		const normalKeyframes = (hasDefaultStyles && hasDefaultAnimation) ? (KEYFRAME_TEMPLATES[animationType] || "") : "";
 		const hoverKeyframes = (hasHoverStyles && hasHoverAnimation) ? (KEYFRAME_TEMPLATES[`hover_${hoverAnimationType}`] || "") : "";
 
@@ -221,7 +237,7 @@ export function AvatarAnimator({ initialAvatarUrl = PRESET_IMAGES[0].url }) {
 
 			if (hoverFilters || hoverAnimationExpression) {
 				const filterLine = hoverFilters ? `\n\tfilter: ${hoverFilters};` : "";
-				hoverSelectorExpression = `\n\n.avatar_decoration img:hover {${filterLine}${hoverAnimationExpression}\n}`;
+				hoverSelectorExpression = `\n\n${selectors.map(s => `${s}:hover`).join(", ")} {${filterLine}${hoverAnimationExpression}\n}`;
 			}
 		}
 
@@ -241,17 +257,18 @@ export function AvatarAnimator({ initialAvatarUrl = PRESET_IMAGES[0].url }) {
 			const filterLine = normalFilters ? `\n\tfilter: ${normalFilters};` : "";
 			const borderLine = borderRadius > 0 ? `\n\tborder-radius: ${borderRadius}px;` : "";
 
-			normalSelectorExpression = `.avatar_decoration img {${filterLine}${borderLine}${defaultAnimationExpression}\n\ttransition: 0.3s;\n}`;
+			normalSelectorExpression = `${selectorString} {${filterLine}${borderLine}${defaultAnimationExpression}\n\ttransition: 0.3s;\n}`;
 		}
 
 		return `${normalKeyframes}${hoverKeyframes}${normalSelectorExpression}${hoverSelectorExpression}`.trim();
 	}, [
-		hasDefaultStyles, borderRadius, shadowColor, shadowBlur, grayscale, brightness, contrast, hasDefaultAnimation, animationType, duration, timingFunction, animationPlayState,
+		hasDefaultStyles, applyToDecoration, applyToDetails, borderRadius, shadowColor, shadowBlur, grayscale, brightness, contrast, hasDefaultAnimation, animationType, duration, timingFunction, animationPlayState,
 		hasHoverStyles, hoverShadowColor, hoverShadowBlur, hoverGrayscale, hoverBrightness, hoverContrast, hasHoverAnimation, hoverAnimationType, hoverDuration, hoverTimingFunction, hoverAnimationPlayState
 	]);
 
 	const handleCopyCss = () => {
 		navigator.clipboard.writeText(generatedCss);
+		toast.success("CSS copied to clipboard.");
 	};
 
 	const handleUrlChange = (val: string) => {
@@ -263,19 +280,30 @@ export function AvatarAnimator({ initialAvatarUrl = PRESET_IMAGES[0].url }) {
 		<div className="flex flex-col lg:flex-row gap-6 max-w-6xl mx-auto p-4 items-start">
 			<div className="w-full lg:w-1/2 lg:sticky lg:top-4 space-y-4">
 				<div className="space-y-3 border rounded-xl p-4 bg-muted/10">
-					<Label className="text-[10px] uppercase font-bold tracking-wider">Select Preview Template</Label>
+					<Label className="text-[10px] uppercase font-bold tracking-wider">Select Preview</Label>
 					<div className="flex gap-2 flex-wrap">
-						{templateImages.map((preset) => (
+						{applyToDecoration ? (
+							templateImages.map((preset) => (
+								<Button
+									key={preset.url}
+									variant={avatarUrl === preset.url ? "default" : "outline"}
+									size="sm"
+									className="text-xs flex-1 min-w-20"
+									onClick={() => handleUrlChange(preset.url)}
+								>
+									{preset.label}
+								</Button>
+							))
+						) : (
 							<Button
-								key={preset.url}
-								variant={avatarUrl === preset.url ? "default" : "outline"}
+								variant={avatarUrl === templateImages[0].url ? "default" : "outline"}
 								size="sm"
-								className="text-xs flex-1 min-w-20"
-								onClick={() => handleUrlChange(preset.url)}
+								className="text-xs"
+								onClick={() => handleUrlChange(templateImages[0].url)}
 							>
-								{preset.label}
+								Body
 							</Button>
-						))}
+						)}
 					</div>
 					<div className="space-y-1.5 pt-2 border-t border-muted/50">
 						<Label className="text-[10px] uppercase font-bold tracking-wider">Custom Image URL</Label>
@@ -306,18 +334,18 @@ export function AvatarAnimator({ initialAvatarUrl = PRESET_IMAGES[0].url }) {
 							/>
 						</div>
 					)}
-					<p className="text-xs text-muted-foreground mt-4 italic">Hover over the image to preview interaction styles</p>
+					<p className="text-xs text-muted-foreground mt-4 italic">Hover over the image to preview hover effects.</p>
 				</div>
 
 				<div className="flex flex-col space-y-1.5 w-full">
-					<Label className="text-[10px] uppercase font-bold tracking-wider">Generated CSS</Label>
+					<Label className="text-[10px] uppercase font-bold tracking-wider">CSS</Label>
 					<div className="relative border rounded-md p-3 bg-secondary/30 min-h-50 max-h-75 overflow-auto">
 						{generatedCss ? (
 							<pre className="text-[11px] text-muted-foreground font-mono whitespace-pre-wrap break-all leading-relaxed">
 								{generatedCss}
 							</pre>
 						) : (
-							<p className="text-xs text-muted-foreground italic flex items-center justify-center h-full min-h-43.5">No active custom styles found.</p>
+							<p className="text-xs text-muted-foreground italic flex items-center justify-center h-full min-h-43.5">Customize your avatar to generate the CSS.</p>
 						)}
 						{generatedCss && (
 							<Button
@@ -330,16 +358,29 @@ export function AvatarAnimator({ initialAvatarUrl = PRESET_IMAGES[0].url }) {
 							</Button>
 						)}
 					</div>
-					<Button className="w-full gap-2" onClick={handleCopyCss} disabled={!generatedCss}>
-						<Download className="size-3.5" /> Copy Code Styles
-					</Button>
 				</div>
 			</div>
 
 			<div className="w-full lg:w-1/2 space-y-5 p-6 border rounded-xl bg-background max-h-[calc(100vh-2rem)] overflow-y-auto pr-2">
 				<div className="border rounded-xl p-4 bg-muted/10 space-y-4">
 					<div className="flex items-center justify-between">
-						<h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Default Styles</h3>
+						<h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Target Elements</h3>
+					</div>
+					<div className="flex flex-col gap-3">
+						<div className="flex items-center space-x-2">
+							<Checkbox id="dec" checked={applyToDecoration} onCheckedChange={(c) => setApplyToDecoration(!!c)} />
+							<Label htmlFor="dec" className="text-xs">Avatar Decoration</Label>
+						</div>
+						<div className="flex items-center space-x-2">
+							<Checkbox id="det" checked={applyToDetails} onCheckedChange={(c) => setApplyToDetails(!!c)} />
+							<Label htmlFor="det" className="text-xs">Details Panel Avatar</Label>
+						</div>
+					</div>
+				</div>
+
+				<div className="border rounded-xl p-4 bg-muted/10 space-y-4">
+					<div className="flex items-center justify-between">
+						<h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Default</h3>
 						<Switch
 							checked={hasDefaultStyles}
 							onCheckedChange={setHasDefaultStyles}
@@ -353,7 +394,7 @@ export function AvatarAnimator({ initialAvatarUrl = PRESET_IMAGES[0].url }) {
 							<div className="space-y-1.5">
 								<Label className="text-[10px] uppercase font-bold tracking-wider">Glow Color</Label>
 								<div className="flex items-center gap-3">
-									<ColorPicker color={shadowColor} onChange={setShadowColor} />
+									<ColorPicker color={shadowColor} onChange={setShadowColor} showGradient={false} />
 									<Input className="h-9 text-xs font-mono" value={shadowColor} onChange={(e) => setShadowColor(e.target.value)} />
 								</div>
 							</div>
@@ -395,7 +436,7 @@ export function AvatarAnimator({ initialAvatarUrl = PRESET_IMAGES[0].url }) {
 
 				<div className="border rounded-xl p-4 bg-muted/10 space-y-4">
 					<div className="flex items-center justify-between">
-						<h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Hover Styles</h3>
+						<h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Hover Effect</h3>
 						<Switch
 							checked={hasHoverStyles}
 							onCheckedChange={setHasHoverStyles}
@@ -407,7 +448,7 @@ export function AvatarAnimator({ initialAvatarUrl = PRESET_IMAGES[0].url }) {
 							<div className="space-y-1.5">
 								<Label className="text-[10px] uppercase font-bold tracking-wider">Glow Color</Label>
 								<div className="flex items-center gap-3">
-									<ColorPicker color={hoverShadowColor} onChange={setHoverShadowColor} />
+									<ColorPicker color={hoverShadowColor} onChange={setHoverShadowColor} showGradient={false} />
 									<Input className="h-9 text-xs font-mono" value={hoverShadowColor} onChange={(e) => setHoverShadowColor(e.target.value)} />
 								</div>
 							</div>

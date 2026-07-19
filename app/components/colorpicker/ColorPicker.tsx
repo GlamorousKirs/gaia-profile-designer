@@ -14,6 +14,7 @@ extend([namesPlugin]);
 interface ColorPickerProps {
 	color: string;
 	onChange: (color: string) => void;
+	showGradient?: boolean;
 }
 
 interface GradientStop {
@@ -34,7 +35,7 @@ const DEFAULT_GRADIENT_STOPS: GradientStop[] = [
 const DEFAULT_GRADIENT_ANGLE = 90;
 const DEFAULT_SOLID_COLOR = "#605270";
 
-export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
+export const ColorPicker = ({ color, onChange, showGradient = true }: ColorPickerProps) => {
 	const { libraries, loadLibraries, saveLibrary, deleteLibrary } = useColorStore();
 
 	const [activeMode, setActiveMode] = useState<"solid" | "gradient">("solid");
@@ -144,20 +145,22 @@ export const ColorPicker = ({ color, onChange }: ColorPickerProps) => {
 						className="custom-layout p-0 rounded-lg backdrop-blur-md bg-background border flex flex-col w-64 overflow-hidden"
 						onClick={(e) => e.stopPropagation()}
 					>
-						<div className="flex p-1 gap-1 border-b">
-							<button
-								onClick={() => { setActiveMode("solid"); onChange(DEFAULT_SOLID_COLOR); }}
-								className={`flex items-center justify-center gap-1 flex-1 py-1 text-[10px] font-bold rounded-[calc(var(--radius)-2px)] ${activeMode === "solid" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
-							>
-								SOLID
-							</button>
-							<button
-								onClick={() => { setActiveMode("gradient"); setStops(DEFAULT_GRADIENT_STOPS); setAngle(DEFAULT_GRADIENT_ANGLE); onChange(generateGradientString(DEFAULT_GRADIENT_STOPS, DEFAULT_GRADIENT_ANGLE)); }}
-								className={`flex items-center justify-center gap-1 flex-1 py-1 text-[10px] font-bold rounded-[calc(var(--radius)-2px)] ${activeMode === "gradient" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
-							>
-								GRADIENT
-							</button>
-						</div>
+						{showGradient && (
+							<div className="flex p-1 gap-1 border-b">
+								<button
+									onClick={() => { setActiveMode("solid"); onChange(DEFAULT_SOLID_COLOR); }}
+									className={`flex items-center justify-center gap-1 flex-1 py-1 text-[10px] font-bold rounded-[calc(var(--radius)-2px)] ${activeMode === "solid" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+								>
+									SOLID
+								</button>
+								<button
+									onClick={() => { setActiveMode("gradient"); setStops(DEFAULT_GRADIENT_STOPS); setAngle(DEFAULT_GRADIENT_ANGLE); onChange(generateGradientString(DEFAULT_GRADIENT_STOPS, DEFAULT_GRADIENT_ANGLE)); }}
+									className={`flex items-center justify-center gap-1 flex-1 py-1 text-[10px] font-bold rounded-[calc(var(--radius)-2px)] ${activeMode === "gradient" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+								>
+									GRADIENT
+								</button>
+							</div>
+						)}
 
 						<div className="p-4 flex flex-col items-center gap-3">
 							{activeMode === "solid" ? (

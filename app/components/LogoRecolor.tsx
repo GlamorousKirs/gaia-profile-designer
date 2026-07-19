@@ -22,7 +22,6 @@ import {
 	AttachmentTitle,
 } from "@/components/ui/attachment"
 
-// Simple debounce hook
 function useDebounce<T>(value: T, delay: number): T {
 	const [debouncedValue, setDebouncedValue] = useState(value)
 	useEffect(() => {
@@ -69,7 +68,6 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 	const [scale, setScale] = useState<string>("1")
 	const addLogo = useLogoStore((state) => state.addLogo)
 
-	// Debounce inputs to prevent heavy re-processing
 	const debouncedColor = useDebounce(logoColor, 200)
 	const debouncedSpeed = useDebounce(animationSpeed, 200)
 
@@ -84,7 +82,6 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 		}
 		const reader = new FileReader()
 		reader.onload = (e) => {
-			// Sanitize input using DOMPurify
 			const content = DOMPurify.sanitize(e.target?.result as string)
 			setUploadedSvg(content)
 			setActiveRecolorTab("upload")
@@ -205,7 +202,6 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 		return result
 	}, [])
 
-	// Use debounced values for heavy processing
 	const memoizedSvg = useMemo(() => 
 		getColoredSvg(currentSvgContent, dimensions.width, dimensions.height, debouncedColor, animateGradient, animateColors, debouncedSpeed), 
 		[getColoredSvg, currentSvgContent, dimensions, debouncedColor, animateGradient, animateColors, debouncedSpeed]
