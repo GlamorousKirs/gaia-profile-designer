@@ -1,7 +1,8 @@
 import { useState, useCallback, useMemo, useEffect, memo, useRef } from "react"
 import { useLocation } from "react-router"
 import { toast } from "sonner"
-import { Loader2, Download, Check, Copy, Save, FileType } from "lucide-react"
+import DOMPurify from "dompurify"
+import { Loader2, Download, Check, Copy, Save, FileType, Upload, XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,6 +12,25 @@ import { ColorPicker } from "@/components/colorpicker/ColorPicker"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useLogoStore } from "@/store/logoStore"
 import { Slider } from "@/components/ui/slider"
+import {
+	Attachment,
+	AttachmentAction,
+	AttachmentActions,
+	AttachmentContent,
+	AttachmentDescription,
+	AttachmentMedia,
+	AttachmentTitle,
+} from "@/components/ui/attachment"
+
+// Simple debounce hook
+function useDebounce<T>(value: T, delay: number): T {
+	const [debouncedValue, setDebouncedValue] = useState(value)
+	useEffect(() => {
+		const handler = setTimeout(() => setDebouncedValue(value), delay)
+		return () => clearTimeout(handler)
+	}, [value, delay])
+	return debouncedValue
+}
 
 interface LogoRecolorProps {
 	onSave: (cssUrl: string) => void
@@ -33,11 +53,14 @@ const SVGDisplay = memo(({ content }: { content: string }) => (
 export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolorProps) {
 	const location = useLocation()
 	const parserRef = useRef(new DOMParser())
+	const fileInputRef = useRef<HTMLInputElement>(null)
 	const isLogoRecolorPage = location.pathname.includes("logo-recolor")
 	const isStudioPage = location.pathname.includes("studio")
 
-	const [activeRecolorTab, setActiveRecolorTab] = useState<"logo" | "equalizer">("logo")
+	const [activeRecolorTab, setActiveRecolorTab] = useState<"logo" | "equalizer" | "upload">("logo")
 	const [equalizerStyle, setEqualizerStyle] = useState<"style1" | "style2">("style1")
+	const [uploadedSvg, setUploadedSvg] = useState<string>("")
+	const [uploadState, setUploadState] = useState<"idle" | "done">("idle")
 	const [logoColor, setLogoColor] = useState("#6a8fff")
 	const [animateGradient, setAnimateGradient] = useState(false)
 	const [animateColors, setAnimateColors] = useState(false)
@@ -46,8 +69,36 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 	const [scale, setScale] = useState<string>("1")
 	const addLogo = useLogoStore((state) => state.addLogo)
 
+	// Debounce inputs to prevent heavy re-processing
+	const debouncedColor = useDebounce(logoColor, 200)
+	const debouncedSpeed = useDebounce(animationSpeed, 200)
+
 	const [svgs, setSvgs] = useState({ logo: rawSvgContent, equalizer: "", equalizerstyle2: "" })
 	const [loading, setLoading] = useState({ logo: isSvgLoading, equalizer: false, equalizerstyle2: false })
+
+	const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0]
+		if (!file || file.type !== "image/svg+xml") {
+			toast.error("Please upload a valid SVG file.")
+			return
+		}
+		const reader = new FileReader()
+		reader.onload = (e) => {
+			// Sanitize input using DOMPurify
+			const content = DOMPurify.sanitize(e.target?.result as string)
+			setUploadedSvg(content)
+			setActiveRecolorTab("upload")
+			setExportName(file.name.replace(".svg", ""))
+			setUploadState("done")
+			toast.success("SVG uploaded and sanitized!")
+		}
+		reader.readAsText(file)
+	}
+
+	const removeFile = () => {
+		setUploadedSvg("")
+		setUploadState("idle")
+	}
 
 	useEffect(() => {
 		const controller = new AbortController()
@@ -59,7 +110,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 			setLoading(prev => ({ ...prev, [key]: true }))
 			try {
 				const res = await fetch(url, { signal: controller.signal })
-				const text = await res.text()
+				const text = DOMPurify.sanitize(await res.text())
 				svgCache[key] = text
 				setSvgs(prev => ({ ...prev, [key]: text }))
 			} catch (err) {
@@ -71,7 +122,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 
 		if (activeRecolorTab === "logo") {
 			if (!rawSvgContent) fetchAsset("logo", LOGO_SVG_URL)
-		} else {
+		} else if (activeRecolorTab === "equalizer") {
 			fetchAsset("equalizer", EQUALIZER_SVG_URL)
 			fetchAsset("equalizerstyle2", EQUALIZER_style2_SVG_URL)
 		}
@@ -80,8 +131,9 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 
 	const currentSvgContent = useMemo(() => {
 		if (activeRecolorTab === "logo") return svgs.logo
+		if (activeRecolorTab === "upload") return uploadedSvg
 		return equalizerStyle === "style1" ? svgs.equalizer : svgs.equalizerstyle2
-	}, [activeRecolorTab, equalizerStyle, svgs])
+	}, [activeRecolorTab, equalizerStyle, svgs, uploadedSvg])
 
 	const dimensions = useMemo(() => {
 		const baseSize = 57
@@ -91,6 +143,10 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 
 	const getColoredSvg = useCallback((content: string, width: number, height: number, color: string, rotate: boolean, cycle: boolean, speed: number) => {
 		if (!content) return ""
+		
+		const cacheKey = `${content.length}-${width}-${height}-${color}-${rotate}-${cycle}-${speed}`;
+		if (svgCache[cacheKey]) return svgCache[cacheKey];
+
 		const doc = parserRef.current.parseFromString(content, "image/svg+xml")
 		const svg = doc.documentElement
 
@@ -144,10 +200,16 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 
 		svg.setAttribute("width", width.toString())
 		svg.setAttribute("height", height.toString())
-		return new XMLSerializer().serializeToString(svg)
+		const result = new XMLSerializer().serializeToString(svg)
+		svgCache[cacheKey] = result
+		return result
 	}, [])
 
-	const memoizedSvg = useMemo(() => getColoredSvg(currentSvgContent, dimensions.width, dimensions.height, logoColor, animateGradient, animateColors, animationSpeed), [getColoredSvg, currentSvgContent, dimensions, logoColor, animateGradient, animateColors, animationSpeed])
+	// Use debounced values for heavy processing
+	const memoizedSvg = useMemo(() => 
+		getColoredSvg(currentSvgContent, dimensions.width, dimensions.height, debouncedColor, animateGradient, animateColors, debouncedSpeed), 
+		[getColoredSvg, currentSvgContent, dimensions, debouncedColor, animateGradient, animateColors, debouncedSpeed]
+	)
 
 	const convertSvgToDataUrl = useCallback((svgContent: string): string => {
 		return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgContent)))}`
@@ -190,43 +252,79 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 
 	const cssSelector = activeRecolorTab === "logo" ? `#gaia_header #header_left img` : `.equalizer-asset`
 
+	const description = useMemo(() => {
+		if (activeRecolorTab === "logo") return "Recolor Gaia logo for your profile gaia header."
+		if (activeRecolorTab === "equalizer") return "Recolor equalizers for your media panel."
+		return "Upload and recolor your own custom SVG."
+	}, [activeRecolorTab])
+
 	return (
 		<div className="w-full rounded-xl border bg-background shadow-xl">
 			<div className="flex items-center justify-between border-b p-5">
 				<div>
-					<h2 className="text-lg font-semibold">{activeRecolorTab === "logo" ? "Gaia Logo" : "Equalizer"}</h2>
-					<p className="text-sm text-muted-foreground">{activeRecolorTab === "logo" ? "Recolor Gaia logo for your profile gaia header." : "Recolor equalizers for your media panel."}</p>
+					<h2 className="text-lg font-semibold capitalize">{activeRecolorTab === "logo" ? "Gaia Logo" : activeRecolorTab}</h2>
+					<p className="text-sm text-muted-foreground">{description}</p>
 				</div>
 				<Tabs
 					value={activeRecolorTab}
 					onValueChange={(val) => {
-						setActiveRecolorTab(val as "logo" | "equalizer")
-						setExportName(val === "logo" ? "gaia-header-logo" : `equalizer-${equalizerStyle}-recolored`)
+						setActiveRecolorTab(val as "logo" | "equalizer" | "upload")
+						setExportName(val === "logo" ? "gaia-header-logo" : val === "upload" ? "custom-logo" : `equalizer-${equalizerStyle}-recolored`)
 					}}
-					className="w-48"
+					className="w-60"
 				>
-					<TabsList className="grid h-8 w-full grid-cols-2 p-1">
+					<TabsList className="grid h-8 w-full grid-cols-3 p-1">
 						<TabsTrigger value="logo" className="text-[10px]">Logo</TabsTrigger>
 						<TabsTrigger value="equalizer" className="text-[10px]">Equalizer</TabsTrigger>
+						<TabsTrigger value="upload" className="text-[10px]">Upload</TabsTrigger>
 					</TabsList>
 				</Tabs>
 			</div>
 
 			<div className="flex h-48 items-center justify-center border-b bg-muted/20 p-6">
-				{(activeRecolorTab === "logo" ? loading.logo : (loading.equalizer || loading.equalizerstyle2)) ? <Loader2 className="size-8 animate-spin" /> :
-					!currentSvgContent ? <span className="text-xs italic text-muted-foreground">Click tab to load preview</span> :
+				{activeRecolorTab !== "upload" && (activeRecolorTab === "logo" ? loading.logo : (loading.equalizer || loading.equalizerstyle2)) ? <Loader2 className="size-8 animate-spin" /> :
+					!currentSvgContent ? <span className="text-xs italic text-muted-foreground">Upload your own SVG.</span> :
 						<SVGDisplay content={memoizedSvg} />
 				}
 			</div>
 
 			<div className="grid grid-cols-1 gap-8 p-6 md:grid-cols-2">
 				<div className="space-y-4">
+					{activeRecolorTab === "upload" && (
+						<div className="space-y-1.5">
+							<Label className="text-[10px] font-bold uppercase tracking-wider">File</Label>
+							{!uploadedSvg ? (
+								<Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+									<Upload className="mr-2 size-3" /> Select SVG
+								</Button>
+							) : (
+								<Attachment state={uploadState}>
+									<AttachmentMedia variant="image" className="p-1 flex items-center justify-center">
+										<div 
+											className="flex size-full items-center justify-center [&>svg]:size-full"
+											dangerouslySetInnerHTML={{ __html: memoizedSvg }} 
+										/>
+									</AttachmentMedia>
+									<AttachmentContent>
+										<AttachmentTitle>{exportName}.svg</AttachmentTitle>
+										<AttachmentDescription>SVG File</AttachmentDescription>
+									</AttachmentContent>
+									<AttachmentActions>
+										<AttachmentAction aria-label={`Remove ${exportName}.svg`} onClick={removeFile}>
+											<XIcon />
+										</AttachmentAction>
+									</AttachmentActions>
+								</Attachment>
+							)}
+							<input type="file" ref={fileInputRef} className="hidden" accept=".svg" onChange={handleFileUpload} />
+						</div>
+					)}
 					{activeRecolorTab === "equalizer" && (
 						<div className="space-y-1.5">
 							<Label className="text-[10px] font-bold uppercase tracking-wider">Styles</Label>
 							<div className="flex gap-2">
 								{[{ id: "style1", content: svgs.equalizer }, { id: "style2", content: svgs.equalizerstyle2 }].map((style) => {
-									const previewSvg = getColoredSvg(style.content, 57, 57, logoColor, false, false, 0)
+									const previewSvg = getColoredSvg(style.content, 57, 57, debouncedColor, false, false, 0)
 									return (
 										<button
 											key={style.id}
@@ -323,7 +421,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 						</div>
 						<div className="relative h-32 overflow-auto rounded-md border bg-secondary/30 p-3">
 							<code className="break-all font-mono text-[9px] text-muted-foreground">
-								{currentSvgContent ? convertSvgToDataUrl(memoizedSvg) : "No asset selected."}
+								{currentSvgContent ? convertSvgToDataUrl(memoizedSvg) : "No file selected."}
 							</code>
 						</div>
 					</div>
@@ -344,7 +442,7 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 									) : (
 										<>background: url('{convertSvgToDataUrl(memoizedSvg)}') no-repeat center / contain;</>
 									)
-								) : "No asset selected."}
+								) : "No file selected."}
 							</code>
 						</div>
 					</div>
@@ -384,9 +482,9 @@ export function LogoRecolor({ onSave, rawSvgContent, isSvgLoading }: LogoRecolor
 				{!isStudioPage && (
 					<Button variant="outline" className="flex-1 gap-2" disabled={!currentSvgContent} onClick={async () => {
 						await addLogo(exportName, memoizedSvg)
-						toast.success("Saved to gallery")
+						toast.success("Saved to Library")
 					}}>
-						<Save className="size-3.5" /> Save Asset
+						<Save className="size-3.5" /> Save to Library
 					</Button>
 				)}
 			</div>
